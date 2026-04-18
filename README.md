@@ -46,9 +46,14 @@ What we can legitimately claim: *"inspired by Meta-Harness; applies the propose/
 
 ```bash
 cd /Users/hanyan/git_repo/context-curation-benchmark
-python3 -m pip install -r requirements.txt
-cp .env.example .env     # then edit OPENAI_API_KEY
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+cp .env.example .env     # then edit ANTHROPIC_API_KEY
 ```
+
+**LLM backend:** Claude (Anthropic SDK). Default models — agent = `claude-sonnet-4-6`, judge / proposer = `claude-opus-4-7`, summary / router = `claude-haiku-4-5`. Override via env.
+
+**Embeddings:** local `BAAI/bge-small-en-v1.5` via `sentence-transformers` (Claude has no embedding endpoint). FAISS `IndexFlatIP` for retrieval.
 
 ## Run
 
