@@ -9,14 +9,14 @@ Extracted 2026-04-18 for the context curation benchmark. All files are cleaned m
 | `procurement.md` | Procurement & Vendor Management | `https://handbook.gitlab.com/handbook/finance/procurement/` | 850 |
 | `individual-software-purchases.md` | Individual Use Software Purchases | `https://handbook.gitlab.com/handbook/finance/procurement/individual-use-software/` | 446 |
 | `corporate-card-policy.md` | Navan Purchasing Card Policy (Corporate Credit Card) | `https://handbook.gitlab.com/handbook/finance/accounts-payable/corp-credit-cards/` | 771 |
-| `flexible-pto-and-time-off.md` | Flexible PTO, Public Holidays, Sick Time, Bereavement, Jury Duty | `https://handbook.gitlab.com/handbook/people-group/time-off-and-absence/time-off-types/` | 1174 |
-| `parental-and-other-leave.md` | Parental Leave, Emergency Leave, Military Leave, Equity Vesting During Leave | `https://handbook.gitlab.com/handbook/people-group/time-off-and-absence/leave-types/` | 1198 |
+| `flexible-pto-and-time-off.md` | Flexible PTO, Public Holidays, Sick Time, Bereavement, Jury Duty | `https://handbook.gitlab.com/handbook/people-group/time-off-and-absence/time-off-types/` | 1116 |
+| `parental-and-other-leave.md` | Parental Leave, Emergency Leave, Military Leave, Equity Vesting During Leave | `https://handbook.gitlab.com/handbook/people-group/time-off-and-absence/leave-types/` | 1102 |
 | `general-onboarding.md` | General Onboarding (New Hire Checklist) | `https://handbook.gitlab.com/handbook/people-group/general-onboarding/` | 862 |
-| `us-benefits-overview.md` | GitLab Inc (US) Benefits Overview | `https://handbook.gitlab.com/handbook/total-rewards/benefits/general-and-entity-benefits/inc-benefits-us/` | 1092 |
+| `us-benefits-overview.md` | GitLab Inc (US) Benefits Overview | `https://handbook.gitlab.com/handbook/total-rewards/benefits/general-and-entity-benefits/inc-benefits-us/` | 1048 |
 | `total-rewards-compensation.md` | Total Rewards: Compensation, Bonuses, Equity | `https://handbook.gitlab.com/handbook/total-rewards/compensation/` + `.../stock-options/` | 917 |
 | `all-remote-work.md` | All-Remote Work: Async, Handbook-First, Non-Linear Workday | `https://handbook.gitlab.com/handbook/company/culture/all-remote/` (+ subpages) | 861 |
 
-**Total: 11 content files + this index. Approximately 9,622 words / ~12-13k tokens combined.**
+**Total: 11 content files + this index. Approximately 9,424 words of policy content (~12-13k tokens combined).**
 
 ## Notes on skipped sections
 

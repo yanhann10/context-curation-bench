@@ -66,37 +66,21 @@ See also the People Group Incident Response Plan for what the People Group does 
 
 ## Military Leave
 
-GitLab is committed to protecting the rights of team members absent from work due to military leave. No team member or prospective team member will be subjected to any form of discrimination or retaliation on the basis of uniformed-service membership.
+GitLab protects the rights of team members absent for military leave. No discrimination or retaliation on the basis of uniformed-service membership.
 
-### Leaves ≤ 31 days
+- **Leaves ≤ 31 days:** No changes to job, pay, or benefits. Team member returns on next scheduled shift.
+- **Leaves > 31 days:** Up to **6 months unpaid leave** (subject to statutory entitlement and business needs). Beyond 6 months the member is offboarded but eligible for reinstatement.
+- **Healthcare:** May retain for up to **2 years or end of service** (whichever first), at own expense. Otherwise benefits end on **day 31**.
+- **Stock vesting** continues up to 6 months of unpaid military leave.
 
-- No changes to job, pay, or benefits.
-- Team members return to their next working shift after military service ends.
+**Reinstatement:** Up to **2 years** after service ends (2 years for disabilities). Required: proper notice, honorable release, and application within:
+- **< 31 days:** report on next regularly scheduled work period
+- **31–180 days:** apply within **14 days**
+- **> 180 days:** apply within **90 days**
 
-### Leaves > 31 days
+The "escalator principle" applies — the team member returns to the position they would have attained if they had not been called to serve.
 
-- Up to **6 months unpaid leave** (eligibility dependent on statutory entitlement and business needs).
-- If leave extends beyond 6 months, the team member is offboarded (unless contrary to statutory requirements), but eligible for reinstatement.
-- Team members may elect to retain healthcare for up to **2 years or end of service** (whichever first), at their own expense. If no arrangements made, benefits end on **day 31**.
-- Stock continues to vest during unpaid military leave for up to 6 months (unless contrary to local requirements).
-
-### Reinstatement
-
-Guaranteed reinstatement rights for **up to 2 years** after service ends. Team members with disabilities have 2 years for recuperation/convalescence.
-
-To be entitled to reinstatement:
-- Proper notice given
-- Released under honorable conditions
-- Applied for re-employment within:
-  - **Leaves < 31 days:** report next regularly scheduled work period (no application needed)
-  - **31–180 days:** apply **within 14 days** of service completion
-  - **>180 days:** apply **within 90 days** of service completion
-
-The "escalator principle" applies: the team member returns to the position they would have attained if they had not been called to serve.
-
-### Applying
-
-Provide at least **30 days advance notice** via Workday under Leaves dropdown → "Military Leave". GitLab reserves the right to request service documentation. Absence Management will contact you if needed.
+**Applying:** Provide **30 days advance notice** via Workday → Leaves → "Military Leave". Documentation may be requested.
 
 ## Sick Leave
 

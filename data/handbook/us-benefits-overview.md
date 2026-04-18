@@ -44,31 +44,20 @@ Already have group medical coverage? Opt out and receive a **$150 monthly benefi
 
 ### Cigna Medical Plans (three options)
 
-1. **Cigna EPO** — Configured as PPO with limited out-of-network benefits ($10k/$20k deductible, $20k/$40k out-of-pocket max, 50% coinsurance out-of-network). Consider PPO 500 or HSA plans if you need out-of-network coverage.
+1. **Cigna EPO** — Configured as PPO with limited out-of-network benefits ($10k/$20k deductible, $20k/$40k out-of-pocket max, 50% coinsurance out-of-network).
 2. **Cigna HDHP (High Deductible Health Plan)** — Eligible for HSA contributions.
 3. **Cigna PPO** — Standard PPO. Utah members get extended PPO network including Intermountain Healthcare System.
 
-**GitLab HSA Contributions (for HDHP enrollees):**
-- Team Member Only Coverage: **$100 / month**
-- Team Member + Spouse/Child/Family: **$125 / month**
-
-*California, Alabama, and New Jersey:* HSA contributions are taxable at the state level.
+**GitLab HSA Contributions (HDHP enrollees):** $100/mo individual, $125/mo family. HSA contributions are taxable at the state level in California, Alabama, and New Jersey.
 
 ### Kaiser Medical Plans
 
-Available in Hawaii and California (NorCal / SoCal). Each state has its own plan options. Kaiser claims: **365 days to submit** out-of-network claims.
+Available in Hawaii and California. Kaiser claims window: **365 days** for out-of-network.
 
-## Dental Coverage
+## Dental & Vision Coverage
 
-Through Cigna, two coverage levels:
-- DPPO Base Plan
-- DPPO Buy Up Plan
-
-## Vision Coverage
-
-Through Cigna in partnership with EyeMed:
-- Vision Base
-- Vision Buy Up
+- **Dental** through Cigna: DPPO Base Plan and DPPO Buy Up Plan.
+- **Vision** through Cigna + EyeMed: Vision Base and Vision Buy Up.
 
 ## Employee Assistance Program (EAP)
 
@@ -76,8 +65,7 @@ Through **New York Life Group Benefits** — no cost:
 - **Behavioral Health:** 3 face-to-face sessions with counselors
 - **Legal Services:** Free 30-minute consultations and 25% fee discounts
 - **Financial Consultations:** Free 30-minute consultation and 25% tax services discount
-- **Health Advocacy:** healthcare navigation
-- **Travel Protection:** additional coverage beyond business travel policy
+- **Health Advocacy** and **Travel Protection** also included
 
 ## Life Insurance & AD&D
 
