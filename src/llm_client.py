@@ -52,14 +52,17 @@ async def complete_text(
     max_tokens: int = 1024,
     temperature: float = 0.0,
 ) -> tuple[str, int, int, float]:
-    t0 = time.time()
-    resp = await client.messages.create(
+    kwargs = dict(
         model=model,
         max_tokens=max_tokens,
         temperature=temperature,
-        system=_system_blocks(system) if system is not None else None,
         messages=[{"role": "user", "content": user}],
     )
+    blocks = _system_blocks(system)
+    if blocks is not None:
+        kwargs["system"] = blocks
+    t0 = time.time()
+    resp = await client.messages.create(**kwargs)
     latency = time.time() - t0
     text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
     u = resp.usage
@@ -74,24 +77,19 @@ async def complete_json(
     max_tokens: int = 1024,
     temperature: float = 0.0,
 ) -> tuple[dict, int, int, float]:
-    """Force JSON via assistant prefill. Returns parsed dict (empty on failure)."""
-    t0 = time.time()
-    resp = await client.messages.create(
-        model=model,
-        max_tokens=max_tokens,
-        temperature=temperature,
-        system=_system_blocks(system) if system is not None else None,
-        messages=[
-            {"role": "user", "content": user},
-            {"role": "assistant", "content": "{"},
-        ],
+    """Request JSON output; parse leniently.
+
+    Some Claude 4.x variants reject assistant-prefill, so we rely on strict
+    JSON instruction in the system prompt (callers already include it) plus
+    _safe_json regex-extract fallback.
+    """
+    reinforced_user = user + "\n\nReturn a single JSON object. No prose, no code fences."
+    text, in_tok, out_tok, latency = await complete_text(
+        client, user=reinforced_user, system=system,
+        model=model, max_tokens=max_tokens, temperature=temperature,
     )
-    latency = time.time() - t0
-    body = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
-    raw = "{" + body
-    data = _safe_json(raw)
-    u = resp.usage
-    return data, u.input_tokens, u.output_tokens, latency
+    data = _safe_json(text)
+    return data, in_tok, out_tok, latency
 
 
 def _safe_json(raw: str) -> dict:
