@@ -1,4 +1,8 @@
-"""Load handbook markdown + synthetic Slack threads + test questions into a uniform schema."""
+"""Load handbook markdown + Slack threads + test questions into a uniform schema.
+
+Stage 3 addition: handbook docs get a synthetic source_timestamp of 2026-01-01
+so strategies can compare recency against (newer) Slack threads uniformly.
+"""
 from __future__ import annotations
 import json
 from pathlib import Path
@@ -7,7 +11,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HANDBOOK_DIR = ROOT / "data" / "handbook"
 SLACK_FILE = ROOT / "data" / "slack.json"
+SLACK_API_FILE = ROOT / "data" / "slack_api.json"
 QUESTIONS_FILE = ROOT / "data" / "test_questions.json"
+QUESTIONS_V2_FILE = ROOT / "data" / "test_questions_v2.json"
+
+# All handbook docs share this synthetic source date — strategies that are
+# recency-aware will compare it against Slack thread timestamps.
+HANDBOOK_SOURCE_TIMESTAMP = "2026-01-01T00:00:00Z"
 
 
 def load_handbook() -> list[dict]:
@@ -25,36 +35,46 @@ def load_handbook() -> list[dict]:
                 "title": title,
                 "source": "gitlab-handbook",
                 "path": str(path.relative_to(ROOT)),
+                "timestamp": HANDBOOK_SOURCE_TIMESTAMP,
             },
         })
     return docs
 
 
-def load_slack() -> list[dict]:
-    if not SLACK_FILE.exists():
+def load_slack(path: Path = SLACK_FILE) -> list[dict]:
+    if not path.exists():
         return []
-    return json.loads(SLACK_FILE.read_text(encoding="utf-8"))
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
-def load_questions() -> list[dict]:
-    if not QUESTIONS_FILE.exists():
+def load_slack_api() -> list[dict]:
+    """Load Slack-API-shape threads (richer metadata: channel_id, thread_ts,
+    user_id, reactions, validated_by_hr). Uses same internal schema."""
+    return load_slack(SLACK_API_FILE)
+
+
+def load_questions(path: Path = QUESTIONS_FILE) -> list[dict]:
+    if not path.exists():
         return []
-    return json.loads(QUESTIONS_FILE.read_text(encoding="utf-8"))
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
-def load_all_docs() -> list[dict]:
+def load_questions_v2() -> list[dict]:
+    return load_questions(QUESTIONS_V2_FILE)
+
+
+def load_all_docs(slack_source: str = "simple") -> list[dict]:
+    """slack_source='simple' uses slack.json (Stage 1/2); 'api' uses slack_api.json (Stage 3)."""
+    if slack_source == "api":
+        return load_handbook() + load_slack_api()
     return load_handbook() + load_slack()
 
 
 if __name__ == "__main__":
-    hb = load_handbook()
-    sl = load_slack()
-    q = load_questions()
-    print(f"handbook: {len(hb)} docs")
-    print(f"slack:    {len(sl)} threads")
-    print(f"questions:{len(q)}")
-    for d in hb:
-        print(f"  {d['id']}: {d['metadata']['title']} ({len(d['content'])} chars)")
-    for d in sl:
-        rel = d["metadata"].get("relationship", "?")
-        print(f"  {d['id']}: [{rel}] {d['metadata']['title']}")
+    for label, docs, qs in [
+        ("stage 1/2", load_all_docs("simple"), load_questions()),
+        ("stage 3  ", load_all_docs("api"), load_questions_v2()),
+    ]:
+        s = sum(1 for d in docs if d["type"] == "static")
+        sl = sum(1 for d in docs if d["type"] == "slack")
+        print(f"{label}: {s} static, {sl} slack, {len(qs)} questions")
