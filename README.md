@@ -95,48 +95,47 @@ Artifacts in `output/`:
 - `slack_only` — info only in Slack, not in handbook
 - `needs_both` — handbook gives policy, Slack gives a current detail
 
-## Findings (Stage 3, 5 strategies, Claude Sonnet 4.6 throughout)
+## Findings (Stage 3, 7 strategies, Claude Sonnet 4.6 throughout)
 
 N=10 v2 HR onboarding questions (4 slack_contradicts, 2 slack_only, 2 needs_both, 2 portal_only). Corpus: 11 handbook docs (timestamped 2026-01-01) + 10 Slack-API-shape threads (HR-validated, recent). Full eval log in `eval/eval_runs.md`.
 
 | strategy | quality | f1 | latency_s | prompt_tok | cost_usd |
 |---|---|---|---|---|---|
-| full_context | **1.000** | 0.532 | 6.2 | 19,957 | 0.667 |
-| meta_harness_optimized | 0.895 | 0.455 | 7.7 | 11,863 | 0.432 |
-| rag_embedding | 0.925 | 0.464 | 6.8 | 2,161 | **0.143** |
-| hierarchical | 0.915 | 0.501 | 6.1 | **1,489** | **0.116** |
-| **agent_managed** | **0.995** | 0.537 | 9.7 | 7,738 | 0.318 |
+| full_context | 0.995 | 0.534 | 6.6 | 19,957 | 0.670 |
+| meta_harness_optimized | 0.890 | 0.467 | 7.5 | 11,863 | 0.431 |
+| rag_embedding | 0.925 | 0.455 | 6.7 | 2,161 | **0.141** |
+| hierarchical | 0.910 | 0.491 | 6.1 | **1,489** | **0.118** |
+| agent_managed | 0.990 | 0.524 | 8.9 | 7,739 | 0.320 |
+| cascade_router | 0.925 | 0.546 | 23.5 | 24,522 | 0.904 |
+| **ensemble** | **0.995** | 0.527 | 11.3 | 9,817 | 0.428 |
 
-**Headline:** **agent_managed matches full-context quality at half the cost** — best point on the quality/cost frontier on the harder v2 eval.
+**Oracle router** (pick cheapest max-quality per question): **1.000 quality at $0.138** — 3× cheaper than ensemble, 5× cheaper than full_context. Picks hierarchical 9/10, agent_managed 1/10.
 
 Charts: `output/chart_stage3.png`, `output/chart_stage3_heatmap.png`.
 
+### Headlines
+- **Ensemble matches full_context quality at 64% the cost** — best demonstrated strategy at this model class.
+- **Cascade routing is WORSE than its tier-2 alone** (0.925 at $0.90 vs agent_managed 0.990 at $0.32). LLM self-verification is over-confident on confidently-wrong tier-1 outputs.
+- **Oracle-vs-ensemble gap is $0.29 / 10q** — a learned router or cross-model verifier that beats self-verification is the highest-leverage improvement.
+
 ### Per-strategy failure modes
 
-- **full_context**: 1.000 — no failures. Costs 2× agent-managed.
-- **meta_harness_optimized**: drops q-v2-009 (portal_only STD benefits → **0.00**). The optimizer's spec excluded `us-benefits-overview` — classic overfit to the train subset.
-- **rag_embedding / hierarchical**: both fail q-v2-010 (portal_only military leave reinstatement: RAG 0.30, hier 0.20). Neither retrieved the `parental-and-other-leave` doc. Shallow retrieval/summarization doesn't know what it doesn't know.
-- **agent_managed**: 0.995, single 0.95 on q-v2-007 (needs_both contractor onboarding). Tool-use loop is a clean win.
+- **full_context**: 0.995 — one 0.95 on q-v2-007 (needs_both); 2× the cost of agent_managed.
+- **meta_harness_optimized**: drops q-v2-009 (portal_only STD benefits → **0.00**). Optimizer spec excluded `us-benefits-overview`. Train-set overfit is recurrent.
+- **rag_embedding / hierarchical**: fail q-v2-010 (military leave: RAG 0.30, hier 0.10). Neither retrieves `parental-and-other-leave.md`.
+- **agent_managed**: 0.990, 0.90 on q-v2-007 only.
+- **cascade_router**: 0.30 on q-v2-010. **Self-verifier failure mode:** hier returned confidently-wrong, verifier said `confident: 1`, never escalated. Also pays all 3 tiers on ~8/10 questions because verifier over-eagerly fires on hedging/missing citations.
+- **ensemble**: 0.95 on q-v2-007 — judge picked hier's answer when agent_managed's was also ~0.95; not a real failure.
 
 ### When to pick what
 
-- **Max quality, no tuning budget** → `full_context` (still 1.0 at Sonnet 4.6 level)
-- **Best quality/cost** → `agent_managed` (tool-use, 99.5% quality at 48% the cost)
-- **Cheapest acceptable** → `hierarchical` or `rag_embedding` (91-93% quality at 17-22% the cost), but expect 1-2 catastrophic failures on portal-only questions
-- **Avoid**: `meta_harness_optimized` on a small eval — the optimizer's doc-inclusion mutations can strand a doc that matters for a future question
+- **Max demonstrated quality** → `ensemble` (0.995 at $0.428)
+- **Best single-strategy quality/cost** → `agent_managed` (0.990 at $0.320)
+- **Cheapest with 1 catastrophic failure tolerance** → `hierarchical` ($0.118, but fails q-v2-010)
+- **Avoid**: `cascade_router` as implemented — single-model self-verification defeats the purpose. Fix with a cross-model verifier.
+- **Theoretical ceiling**: oracle router ($0.138, 1.000) — implementable with a learned router or cross-model verifier
 
-Recency-handling: all 5 strategies correctly prefer the recent Slack value on `slack_contradicts` questions. Recency is table stakes at Sonnet 4.6 and was dropped as a separate metric.
-
-**Detail:**
-- **Meta-harness wins on quality by +3.5%**, but marginal on tokens. The proposer's keeper mutations: `max_chars_per_doc 3000→6000` (ensures full us-benefits policy fits), `ordering=slack_first`, `format=structured`.
-- **Hardest question: q-004 (needs_both).** Meta-harness holds 0.95; full_context and RAG drop to 0.80. The explicit policy+recent-detail combination rewards curation that keeps BOTH sources.
-- **Hierarchical failure mode on q-002:** the router dropped the contradicting Slack thread, answer went stale (quality 0.80). Summarize-route-expand loses recency when summaries undersell time-sensitive threads.
-- **F1 is higher for RAG/hierarchical** (0.44) than full_context (0.40) — shorter retrieved chunks keep the answer closer to the terse golden.
-
-**When to pick what:**
-- Cost-sensitive, policy-heavy domain → **RAG** (1,957 avg tokens vs 18,583)
-- Max quality, 6-12 question budget to optimize → **meta_harness_optimized**
-- Default without engineering effort → **full_context** still fine at Sonnet 4.6 level
+Recency-handling: all strategies correctly prefer the recent Slack value on `slack_contradicts` questions. Recency is table stakes at Sonnet 4.6 and was dropped as a separate metric.
 
 ## Sources
 
