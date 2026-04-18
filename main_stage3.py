@@ -27,11 +27,12 @@ from anthropic import AsyncAnthropic
 from src.data_loader import load_all_docs, load_questions_v2
 from src.strategies import full_context, meta_harness_optimized, CurationSpec
 from src.evaluator import log_results, summarize
-from src.evaluator_async import run_strategy_async
+from src.evaluator_async import run_strategy_async, run_agent_strategy_async
 from src.harness_optimizer import baseline_spec
 from src.harness_optimizer_async import optimize_async
 from src.strategies_rag import rag_build_prompt_fn
 from src.strategies_hierarchical import hierarchical_build_prompt_fn
+from src.strategies_agent_managed import agent_managed_runner
 
 
 ROOT = Path(__file__).resolve().parent
@@ -93,7 +94,7 @@ async def amain(args) -> int:
         max_ids=args.hier_ids,
     )
 
-    print("\n[run] launching 4 strategies concurrently")
+    print("\n[run] launching 5 strategies concurrently")
     results_lists = await asyncio.gather(
         run_strategy_async(client, "full_context", full_context, questions, docs,
                            agent_model, judge_model, concurrency=concurrency),
@@ -104,6 +105,9 @@ async def amain(args) -> int:
                            agent_model, judge_model, concurrency=concurrency),
         run_strategy_async(client, "hierarchical", hier_fn, questions, docs,
                            agent_model, judge_model, concurrency=concurrency),
+        run_agent_strategy_async(client, "agent_managed", agent_managed_runner,
+                                 questions, docs, agent_model, judge_model,
+                                 concurrency=min(concurrency, 4)),
     )
     all_results = [r for rs in results_lists for r in rs]
 
@@ -120,7 +124,7 @@ async def amain(args) -> int:
             print(f"    {k:>22s}: {v}")
 
     # per-question grid
-    strat_order = ["full_context", "meta_harness_optimized", "rag_embedding", "hierarchical"]
+    strat_order = ["full_context", "meta_harness_optimized", "rag_embedding", "hierarchical", "agent_managed"]
     print("\nPer-question × strategy quality grid:")
     print(f"  {'qid':<10s} {'category':<18s} " + " ".join(f"{s[:10]:>10s}" for s in strat_order))
     by_q: dict[str, dict] = {}

@@ -5,6 +5,26 @@ Entry template below. Add newest on top.
 
 ---
 
+### 2026-04-18T23:14Z — efa0c56 — stage 3 (all 5 strategies, v2 questions, recency dropped)
+
+- host: laptop (macOS, Python 3.13)
+- models: all roles = claude-sonnet-4-6
+- strategies: full_context, meta_harness_optimized, rag_embedding, hierarchical, **agent_managed (new)**
+- questions: N=10 v2 (4 slack_contradicts, 2 slack_only, 2 needs_both, 2 portal_only)
+- corpus: 11 handbook (ts=2026-01-01 uniform) + 10 slack_api threads (ts=recent)
+- optimizer: n_iter=2, train_n=4
+- **recency** dropped from metrics (was 1.0 across all strategies on Stage 2)
+- summary:
+  | strategy | quality | f1 | latency_s | prompt_tok | cost_usd |
+  |---|---|---|---|---|---|
+  | full_context | **1.000** | 0.532 | 6.2 | 19,957 | 0.667 |
+  | meta_harness_optimized | 0.895 | 0.455 | 7.7 | 11,863 | 0.432 |
+  | rag_embedding | 0.925 | 0.464 | 6.8 | 2,161 | 0.143 |
+  | hierarchical | 0.915 | 0.501 | 6.1 | **1,489** | **0.116** |
+  | **agent_managed** | **0.995** | 0.537 | 9.7 | 7,738 | 0.318 |
+- artifacts: output/results_stage3.csv, output/summary_stage3.json, output/final_spec_stage3.json, output/chart_stage3.png, output/chart_stage3_heatmap.png
+- notes: **agent_managed (tool-use loop) matches full_context quality at half the cost** — clear winner on the quality/cost frontier. Full_context stuffing still achieves 1.00 quality on a 10-question set, so the "just stuff the window" story only breaks on cost, not correctness. **Meta-harness catastrophically fails q-v2-009** (portal_only STD benefits → 0.00) — optimizer spec excluded us-benefits-overview; classic overfit to train subset. **RAG and hierarchical fail q-v2-010** (portal_only military leave reinstatement: RAG 0.30, hier 0.20) — neither retrieved the parental-and-other-leave doc. Failure mode: cheap retrieval/summarize strategies don't know what they don't know.
+
 ### 2026-04-18T22:58Z — 51a44de — stage 2 (all 4 strategies)
 
 - host: aws-micro (Ubuntu 24.04, 1 CPU, 3.7GB RAM)

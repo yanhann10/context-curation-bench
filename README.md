@@ -95,20 +95,37 @@ Artifacts in `output/`:
 - `slack_only` — info only in Slack, not in handbook
 - `needs_both` — handbook gives policy, Slack gives a current detail
 
-## Findings (Stage 1 + Stage 2, Claude Sonnet 4.6 throughout)
+## Findings (Stage 3, 5 strategies, Claude Sonnet 4.6 throughout)
 
-N=6 HR onboarding questions (2 portal_only, 2 slack_contradicts, 1 slack_only, 1 needs_both). Full eval log in `eval/eval_runs.md`.
+N=10 v2 HR onboarding questions (4 slack_contradicts, 2 slack_only, 2 needs_both, 2 portal_only). Corpus: 11 handbook docs (timestamped 2026-01-01) + 10 Slack-API-shape threads (HR-validated, recent). Full eval log in `eval/eval_runs.md`.
 
 | strategy | quality | f1 | latency_s | prompt_tok | cost_usd |
 |---|---|---|---|---|---|
-| full_context | 0.950 | 0.396 | 7.5 | 18,583 | 0.384 |
-| meta_harness_optimized | **0.975** | 0.404 | 9.7 | 17,869 | 0.378 |
-| rag_embedding | 0.942 | 0.444 | 6.3 | **1,957** | **0.080** |
-| hierarchical | 0.925 | 0.448 | 6.3 | **1,622** | **0.074** |
+| full_context | **1.000** | 0.532 | 6.2 | 19,957 | 0.667 |
+| meta_harness_optimized | 0.895 | 0.455 | 7.7 | 11,863 | 0.432 |
+| rag_embedding | 0.925 | 0.464 | 6.8 | 2,161 | **0.143** |
+| hierarchical | 0.915 | 0.501 | 6.1 | **1,489** | **0.116** |
+| **agent_managed** | **0.995** | 0.537 | 9.7 | 7,738 | 0.318 |
 
-All strategies achieved `recency=1.0` on Stage 2 questions, so recency was dropped as a separate metric from Stage 3 onward — it's table stakes at Sonnet 4.6. Recency handling is now folded into `quality` (stale answers on recency-sensitive questions score ≤0.5).
+**Headline:** **agent_managed matches full-context quality at half the cost** — best point on the quality/cost frontier on the harder v2 eval.
 
-**Headline:** RAG hits 97% of full-context quality at **1/5 the cost**. Dominant tradeoff on this task.
+Charts: `output/chart_stage3.png`, `output/chart_stage3_heatmap.png`.
+
+### Per-strategy failure modes
+
+- **full_context**: 1.000 — no failures. Costs 2× agent-managed.
+- **meta_harness_optimized**: drops q-v2-009 (portal_only STD benefits → **0.00**). The optimizer's spec excluded `us-benefits-overview` — classic overfit to the train subset.
+- **rag_embedding / hierarchical**: both fail q-v2-010 (portal_only military leave reinstatement: RAG 0.30, hier 0.20). Neither retrieved the `parental-and-other-leave` doc. Shallow retrieval/summarization doesn't know what it doesn't know.
+- **agent_managed**: 0.995, single 0.95 on q-v2-007 (needs_both contractor onboarding). Tool-use loop is a clean win.
+
+### When to pick what
+
+- **Max quality, no tuning budget** → `full_context` (still 1.0 at Sonnet 4.6 level)
+- **Best quality/cost** → `agent_managed` (tool-use, 99.5% quality at 48% the cost)
+- **Cheapest acceptable** → `hierarchical` or `rag_embedding` (91-93% quality at 17-22% the cost), but expect 1-2 catastrophic failures on portal-only questions
+- **Avoid**: `meta_harness_optimized` on a small eval — the optimizer's doc-inclusion mutations can strand a doc that matters for a future question
+
+Recency-handling: all 5 strategies correctly prefer the recent Slack value on `slack_contradicts` questions. Recency is table stakes at Sonnet 4.6 and was dropped as a separate metric.
 
 **Detail:**
 - **Meta-harness wins on quality by +3.5%**, but marginal on tokens. The proposer's keeper mutations: `max_chars_per_doc 3000→6000` (ensures full us-benefits policy fits), `ordering=slack_first`, `format=structured`.

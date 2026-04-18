@@ -27,11 +27,14 @@ def plot_quality_vs_cost(csv_path: Path, out_path: Path) -> None:
     cost_total = [sum(float(r["cost_usd"]) for r in by_strat[s]) for s in strats]
     tok_mean = [sum(int(r["prompt_tokens"]) for r in by_strat[s]) / len(by_strat[s]) for s in strats]
 
+    palette = plt.get_cmap("tab10").colors
+    colors = [palette[i % len(palette)] for i in range(len(strats))]
+
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5))
 
     # Left: quality bar + cost overlay
     x = range(len(strats))
-    bars = ax1.bar(x, q_mean, color=["#4C72B0", "#55A868", "#C44E52", "#8172B2"][:len(strats)])
+    bars = ax1.bar(x, q_mean, color=colors)
     ax1.set_xticks(list(x))
     ax1.set_xticklabels(strats, rotation=15, ha="right")
     ax1.set_ylim(0, 1.05)
@@ -41,7 +44,7 @@ def plot_quality_vs_cost(csv_path: Path, out_path: Path) -> None:
         ax1.text(bar.get_x() + bar.get_width() / 2, v + 0.01, f"{v:.2f}", ha="center", fontsize=10)
 
     # Right: cost vs prompt-tokens (log scale on tokens)
-    ax2.scatter(tok_mean, cost_total, s=180, c=["#4C72B0", "#55A868", "#C44E52", "#8172B2"][:len(strats)])
+    ax2.scatter(tok_mean, cost_total, s=180, c=colors)
     for s, x_v, y_v in zip(strats, tok_mean, cost_total):
         ax2.annotate(s, (x_v, y_v), xytext=(8, 6), textcoords="offset points", fontsize=9)
     ax2.set_xscale("log")

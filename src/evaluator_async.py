@@ -104,3 +104,53 @@ async def run_strategy_async(
             )
 
     return await asyncio.gather(*[bounded(q) for q in questions])
+
+
+async def run_agent_strategy_async(
+    client: AsyncAnthropic,
+    strategy_name: str,
+    agent_runner,
+    questions: list[dict],
+    docs: list[dict],
+    agent_model: str,
+    judge_model: str,
+    concurrency: int = 6,
+) -> list[RunResult]:
+    """For strategies whose agent is a multi-turn loop (e.g. tool-use).
+
+    agent_runner(client, question_text, docs, model) -> (answer, latency, in_tok, out_tok)
+    Tokens are summed across all turns inside the loop.
+    """
+    sem = asyncio.Semaphore(concurrency)
+
+    async def bounded(q):
+        async with sem:
+            try:
+                ans, latency, in_tok, out_tok = await agent_runner(
+                    client, q["question"], docs, agent_model,
+                )
+                quality, note, j_in, j_out = await judge_async(client, q, ans, judge_model)
+                fail = ""
+            except Exception as e:
+                ans, latency, in_tok, out_tok = "", 0.0, 0, 0
+                quality, note, fail = 0.0, "", f"error: {e}"
+                j_in, j_out = 0, 0
+            gold = q["golden_answer"]
+            key_facts = q.get("key_facts", [])
+            agent_cost = cost_usd(agent_model, in_tok, out_tok)
+            judge_cost = cost_usd(judge_model, j_in, j_out)
+            return RunResult(
+                question_id=q["id"], strategy=strategy_name,
+                question=q["question"], answer=ans,
+                golden_answer=gold, quality=quality,
+                f1=round(_f1(ans, gold), 3),
+                exact_match=_em(ans, gold),
+                key_fact_recall=round(_kfr(ans, key_facts), 3),
+                latency_s=round(latency, 3),
+                prompt_tokens=in_tok, completion_tokens=out_tok,
+                total_tokens=in_tok + out_tok,
+                cost_usd=round(agent_cost + judge_cost, 5),
+                failure_note=fail or note,
+            )
+
+    return await asyncio.gather(*[bounded(q) for q in questions])
