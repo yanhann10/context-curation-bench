@@ -36,53 +36,62 @@
 
 **Short answer:** yes — oracle routing on Stage 3 data buys **100% quality at 21% the cost of full_context** (best single strategy) and 43% the cost of agent_managed. Realistic routing captures some fraction of that gap. Ensembling is cheaper to implement but more expensive to run.
 
-### 3.1 Oracle router (upper bound from Stage 3 data)
+### 3.1 Oracle + real routers — actual Stage 3 numbers (updated after building cascade + ensemble)
 
-Per-question: pick the cheapest strategy that ties for max quality. Computed from `output/results_stage3.csv`:
+Per-question oracle: pick the cheapest strategy that ties for max quality. Plus the two real routers we shipped.
 
 | approach | quality_mean | cost_total (N=10) | avg prompt_tok | avg latency_s |
 |---|---|---|---|---|
-| full_context (best single) | 1.000 | $0.667 | 19,957 | 6.20 |
-| agent_managed | 0.995 | $0.318 | 7,738 | 9.66 |
-| hierarchical (cheapest) | 0.915 | $0.116 | 1,489 | 6.05 |
-| **oracle router** | **1.000** | **$0.138** | **2,175** | **6.53** |
+| full_context | 0.995 | $0.670 | 19,957 | 6.6 |
+| agent_managed | 0.990 | $0.320 | 7,739 | 8.9 |
+| hierarchical (cheapest) | 0.910 | $0.118 | 1,489 | 6.1 |
+| **cascade_router** (real) | 0.925 | **$0.904** | 24,522 | 23.5 |
+| **ensemble** (real) | **0.995** | $0.428 | 9,817 | 11.3 |
+| **oracle router** (upper bound) | **1.000** | **$0.138** | 2,092 | 6.3 |
 
-Oracle picked hierarchical 8/10 times, `rag_embedding` once (q-v2-006), `agent_managed` once (q-v2-010). Specifically the two oracle upgrades from hier:
-- q-v2-006 `slack_only`: hier 0.95 → rag 1.00 at +$0.004
-- q-v2-010 `portal_only` military leave: hier 0.20 → agent 1.00 at +$0.021
+Oracle picks hierarchical 9/10, agent_managed 1/10 (on q-v2-010 only). Oracle is achievable only if the router perfectly classifies which question falls in the hier-wins-set vs the hier-fails-set.
+
+### 3.1.1 Findings after actually building cascade and ensemble
+
+**Cascade is worse than its own tier-2 strategy** — 0.925 vs agent_managed 0.990, at 3× the cost ($0.90 vs $0.32). Two reasons:
+1. **Self-verifier is over-confident on wrong tier-1 outputs.** On q-v2-010 (military leave), hier returned a confidently-wrong answer. The self-verifier said `confident: 1`, cascade returned hier's answer → 0.30 quality. **This is a documented single-model self-confidence failure.**
+2. **Self-verifier is over-eager elsewhere.** On 7–8 of 10 questions the verifier said `confident: 0` (on hedging, missing citations) even when hier's answer was actually fine — so cascade always paid tier-2 anyway.
+
+**Ensemble works** — 0.995 quality at $0.43, matches full_context at 64% the cost. But still 3× the oracle. Judge-based A-vs-B selection is a better signal than self-verification.
+
+**Implication for routing:** the highest-leverage next experiment is **replacing LLM self-verification with an orthogonal verifier** — a cross-model check (agent = Sonnet, verifier = Haiku), a retrieval-reranker confidence score, or a small fine-tuned classifier trained on labeled outputs.
 
 ### 3.2 Category-label router (degenerate on this N)
 
 Routing by question `category` label (assuming you had one at serve time, which you don't) picks full_context for every category on this data because full_context is always max-quality. Collapses to the full_context row. Category is the wrong feature at this scale.
 
-### 3.3 Practical routers worth prototyping
+### 3.3 Practical routers — what we built vs what's left
 
-Ranked by implementation effort:
+1. **Cheap-first cascade** (BUILT, underperformed)
+   - Tier 1 hier → self-verify → Tier 2 agent → self-verify → Tier 3 full. Actual: 0.925 at $0.904. Verifier bias killed it.
+   - Fixable by: cross-model verifier (Haiku verifies Sonnet), or retrieval-score confidence, or learned confidence classifier.
 
-1. **Cheap-first cascade** (lowest effort, likely wins on this eval)
-   - Always try hierarchical first ($0.012/q, ~91.5% quality)
-   - If confidence signal fires — e.g. the router returned <2 doc_ids, or the answer doesn't cite a source, or an LLM-judge verifier gives <0.8 — escalate to agent_managed ($0.032/q)
-   - If still weak → full_context ($0.067/q)
-   - **Estimated:** ~0.98 quality at ~$0.20 total on Stage 3 (within 80% of oracle)
+2. **Ensemble with judge-pick** (BUILT, best real result)
+   - Run hier + agent in parallel, judge picks A/B. Actual: 0.995 at $0.428. Matches full_context quality, 64% the cost.
+   - Room to cheapen: use Haiku as the picker instead of Sonnet.
 
-2. **LLM router** (medium effort)
-   - Small Haiku call: `route(question, corpus_schema) -> strategy_id`
-   - Training signal: historical per-question winners (need ≥100 labeled Qs first — a dependency on benchmark-scale work)
-   - Adds ~$0.001 per question for the router call
+3. **Learned router** (NOT built — needs scale)
+   - Small classifier: `route(question, corpus_schema) -> strategy_id`
+   - Training signal: historical per-question winners. Needs ≥100 labeled Qs first — blocked on benchmark-scale work.
 
-3. **Confidence-calibrated ensemble** (higher effort, likely overkill)
-   - Run 2 cheapest strategies in parallel, if they agree → return; if disagree → run expensive tiebreaker + judge
-   - Bounded cost: disagreement rate × expensive-strategy cost + 2× cheap
-   - Needs an agreement metric (embedding similarity or LLM-judge "equivalent?")
+4. **Confidence-calibrated ensemble** (NOT built)
+   - Run 2 cheapest in parallel, agree → return, disagree → expensive tiebreaker. Bounded cost. Needs an agreement metric.
 
-4. **Self-consistency / best-of-N** (budget blow-up risk)
-   - Run one strategy N times at T>0, vote — not obviously better for non-reasoning QA tasks
+5. **Self-consistency / best-of-N** (NOT built, low priority)
+   - Budget blow-up risk, marginal benefit on deterministic QA.
 
-### 3.4 Ensemble viability
+### 3.4 Ensemble viability — actual numbers
 
-Full ensembles (all 5 strategies → vote) cost **$1.68/10q = $0.168/q** for an expected ceiling of ~1.00 quality — worse economics than oracle routing because you always pay every strategy. Only justified if run-to-run variance is high enough that voting buys statistical robustness (not measured yet; needs the 3-seed multi-run from benchmark-readiness).
+Partial ensemble (hier + agent_managed + judge-pick) ACTUAL: **0.995 quality at $0.428** — matches full_context (0.995 at $0.670) at 64% the cost. Not as cheap as oracle, not as cheap as agent_managed alone ($0.320), but higher quality than either.
 
-**Partial ensemble** (hier + agent_managed + LLM-judge picks better): $0.012 + $0.032 + ~$0.003 judge = $0.047/q = $0.47/10q — *worse* than full_context on cost, *similar* on quality. Not obviously better unless we credit variance reduction.
+Full 7-way ensemble would cost ~$2.9/10q (sum of all strategies) for the same ceiling — strictly worse than the 2-way build. Not worth it.
+
+**Only cheaper ensemble worth trying:** swap the judge-picker from Sonnet to Haiku. Expected cost: ~$0.35/10q, quality should hold. Blocked only on writing a small helper.
 
 ### 3.5 What a router demo would need
 
@@ -97,10 +106,13 @@ Full ensembles (all 5 strategies → vote) cost **$1.68/10q = $0.168/q** for an 
 - At larger N with harder questions, the gap between hierarchical and agent_managed will widen; cascade cost will rise accordingly.
 - Routing only matters if the failure modes are **recoverable** — i.e. some other strategy gets the right answer. On Stage 3 every failed cell had at least one 1.00 peer, so recoverable. Real-world evals may have questions that *no* strategy handles, which routing can't fix.
 
-### 3.7 Recommended next experiment (post-scaling)
+### 3.7 Recommended next experiments
 
-Once N ≥ 100 with 3-seed runs exists:
-1. Implement the cheap-first cascade (router #1) as `src/strategies_router.py`
-2. Run on the same eval as Stage 3 equivalent-at-scale
-3. Report: quality_mean, cost_total, **AUC-like frontier** of (budget cap) → (quality achievable under that cap)
-4. Compare to single-strategy baselines and to Letta Context-Bench's agentic retrieval (if public)
+Given cascade's self-verification failure and ensemble's 3× oracle-gap, the highest-leverage next work, in order:
+
+1. **Cross-model verifier for cascade.** Replace Sonnet-verifies-Sonnet with Haiku-verifies-Sonnet (or vice versa). Cheap, probably fixes q-v2-010. `src/strategies_cascade.py` already modular — swap the verifier model.
+2. **Haiku-judge ensemble.** Drop ensemble cost from $0.43 → ~$0.35 with minor quality risk. One-line change.
+3. **Scale to N ≥ 100** (benchmark-readiness checklist). Every router/ensemble claim at N=10 is anecdotal.
+4. **Learned router.** After (3), train a logistic or small-BERT classifier on per-question winners. Compare to oracle as ceiling.
+5. **Cost-capped routing** — `--max-cost-usd`, `--max-latency-s` — so a misfiring cascade can't burn through tier-3 on every question.
+6. **Meta-meta-harness** — once (1–5) are solid, multi-objective-optimize (quality, cost, latency) over the full routing space (strategy set, verifier choices, thresholds). Pareto frontier report.

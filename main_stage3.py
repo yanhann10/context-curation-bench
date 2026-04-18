@@ -33,6 +33,8 @@ from src.harness_optimizer_async import optimize_async
 from src.strategies_rag import rag_build_prompt_fn
 from src.strategies_hierarchical import hierarchical_build_prompt_fn
 from src.strategies_agent_managed import agent_managed_runner
+from src.strategies_cascade import make_cascade_runner
+from src.strategies_ensemble import make_ensemble_runner
 
 
 ROOT = Path(__file__).resolve().parent
@@ -53,7 +55,9 @@ async def amain(args) -> int:
     router_model = os.getenv("ROUTER_MODEL", "claude-sonnet-4-6")
     concurrency = args.concurrency
 
-    client = AsyncAnthropic(api_key=key)
+    # Bump retries to survive 429 bursts from heavy strategies (cascade/ensemble
+    # nest agent_managed which itself does 3-6 tool-use turns per question).
+    client = AsyncAnthropic(api_key=key, max_retries=6, timeout=120.0)
 
     docs = load_all_docs(slack_source="api")
     questions = load_questions_v2()
@@ -94,8 +98,15 @@ async def amain(args) -> int:
         max_ids=args.hier_ids,
     )
 
-    print("\n[run] launching 5 strategies concurrently")
-    results_lists = await asyncio.gather(
+    # Cascade + ensemble runners reuse hier_fn as their tier-1 prompt builder
+    cascade_runner = make_cascade_runner(hier_fn, final_fallback="full")
+    ensemble_runner = make_ensemble_runner(hier_fn)
+
+    all_results = []
+
+    # Phase 1: 5 base strategies concurrent. These don't nest agent_managed.
+    print("\n[run] phase 1/3 — 5 base strategies")
+    phase1 = await asyncio.gather(
         run_strategy_async(client, "full_context", full_context, questions, docs,
                            agent_model, judge_model, concurrency=concurrency),
         run_strategy_async(client, "meta_harness_optimized",
@@ -107,9 +118,26 @@ async def amain(args) -> int:
                            agent_model, judge_model, concurrency=concurrency),
         run_agent_strategy_async(client, "agent_managed", agent_managed_runner,
                                  questions, docs, agent_model, judge_model,
-                                 concurrency=min(concurrency, 4)),
+                                 concurrency=3),
     )
-    all_results = [r for rs in results_lists for r in rs]
+    for rs in phase1:
+        all_results.extend(rs)
+
+    # Phase 2: cascade router (tier 2 calls agent_managed internally)
+    print("[run] phase 2/3 — cascade_router (serial-ish)")
+    cascade_results = await run_agent_strategy_async(
+        client, "cascade_router", cascade_runner, questions, docs,
+        agent_model, judge_model, concurrency=2,
+    )
+    all_results.extend(cascade_results)
+
+    # Phase 3: ensemble (runs hier + agent_managed in parallel per question)
+    print("[run] phase 3/3 — ensemble")
+    ensemble_results = await run_agent_strategy_async(
+        client, "ensemble", ensemble_runner, questions, docs,
+        agent_model, judge_model, concurrency=2,
+    )
+    all_results.extend(ensemble_results)
 
     log_results(all_results, OUTPUT_DIR / "results_stage3.csv")
     summary = summarize(all_results)
@@ -124,7 +152,8 @@ async def amain(args) -> int:
             print(f"    {k:>22s}: {v}")
 
     # per-question grid
-    strat_order = ["full_context", "meta_harness_optimized", "rag_embedding", "hierarchical", "agent_managed"]
+    strat_order = ["full_context", "meta_harness_optimized", "rag_embedding",
+                   "hierarchical", "agent_managed", "cascade_router", "ensemble"]
     print("\nPer-question × strategy quality grid:")
     print(f"  {'qid':<10s} {'category':<18s} " + " ".join(f"{s[:10]:>10s}" for s in strat_order))
     by_q: dict[str, dict] = {}

@@ -1,136 +1,141 @@
 # Eval Runs — Master Log
 
-## Stage 3 — 5 strategies on N=10 v2 questions  (commit `0128510`, 2026-04-18)
+## Stage 3 — 7 strategies on N=10 v2 questions  (commit pending, 2026-04-18)
 
-**Host:** laptop (macOS, Python 3.13) · **Models:** all roles = `claude-sonnet-4-6` · **Concurrency:** 6
+**Host:** laptop (macOS, Python 3.13) · **Models:** all roles = `claude-sonnet-4-6` · **Concurrency:** 6 (phase 1), 2–3 (phases 2–3)
 **Corpus:** 11 GitLab Handbook docs uniformly timestamped `2026-01-01T00:00:00Z` + 10 Slack-API-shape threads (`validated_by_hr=true`, timestamps 2026-04-08 to 2026-04-17)
 **Question set:** N=10 in `data/test_questions_v2.json`
   - 4 `slack_contradicts` (recent Slack value differs from stale handbook value — tests consolidation)
   - 2 `slack_only` (info only in Slack, not in handbook)
   - 2 `needs_both` (handbook policy + current Slack detail)
-  - 2 `portal_only` (handbook correct, no Slack touches — tests whether strategies over-index on Slack noise)
-**Optimizer:** n_iter=2, train_n=4 (first 4 questions). NOTE: train ⊂ eval; no held-out split in Stage 3 (see generalizability section).
-**Metric change:** `recency` dropped — all strategies hit 1.0 on Stage 2, so it's rolled into `quality` (judge penalizes stale-on-recency-sensitive to ≤0.5).
+  - 2 `portal_only` (handbook correct, no Slack touches)
+**Optimizer:** n_iter=2, train_n=4 (first 4 questions; **train ⊂ eval** — no held-out split in Stage 3)
+**SDK config:** `AsyncAnthropic(max_retries=6, timeout=120s)` — needed after a prior run caught 12 × 429s
+**Phase order:** 5 base strategies concurrent → cascade_router (concurrency=2) → ensemble (concurrency=2)
 
 ### Summary
 
 | strategy | quality | f1 | EM | key_fact_recall | latency_s | prompt_tok | cost_usd |
 |---|---|---|---|---|---|---|---|
-| full_context            | **1.000** | 0.532 | 0.00 | 0.06 | 6.20 | 19,957 | 0.667 |
-| meta_harness_optimized  | 0.895     | 0.455 | 0.00 | 0.00 | 7.72 | 11,863 | 0.432 |
-| rag_embedding           | 0.925     | 0.464 | 0.00 | 0.025 | 6.78 | 2,161 | 0.143 |
-| hierarchical            | 0.915     | 0.501 | 0.00 | 0.04 | 6.05 | **1,489** | **0.116** |
-| **agent_managed**       | **0.995** | 0.537 | 0.00 | 0.02 | 9.66 | 7,738 | 0.318 |
+| full_context           | 0.995     | 0.534 | 0.00 | 0.08 | 6.59 | 19,957 | 0.670 |
+| meta_harness_optimized | 0.890     | 0.467 | 0.00 | 0.00 | 7.46 | 11,863 | 0.431 |
+| rag_embedding          | 0.925     | 0.455 | 0.00 | 0.025 | 6.75 | 2,161 | 0.141 |
+| hierarchical           | 0.910     | 0.491 | 0.00 | 0.02 | 6.05 | **1,489** | **0.118** |
+| agent_managed          | 0.990     | 0.524 | 0.00 | 0.02 | 8.95 | 7,739 | 0.320 |
+| cascade_router         | 0.925     | 0.546 | 0.00 | 0.065 | 23.5 | 24,522 | 0.904 |
+| **ensemble**           | **0.995** | 0.527 | 0.00 | 0.02 | 11.3 | 9,817 | 0.428 |
+
+Oracle-router upper bound on this same data: **quality 1.000 at $0.138** (picks hierarchical 9/10, agent_managed 1/10 on q-v2-010 only).
 
 ### Per-question × strategy (quality)
 
 ```
-qid        category           full_conte meta_harne rag_embedd hierarchic agent_mana
-q-v2-001   slack_contradicts        1.00       1.00       1.00       1.00       1.00
-q-v2-002   slack_contradicts        1.00       1.00       1.00       1.00       1.00
-q-v2-003   slack_contradicts        1.00       1.00       1.00       1.00       1.00
-q-v2-004   slack_contradicts        1.00       1.00       1.00       1.00       1.00
-q-v2-005   slack_only               1.00       1.00       1.00       1.00       1.00
-q-v2-006   slack_only               1.00       1.00       1.00       0.95       1.00
-q-v2-007   needs_both               1.00       0.95       0.95       1.00       0.95
-q-v2-008   needs_both               1.00       1.00       1.00       1.00       1.00
-q-v2-009   portal_only              1.00       0.00       1.00       1.00       1.00
-q-v2-010   portal_only              1.00       1.00       0.30       0.20       1.00
+qid        category            full_contex meta_harnes rag_embeddi hierarchica agent_manag cascade_rou    ensemble
+q-v2-001   slack_contradicts          1.00       1.00       1.00       1.00       1.00       1.00       1.00
+q-v2-002   slack_contradicts          1.00       1.00       1.00       1.00       1.00       1.00       1.00
+q-v2-003   slack_contradicts          1.00       1.00       1.00       1.00       1.00       0.95       1.00
+q-v2-004   slack_contradicts          1.00       1.00       1.00       1.00       1.00       1.00       1.00
+q-v2-005   slack_only                 1.00       1.00       1.00       1.00       1.00       1.00       1.00
+q-v2-006   slack_only                 1.00       1.00       1.00       1.00       1.00       1.00       1.00
+q-v2-007   needs_both                 0.95       1.00       0.95       1.00       0.90       1.00       0.95
+q-v2-008   needs_both                 1.00       1.00       1.00       1.00       1.00       1.00       1.00
+q-v2-009   portal_only                1.00       0.00       1.00       1.00       1.00       1.00       1.00
+q-v2-010   portal_only                1.00       0.90       0.30       0.10       1.00       0.30       1.00
 ```
 
 ### What each strategy actually did
 
-- **full_context** — concatenated every handbook doc (11) + every Slack-API thread (10) into every prompt. Static-first ordering, titled format. No selection.
-- **meta_harness_optimized** — optimizer's final `CurationSpec` on this run set `include_static_ids` to a **subset** (excluded `us-benefits-overview`), `include_slack_ids` = all, `ordering=slack_first`, `doc_format=structured`, `max_chars_per_doc=6000`. That exclusion caused the 0.00 on q-v2-009 (the STD-benefits question).
-- **rag_embedding** — chunked 21 docs into ~60 chunks (1200 chars, 200 overlap), embedded with local `BAAI/bge-small-en-v1.5` (384-d), built a FAISS `IndexFlatIP` over L2-normalized vectors (IP == cosine), retrieved **top-6 chunks** per question. No rerank.
-- **hierarchical** — **does NOT use embedding retrieval.** Two LLM passes: (1) each of the 21 docs got a 1–2-sentence summary from a Haiku/Sonnet call (cached once per run); (2) per question, the router got a catalog `id | title | timestamp | summary` and returned `{"doc_ids": [...]}` with 2–5 picks; (3) the full text of those picks was sent to the answerer. When the router picked wrong (q-v2-010: military leave), quality collapsed to 0.20.
-- **agent_managed** — tool-use loop (max 6 iterations) with 4 tools:
-  1. `list_handbook()` → `[{id, title, timestamp}]` for all 11 handbook docs
-  2. `get_handbook(doc_id)` → full markdown
-  3. `list_slack()` → `[{id, title, timestamp, channel, user, relationship}]` for all 10 Slack threads
-  4. `get_slack(thread_id)` → full thread text
+- **full_context** — concatenated every handbook doc (11) + every Slack-API thread (10) into every prompt.
+- **meta_harness_optimized** — optimizer's final `CurationSpec`: `ordering=slack_first`, `doc_format=structured`, `max_chars_per_doc=6000`, with an excluded static doc that caused the 0.00 on q-v2-009 (classic train-set overfit).
+- **rag_embedding** — 21 docs → ~60 chunks (1200 chars, 200 overlap), embedded with local `BAAI/bge-small-en-v1.5`, FAISS `IndexFlatIP`, top-6 chunks per question.
+- **hierarchical** — **no embedding retrieval.** Map (1-sentence summary per doc, cached) + Route (LLM picks 2–5 doc_ids from catalog) + Expand (full text of picks). Dropped to 0.10 on q-v2-010 when the router missed `parental-and-other-leave.md` for "military leave".
+- **agent_managed** — tool-use loop (max 6 turns) with `list_handbook` / `get_handbook` / `list_slack` / `get_slack`. Typical flow: `list_*` both → `get_*` 2–3 docs → answer. Tokens summed across all turns.
+- **cascade_router** (NEW) — Tier 1 hierarchical → self-verifier LLM call (`{"confident": 0|1}`) → if 0, Tier 2 agent_managed → verifier again → if 0, Tier 3 full_context. Reuses the same Sonnet for verify + answer.
+- **ensemble** (NEW) — Runs hierarchical and agent_managed **in parallel** per question, then a judge-LLM picks A or B by correctness + specificity. Tokens additive.
 
-  System prompt told it: "handbook is dated 2026-01-01 (potentially stale); Slack is HR-validated, recent. Prefer recent on disagreement. Cite titles." Observed behaviour per question: typical flow was `list_handbook` + `list_slack` on turn 1 → `get_handbook(X)` + `get_slack(Y)` across 2–3 additional turns → final answer on last turn. All tokens across every turn are summed into the reported `prompt_tokens` / `completion_tokens` / `cost_usd`.
+### Failure modes (the useful part)
 
-### Failure modes (the useful part of this run)
-
-- `meta_harness_optimized` → **q-v2-009 = 0.00** (STD benefits). Optimizer overfitted to the 4-question train set and excluded a doc that mattered for the (unseen) portal_only question. Architectural risk: proposer trades breadth for small wins; a single bad mutation can strand a future topic.
-- `rag_embedding` → **q-v2-010 = 0.30** (military leave 90-day reinstatement). The relevant section of `parental-and-other-leave.md` wasn't in the top-6 because the query lexically looks like a travel/time-off question.
-- `hierarchical` → **q-v2-010 = 0.20**. Router picked the wrong set because the summary for `parental-and-other-leave.md` didn't surface "military leave" as a keyword.
-- `agent_managed` → only deviation was **q-v2-007 = 0.95** (needs_both: contractor onboarding). Inspection: agent fetched both sources but phrased the final answer less precisely than golden.
+- `meta_harness_optimized` → **q-v2-009 = 0.00**, same as before. The optimizer's doc-exclusion mutation is a recurrent risk.
+- `rag_embedding` / `hierarchical` → **q-v2-010** collapses (0.30 / 0.10). Same blind spot as prior run: retrieval/routing can't find `parental-and-other-leave.md` for "military leave".
+- **`cascade_router` → q-v2-010 = 0.30. New failure mode:** tier-1 hierarchical returned a confidently wrong answer; the self-verifier said `confident: 1`; cascade never escalated. LLM self-verification is **over-confident on confidently-wrong outputs** — classic bias that makes cascade routing brittle in practice.
+- `cascade_router` → **23.5s mean latency, $0.90 total cost**: the verifier says `confident: 0` most of the time for other reasons (hedging, no citations), so cascade pays for all 3 tiers on ~8/10 questions. Worse economics than agent_managed alone.
+- `ensemble` → **q-v2-007 = 0.95**: judge picked hierarchical's answer when agent_managed's was also ~0.95. Not a failure; both were acceptable.
 
 ### Headline
 
-**Agent-managed matches full-context quality (0.995 vs 1.000) at 48% the cost ($0.318 vs $0.667).** Cheapest cell (hierarchical $0.12) buys 91.5% quality with 1 catastrophic failure. "Just stuff the window" is correct but 2× overpriced on this eval.
+**Ensemble matches full_context quality (0.995) at 64% the cost ($0.43 vs $0.67)** — the best demonstrated strategy at this model class.
+**Cascade routing is worse than its tier-2 strategy alone** on this eval: self-verifier confident-but-wrong failures + always-escalating overhead.
+**Oracle router is still 3× cheaper than ensemble** ($0.14 vs $0.43, same 1.000 quality) — room for a real router to close that gap if it can detect tier-1 wrong-answers better than LLM self-verification.
 
 ### Artifacts
 
-- `output/results_stage3.csv` — all 50 rows (10 q × 5 strategies)
+- `output/results_stage3.csv` — all 70 rows (10 q × 7 strategies)
 - `output/summary_stage3.json` — per-strategy means
 - `output/final_spec_stage3.json`, `output/optimizer_history_stage3.json`
 - `output/chart_stage3.png` — quality bar + cost-vs-tokens scatter (log-x)
-- `output/chart_stage3_heatmap.png` — 5×10 quality grid, RdYlGn
+- `output/chart_stage3_heatmap.png` — 7×10 quality grid
 
 ---
 
 ## Generalizability of these results
 
 **What we believe generalizes** (with caveats):
-- **Relative ordering of strategies on policy-Q&A-with-mixed-sources.** Agent-managed > full_context > rag ≈ hierarchical > meta-harness-with-small-train is a story about architecture, not this specific corpus.
-- **Token-efficiency numbers.** RAG/hierarchical at ~2k prompt tokens and agent-managed at ~8k are model-independent (tokens are properties of what you put in context).
-- **Failure classes.**
-  - Retrieval-only strategies (RAG, hierarchical) have zero-shot blind spots on portal_only questions whose keywords don't match the relevant doc. Architectural.
-  - Proposer-based optimization overfits when train set is small. Architectural.
+- **Relative ordering on policy-Q&A-with-mixed-sources.** Ensemble ≈ full_context > agent_managed > rag ≈ hierarchical > meta-harness-small-train is an architecture story, not corpus-specific.
+- **Cascade's self-verification failure.** LLM-self-confidence is miscalibrated on confidently-wrong outputs. This is documented in literature and our q-v2-010 reproduces it. **Any single-model cascade router inherits this bias.**
+- **Token-efficiency ratios.** hier ~1.5k, RAG ~2k, agent ~8k, full ~20k, ensemble ~10k are model-independent.
 
 **What does NOT generalize**:
-- **Absolute quality numbers (0.90–1.00).** N=10 gives no statistical power; with 5 strategies × 10 cells the resolution is 0.1. Rerun with different seed or paraphrased questions could shift each cell by ±0.05–0.10.
-- **Cost/latency ratios.** Sonnet 4.6 specific. Different models have different $/token and different speeds.
-- **Judge verdicts.** Sonnet judging Sonnet has known self-preference bias. No human calibration.
-- **"All strategies get slack_contradicts right."** Only 4 such questions; real workplace query distribution may expose weaker consolidation in RAG/hierarchical.
-- **The specific 0.00 on q-v2-009 and 0.20 on q-v2-010.** These are real failure modes but anecdotal — they'd need to reproduce across many question paraphrasings to be called a property of the strategy.
+- Absolute quality numbers (0.89–1.00) — N=10 resolution is 0.1; ±0.05 per cell is noise.
+- Cost/latency — Sonnet 4.6 specific.
+- Judge verdicts — self-preference bias, no human calibration.
+- **Cascade's loss of 0.07 vs tier-2 alone** — specific to q-v2-010; may be less severe on a different eval.
 
-**Run-to-run variance not measured.** Temperature=0 reduces but doesn't eliminate it; the proposer's mutations are sampled at temperature=0.4. A 3-run minimum is needed before any cell-level claim.
+**Train/eval contamination.** Meta-harness trained on questions[:4] then eval'd on all 10 — 4/10 cells are in-sample for it.
 
-**Train/eval contamination.** The optimizer trained on `questions[:4]` and was evaluated on all 10 — so 4 of the 10 reported cells are in-sample for the meta-harness strategy. The meta-harness "quality" row is inflated relative to a true held-out score.
+**Run-to-run variance not measured.** Temperature=0 on answers but 0.4 on proposer and 0 on judges/verifiers. A 3-seed run would likely shift cascade and ensemble cells by ±0.05.
 
 ---
 
 ## From Stage 3 to a real benchmark
 
-What would be needed to upgrade this demo into something a paper or a leaderboard could cite:
+What would be needed to upgrade this demo into a paper- or leaderboard-citable artifact:
 
 ### Statistical
-1. **N ≥ 200 questions**, preferably 500+. Current N=10 gives cell-resolution of 0.10 at best; a 2pp difference between two strategies is indistinguishable from noise.
-2. **3-seed minimum per cell**, reporting mean ± std. Essential for any claim of "strategy A beats B".
-3. **Bootstrap confidence intervals** on per-strategy quality (e.g. 95% CI).
-4. **Paired significance tests** (McNemar, permutation) on per-question strategy differences.
+1. **N ≥ 200** questions, preferably 500+. Cell resolution must be < 2pp.
+2. **≥3-seed runs** per cell, report mean ± std.
+3. Bootstrap confidence intervals on per-strategy quality.
+4. Paired significance tests (McNemar, permutation) on per-question strategy differences.
 
 ### Splits
-5. **Held-out test set.** Optimizer sees only train, Pareto-frontier selection done on dev, numbers reported on test. Current build trains on `questions[:4]` and evals on all 10.
-6. **Per-category breakdowns** large enough to be meaningful (≥30 per category).
+5. **Held-out test set.** Optimizer on train, Pareto-select on dev, report on test.
+6. Per-category breakdowns ≥30 per category.
 
 ### Corpus
-7. **Real-world data, not synthetic.** Either a design-partner company's Slack + handbook, or public (GitLab handbook git history + public community Slack archives with timestamps).
-8. **Realistic query distribution.** Current set is 40% `slack_contradicts` — intentionally stressful. Real distribution is probably 5–15%. Need both.
-9. **Multiple domains.** HR + customer support + legal + code docs. Current findings are "policy Q&A with staleness" — portability beyond that is untested.
-10. **Real version history.** Instead of uniformly dating handbook at 2026-01-01, use actual git history so staleness varies per section.
-11. **Out-of-distribution questions.** 10–20% with no relevant source — tests whether agents correctly refuse instead of hallucinating.
+7. **Real-world data** — not synthetic. Design-partner or public (GitLab handbook git history + public community Slack).
+8. **Realistic query distribution.** Current set is 40% `slack_contradicts`; real ops queries are 5–15% staleness.
+9. **Multiple domains.** HR + customer support + legal + code docs.
+10. Real version history for staleness (not uniformly 2026-01-01).
+11. **Out-of-distribution questions** — 10–20% with no relevant source; tests whether agents refuse.
 
 ### Models
-12. **≥ 3 agent models.** Haiku, Sonnet, Opus. Plus at least one non-Anthropic (GPT-4o-mini, GPT-4o). Current single-model results don't tell us whether agent-managed's win holds at Haiku.
-13. **Separate judge model from agent model.** Preferably 2 different judges, plus 50-question human calibration.
-14. **Judge variance.** Report inter-judge agreement (Cohen's κ) — if two competent judges disagree on 20% of cells, the benchmark is noisy.
+12. ≥3 agent models (Haiku / Sonnet / Opus; plus GPT-4o-mini and GPT-4o for cross-provider).
+13. Separate judge model from agent model; 2 different judges + 50-Q human calibration.
+14. Report inter-judge agreement (Cohen's κ).
+
+### Routing-specific (new after cascade findings)
+15. **Replace LLM self-verification with orthogonal verifier.** Options: a small fine-tuned classifier, retrieval-reranker scoring, or cross-model verification (agent = Sonnet, verifier = Haiku on a different prompt). Cascade's failure on q-v2-010 is specifically the single-model self-confidence trap.
+16. **Learned router** (log-regression or small classifier) trained on ≥100 per-question winner labels. Compare to oracle as a ceiling.
+17. **Cost-capped routing variants** (`--max-cost-usd`) so a misfiring cascade can't burn through full_context on every question.
 
 ### Infrastructure
-15. **One-click reproduction.** Clone + install + `.env` + `python main.py` → identical numbers. Current stage is close but untested on a fresh machine.
-16. **Deterministic corpus snapshot.** Pin exact file hashes; don't re-fetch handbook on each run.
-17. **Cost budget protection.** A run should surface `--max-cost-usd` and abort before overrunning.
-18. **Public leaderboard.** Shared eval harness so new curation strategies can be submitted and ranked under identical conditions. Like SWE-bench Verified or τ-bench.
+18. One-click reproduction on a fresh machine (install + `.env` + `python main.py` → identical numbers).
+19. Deterministic corpus snapshot (pin file hashes; no re-fetch on each run).
+20. **Cost budget + rate-limit hygiene** — strategy phases, exponential backoff, and cost ceilings so a large run doesn't silently degrade (we hit 12 × 429 on the first rerun before staggering phases).
+21. Public leaderboard + submission harness. Like SWE-bench Verified or τ-bench.
 
-### Scope creep to watch
-- More metrics (BLEU, ROUGE, BERTScore) add columns, not insight. LLM-judge + F1 + EM is already enough.
-- Per-question dashboards sound useful but are noise at N=10. Scale N first.
-- A Stage 5 / Stage 6 of more strategies without fixing (1)–(6) would make the benchmark noisier, not clearer.
+### Anti-patterns to resist
+- Adding more metrics (BLEU, ROUGE, BERTScore) — adds columns, not insight. LLM-judge + F1 + EM is enough.
+- A Stage 5 / Stage 6 of more strategies before fixing #1–#6 just adds noise cells.
 
 ---
 
