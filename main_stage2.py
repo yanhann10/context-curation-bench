@@ -21,7 +21,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from dotenv import load_dotenv
-from openai import AsyncOpenAI
+from anthropic import AsyncAnthropic
 
 from src.data_loader import load_all_docs, load_questions
 from src.strategies import full_context, meta_harness_optimized, CurationSpec
@@ -39,19 +39,19 @@ OUTPUT_DIR = ROOT / "output"
 
 async def amain(args) -> int:
     load_dotenv(ROOT / ".env")
-    key = os.getenv("OPENAI_API_KEY")
+    key = os.getenv("ANTHROPIC_API_KEY")
     if not key:
-        print("ERROR: OPENAI_API_KEY not set.", file=sys.stderr)
+        print("ERROR: ANTHROPIC_API_KEY not set.", file=sys.stderr)
         return 2
 
-    agent_model = os.getenv("AGENT_MODEL", "gpt-4o-mini")
-    judge_model = os.getenv("JUDGE_MODEL", "gpt-4o")
-    proposer_model = os.getenv("PROPOSER_MODEL", "gpt-4o")
-    summary_model = os.getenv("SUMMARY_MODEL", "gpt-4o-mini")
-    router_model = os.getenv("ROUTER_MODEL", "gpt-4o-mini")
+    agent_model = os.getenv("AGENT_MODEL", "claude-sonnet-4-6")
+    judge_model = os.getenv("JUDGE_MODEL", "claude-opus-4-7")
+    proposer_model = os.getenv("PROPOSER_MODEL", "claude-opus-4-7")
+    summary_model = os.getenv("SUMMARY_MODEL", "claude-haiku-4-5")
+    router_model = os.getenv("ROUTER_MODEL", "claude-haiku-4-5")
     concurrency = args.concurrency
 
-    client = AsyncOpenAI(api_key=key)
+    client = AsyncAnthropic(api_key=key)
     docs = load_all_docs()
     questions = load_questions()
     if not docs or not questions:

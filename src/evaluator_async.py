@@ -1,34 +1,28 @@
-"""Async variants of answer + judge. Compatible with evaluator.RunResult."""
+"""Async answer + judge via Claude (Anthropic Messages API)."""
 from __future__ import annotations
 import asyncio
 import json
-import os
-import time
 
-from openai import AsyncOpenAI
+from anthropic import AsyncAnthropic
 
-from .evaluator import JUDGE_SYSTEM, cost_usd, RunResult
+from .evaluator import JUDGE_SYSTEM, RunResult
+from .llm_client import complete_text, complete_json, cost_usd
 from .metrics import f1 as _f1, exact_match as _em, key_facts_recall as _kfr
 
 
 async def answer_question_async(
-    client: AsyncOpenAI, prompt: str, model: str,
+    client: AsyncAnthropic, prompt: str, model: str,
 ) -> tuple[str, float, int, int]:
-    t0 = time.time()
-    resp = await client.chat.completions.create(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.0,
+    text, in_tok, out_tok, latency = await complete_text(
+        client, user=prompt, system=None, model=model, max_tokens=1024,
     )
-    latency = time.time() - t0
-    answer = resp.choices[0].message.content or ""
-    u = resp.usage
-    return answer, latency, u.prompt_tokens, u.completion_tokens
+    return text, latency, in_tok, out_tok
 
 
 async def judge_async(
-    client: AsyncOpenAI, question: dict, answer: str, judge_model: str,
-) -> tuple[float, int, str]:
+    client: AsyncAnthropic, question: dict, answer: str, judge_model: str,
+) -> tuple[float, int, str, int, int]:
+    """Return (quality, recency, note, in_tok, out_tok)."""
     payload = {
         "question": question["question"],
         "category": question["category"],
@@ -36,28 +30,24 @@ async def judge_async(
         "key_facts": question["key_facts"],
         "agent_answer": answer,
     }
-    resp = await client.chat.completions.create(
+    data, in_tok, out_tok, _ = await complete_json(
+        client,
+        user=json.dumps(payload),
+        system=JUDGE_SYSTEM,
         model=judge_model,
-        messages=[
-            {"role": "system", "content": JUDGE_SYSTEM},
-            {"role": "user", "content": json.dumps(payload)},
-        ],
-        temperature=0.0,
-        response_format={"type": "json_object"},
+        max_tokens=256,
     )
-    raw = resp.choices[0].message.content or "{}"
     try:
-        data = json.loads(raw)
         q = max(0.0, min(1.0, float(data.get("quality", 0.0))))
         r = 1 if int(data.get("recency", 0)) else 0
         note = str(data.get("note", ""))[:120]
-        return q, r, note
+        return q, r, note, in_tok, out_tok
     except Exception as e:
-        return 0.0, 0, f"judge-parse-error: {e}"
+        return 0.0, 0, f"judge-parse-error: {e}", in_tok, out_tok
 
 
 async def evaluate_one(
-    client: AsyncOpenAI,
+    client: AsyncAnthropic,
     strategy_name: str,
     prompt: str,
     question: dict,
@@ -66,14 +56,17 @@ async def evaluate_one(
 ) -> RunResult:
     try:
         ans, latency, in_tok, out_tok = await answer_question_async(client, prompt, agent_model)
-        quality, recency, note = await judge_async(client, question, ans, judge_model)
+        quality, recency, note, j_in, j_out = await judge_async(client, question, ans, judge_model)
         fail = ""
     except Exception as e:
-        ans, latency, in_tok, out_tok, quality, recency, note, fail = (
-            "", 0.0, 0, 0, 0.0, 0, "", f"error: {e}"
-        )
+        ans, latency, in_tok, out_tok = "", 0.0, 0, 0
+        quality, recency, note, fail = 0.0, 0, "", f"error: {e}"
+        j_in, j_out = 0, 0
+
     gold = question["golden_answer"]
     key_facts = question.get("key_facts", [])
+    agent_cost = cost_usd(agent_model, in_tok, out_tok)
+    judge_cost = cost_usd(judge_model, j_in, j_out)
     return RunResult(
         question_id=question["id"], strategy=strategy_name,
         question=question["question"], answer=ans,
@@ -85,13 +78,13 @@ async def evaluate_one(
         latency_s=round(latency, 3),
         prompt_tokens=in_tok, completion_tokens=out_tok,
         total_tokens=in_tok + out_tok,
-        cost_usd=round(cost_usd(in_tok, out_tok), 5),
+        cost_usd=round(agent_cost + judge_cost, 5),
         failure_note=fail or note,
     )
 
 
 async def run_strategy_async(
-    client: AsyncOpenAI,
+    client: AsyncAnthropic,
     strategy_name: str,
     prompt_fn,
     questions: list[dict],

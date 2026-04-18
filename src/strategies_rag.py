@@ -1,18 +1,14 @@
-"""Stage 2 — RAG strategy with FAISS.
-
-Chunk docs, embed with OpenAI text-embedding-3-small, retrieve top-k via
-FAISS flat inner-product (embeddings are L2-normalized so IP == cosine).
-"""
+"""Stage 2 — RAG strategy. Local embeddings (sentence-transformers) + FAISS."""
 from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 
 import faiss
 import numpy as np
-from openai import AsyncOpenAI
+
+from .embeddings import embed
 
 
-EMBED_MODEL = "text-embedding-3-small"
 CHUNK_CHARS = 1200
 OVERLAP_CHARS = 200
 
@@ -40,17 +36,6 @@ def chunk_doc(doc: dict, chunk_chars: int = CHUNK_CHARS, overlap: int = OVERLAP_
     return chunks
 
 
-async def embed_texts(client: AsyncOpenAI, texts: list[str], model: str = EMBED_MODEL) -> np.ndarray:
-    vecs: list[list[float]] = []
-    for i in range(0, len(texts), 96):
-        batch = texts[i : i + 96]
-        resp = await client.embeddings.create(model=model, input=batch)
-        vecs.extend([d.embedding for d in resp.data])
-    arr = np.asarray(vecs, dtype=np.float32)
-    faiss.normalize_L2(arr)  # in-place L2 normalization so IP == cosine
-    return arr
-
-
 class RagIndex:
     def __init__(self, chunks: list[Chunk], vectors: np.ndarray):
         assert len(chunks) == vectors.shape[0]
@@ -59,17 +44,17 @@ class RagIndex:
         self.index = faiss.IndexFlatIP(self.dim)
         self.index.add(vectors)
 
-    async def top_k(self, client: AsyncOpenAI, query: str, k: int = 6) -> list[Chunk]:
-        qv = await embed_texts(client, [query])
+    def top_k(self, query: str, k: int = 6) -> list[Chunk]:
+        qv = embed([query])
         _, idx = self.index.search(qv, k)
         return [self.chunks[i] for i in idx[0] if 0 <= i < len(self.chunks)]
 
 
-async def build_index(client: AsyncOpenAI, docs: list[dict]) -> RagIndex:
+def build_index(docs: list[dict]) -> RagIndex:
     all_chunks: list[Chunk] = []
     for d in docs:
         all_chunks.extend(chunk_doc(d))
-    vecs = await embed_texts(client, [c.text for c in all_chunks])
+    vecs = embed([c.text for c in all_chunks])
     return RagIndex(all_chunks, vecs)
 
 
@@ -95,12 +80,15 @@ def rag_prompt(question: str, retrieved: list[Chunk]) -> str:
     )
 
 
-async def rag_build_prompt_fn(client: AsyncOpenAI, docs: list[dict], k: int = 6):
-    """Return an async prompt_fn(question, docs) compatible with run_strategy_async."""
-    index = await build_index(client, docs)
+async def rag_build_prompt_fn(client, docs: list[dict], k: int = 6):
+    """Build FAISS index once; return async prompt_fn (client unused — local embed).
+
+    Signature kept client-first for parity with hierarchical_build_prompt_fn.
+    """
+    index = build_index(docs)
 
     async def prompt_fn(q: str, _docs) -> str:
-        retrieved = await index.top_k(client, q, k=k)
+        retrieved = index.top_k(q, k=k)
         return rag_prompt(q, retrieved)
 
     return prompt_fn

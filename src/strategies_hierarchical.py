@@ -1,42 +1,33 @@
-"""Stage 2 — Hierarchical strategy.
-
-Two-pass:
-  1. Map: summarize each doc to a one-paragraph abstract (cached once per run).
-  2. Route: pass the question + all abstracts + doc ids to the model, ask which
-     doc_ids are relevant (returns JSON list).
-  3. Expand: include only the selected docs (full text) in the final prompt.
-
-Interface mirrors strategies_rag — returns an async prompt_fn usable by
-run_strategy_async.
-"""
+"""Stage 2 — Hierarchical strategy (Claude backend)."""
 from __future__ import annotations
 import asyncio
-import json
 
-from openai import AsyncOpenAI
+from anthropic import AsyncAnthropic
+
+from .llm_client import complete_text, complete_json
 
 
 SUMMARY_SYSTEM = (
     "Summarize the document in 1-2 sentences (<=60 words). "
-    "Preserve the concrete specifics that would let a reader decide whether "
-    "this doc is relevant to a question: policy type, dollar amounts, time "
-    "windows, audiences (new hires, managers), recency hints."
+    "Preserve specifics that would let a reader decide relevance: policy type, "
+    "dollar amounts, time windows, audiences, recency hints."
 )
 
 
-async def summarize_doc(client: AsyncOpenAI, doc: dict, model: str) -> str:
-    resp = await client.chat.completions.create(
+async def summarize_doc(client: AsyncAnthropic, doc: dict, model: str) -> str:
+    text, _, _, _ = await complete_text(
+        client,
+        user=doc["content"][:6000],
+        system=SUMMARY_SYSTEM,
         model=model,
-        messages=[
-            {"role": "system", "content": SUMMARY_SYSTEM},
-            {"role": "user", "content": doc["content"][:6000]},
-        ],
-        temperature=0.0,
+        max_tokens=200,
     )
-    return (resp.choices[0].message.content or "").strip()
+    return text.strip()
 
 
-async def summarize_all(client: AsyncOpenAI, docs: list[dict], model: str, concurrency: int = 8) -> dict[str, str]:
+async def summarize_all(
+    client: AsyncAnthropic, docs: list[dict], model: str, concurrency: int = 8,
+) -> dict[str, str]:
     sem = asyncio.Semaphore(concurrency)
 
     async def one(d):
@@ -44,21 +35,19 @@ async def summarize_all(client: AsyncOpenAI, docs: list[dict], model: str, concu
             s = await summarize_doc(client, d, model)
             return d["id"], s
 
-    pairs = await asyncio.gather(*[one(d) for d in docs])
-    return dict(pairs)
+    return dict(await asyncio.gather(*[one(d) for d in docs]))
 
 
 ROUTER_SYSTEM = (
     "You are a routing model. Given a user question and a catalog of document "
-    "abstracts with IDs, return a JSON array of doc IDs (from the catalog) that "
-    "are plausibly relevant to answering the question. Prefer precision over "
-    "recall: return 2-5 ids. Return JSON ONLY, shape: "
-    '{"doc_ids": ["...", "..."]}'
+    "abstracts with IDs, return a JSON object listing the relevant doc IDs "
+    "(from the catalog). Prefer precision over recall: return 2-5 ids. "
+    'Return JSON only, shape: {"doc_ids": ["...", "..."]}'
 )
 
 
 async def route_docs(
-    client: AsyncOpenAI,
+    client: AsyncAnthropic,
     question: str,
     summaries: dict[str, str],
     docs: list[dict],
@@ -75,24 +64,12 @@ async def route_docs(
     catalog = "\n".join(catalog_lines)
     user = f"QUESTION: {question}\n\nCATALOG:\n{catalog}\n\nReturn JSON only."
 
-    resp = await client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": ROUTER_SYSTEM},
-            {"role": "user", "content": user},
-        ],
-        temperature=0.0,
-        response_format={"type": "json_object"},
+    data, _, _, _ = await complete_json(
+        client, user=user, system=ROUTER_SYSTEM, model=model, max_tokens=256,
     )
-    raw = resp.choices[0].message.content or "{}"
-    try:
-        data = json.loads(raw)
-        ids = list(data.get("doc_ids", []))
-    except Exception:
-        ids = []
+    ids = list(data.get("doc_ids", [])) if isinstance(data, dict) else []
     ids = [did for did in ids if did in by_id][:max_ids]
     if not ids:
-        # Safety fallback: include all static docs, no slack.
         ids = [d["id"] for d in docs if d["type"] == "static"][:max_ids]
     return ids
 
@@ -116,10 +93,12 @@ def hierarchical_prompt(question: str, selected: list[dict]) -> str:
 
 
 async def hierarchical_build_prompt_fn(
-    client: AsyncOpenAI, docs: list[dict], router_model: str, summary_model: str,
+    client: AsyncAnthropic,
+    docs: list[dict],
+    router_model: str,
+    summary_model: str,
     max_ids: int = 5,
 ):
-    """Build the summary cache once; return an async prompt_fn(question, docs)."""
     summaries = await summarize_all(client, docs, summary_model)
     by_id = {d["id"]: d for d in docs}
 

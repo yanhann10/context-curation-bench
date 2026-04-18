@@ -1,21 +1,22 @@
-"""Async version of the harness optimizer loop."""
+"""Async Meta-Harness-inspired optimizer (Claude backend)."""
 from __future__ import annotations
 import asyncio
 import json
 from dataclasses import asdict
 
-from openai import AsyncOpenAI
+from anthropic import AsyncAnthropic
 
 from .strategies import CurationSpec, meta_harness_optimized
-from .harness_optimizer import baseline_spec, PROPOSER_SYSTEM, _doc_catalog, _failure_traces
+from .harness_optimizer import baseline_spec, PROPOSER_SYSTEM, doc_catalog, failure_traces
 from .evaluator_async import answer_question_async, judge_async
+from .llm_client import complete_json
 
 
 async def eval_spec_async(
     spec: CurationSpec,
     questions: list[dict],
     docs: list[dict],
-    client: AsyncOpenAI,
+    client: AsyncAnthropic,
     agent_model: str,
     judge_model: str,
     concurrency: int = 8,
@@ -26,7 +27,7 @@ async def eval_spec_async(
         async with sem:
             prompt = meta_harness_optimized(q["question"], docs, spec)
             ans, _, _, _ = await answer_question_async(client, prompt, agent_model)
-            quality, recency, note = await judge_async(client, q, ans, judge_model)
+            quality, recency, note, _, _ = await judge_async(client, q, ans, judge_model)
             return {
                 "qid": q["id"], "question": q["question"],
                 "golden": q["golden_answer"], "category": q["category"],
@@ -39,33 +40,31 @@ async def eval_spec_async(
 
 
 async def propose_async(
-    client: AsyncOpenAI, current: CurationSpec, records: list[dict],
-    docs: list[dict], proposer_model: str,
+    client: AsyncAnthropic,
+    current: CurationSpec,
+    records: list[dict],
+    docs: list[dict],
+    proposer_model: str,
 ) -> tuple[CurationSpec, str]:
-    catalog = _doc_catalog(docs)
-    traces = _failure_traces(records)
+    catalog = doc_catalog(docs)
+    traces = failure_traces(records)
     user = (
         f"AVAILABLE DOCS:\n{catalog}\n\n"
         f"CURRENT SPEC:\n{json.dumps(asdict(current), indent=2)}\n\n"
         f"FAILURES ON TRAIN SET:\n{traces}\n\n"
         "Propose ONE mutation now. Return JSON only."
     )
-    resp = await client.chat.completions.create(
-        model=proposer_model,
-        messages=[
-            {"role": "system", "content": PROPOSER_SYSTEM},
-            {"role": "user", "content": user},
-        ],
-        temperature=0.4,
-        response_format={"type": "json_object"},
+    data, _, _, _ = await complete_json(
+        client, user=user, system=PROPOSER_SYSTEM, model=proposer_model,
+        max_tokens=1024, temperature=0.4,
     )
-    raw = resp.choices[0].message.content or "{}"
+    rationale = data.pop("rationale", "") if isinstance(data, dict) else ""
     try:
-        data = json.loads(raw)
-        rationale = data.pop("rationale", "")
-        return CurationSpec(**{
-            k: v for k, v in data.items() if k in CurationSpec.__dataclass_fields__
-        }), rationale
+        fields = {
+            k: v for k, v in (data or {}).items()
+            if k in CurationSpec.__dataclass_fields__
+        }
+        return CurationSpec(**fields), rationale
     except Exception as e:
         return current, f"parse-error: {e}"
 
@@ -73,7 +72,7 @@ async def propose_async(
 async def optimize_async(
     train_questions: list[dict],
     docs: list[dict],
-    client: AsyncOpenAI,
+    client: AsyncAnthropic,
     agent_model: str,
     judge_model: str,
     proposer_model: str,
