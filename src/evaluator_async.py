@@ -21,8 +21,8 @@ async def answer_question_async(
 
 async def judge_async(
     client: AsyncAnthropic, question: dict, answer: str, judge_model: str,
-) -> tuple[float, int, str, int, int]:
-    """Return (quality, recency, note, in_tok, out_tok)."""
+) -> tuple[float, str, int, int]:
+    """Return (quality, note, in_tok, out_tok)."""
     payload = {
         "question": question["question"],
         "category": question["category"],
@@ -39,11 +39,10 @@ async def judge_async(
     )
     try:
         q = max(0.0, min(1.0, float(data.get("quality", 0.0))))
-        r = 1 if int(data.get("recency", 0)) else 0
         note = str(data.get("note", ""))[:120]
-        return q, r, note, in_tok, out_tok
+        return q, note, in_tok, out_tok
     except Exception as e:
-        return 0.0, 0, f"judge-parse-error: {e}", in_tok, out_tok
+        return 0.0, f"judge-parse-error: {e}", in_tok, out_tok
 
 
 async def evaluate_one(
@@ -56,11 +55,11 @@ async def evaluate_one(
 ) -> RunResult:
     try:
         ans, latency, in_tok, out_tok = await answer_question_async(client, prompt, agent_model)
-        quality, recency, note, j_in, j_out = await judge_async(client, question, ans, judge_model)
+        quality, note, j_in, j_out = await judge_async(client, question, ans, judge_model)
         fail = ""
     except Exception as e:
         ans, latency, in_tok, out_tok = "", 0.0, 0, 0
-        quality, recency, note, fail = 0.0, 0, "", f"error: {e}"
+        quality, note, fail = 0.0, "", f"error: {e}"
         j_in, j_out = 0, 0
 
     gold = question["golden_answer"]
@@ -71,7 +70,7 @@ async def evaluate_one(
         question_id=question["id"], strategy=strategy_name,
         question=question["question"], answer=ans,
         golden_answer=gold,
-        quality=quality, recency=recency,
+        quality=quality,
         f1=round(_f1(ans, gold), 3),
         exact_match=_em(ans, gold),
         key_fact_recall=round(_kfr(ans, key_facts), 3),

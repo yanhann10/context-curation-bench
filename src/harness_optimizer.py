@@ -72,7 +72,7 @@ def failure_traces(records: list[dict], min_quality: float = 0.75) -> str:
     lines = []
     for r in fails:
         lines.append(
-            f"- qid={r['qid']} [{r['category']}] q={r['quality']:.2f} r={r['recency']}\n"
+            f"- qid={r['qid']} [{r['category']}] q={r['quality']:.2f}\n"
             f"  question: {r['question']}\n"
             f"  golden:   {r['golden']}\n"
             f"  answer:   {r['answer'][:350].replace(chr(10), ' ')}\n"

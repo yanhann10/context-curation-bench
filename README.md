@@ -69,7 +69,7 @@ python3 main.py --train 4 --iter 3
 ```
 
 Artifacts in `output/`:
-- `results_stage1.csv` — per-question × per-strategy row (quality, recency, tokens, latency, cost)
+- `results_stage1.csv` — per-question × per-strategy row (quality, f1, EM, tokens, latency, cost)
 - `optimizer_history.json` — every proposed spec + rationale + score
 - `final_spec.json` — the winning `CurationSpec`
 - `summary.json` — per-strategy aggregate means
@@ -78,11 +78,15 @@ Artifacts in `output/`:
 
 | Metric | Range | Definition |
 |---|---|---|
-| quality | 0–1 | LLM-judge vs golden answer (strict) |
-| recency | 0/1 | Did the answer reflect the recent Slack fact when the golden was recency-sensitive? |
+| quality | 0–1 | LLM-judge vs golden answer (recency-sensitive goldens penalized if agent returns stale handbook value) |
+| f1 | 0–1 | SQuAD-style token F1 vs golden |
+| exact_match | 0/1 | Normalized EM vs golden |
+| key_fact_recall | 0–1 | Fraction of key_facts whose normalized form appears in answer |
 | latency_s | float | Wall-clock seconds per agent call |
-| prompt_tokens / completion_tokens | int | From OpenAI usage |
-| cost_usd | float | Approximate, gpt-4o-mini pricing |
+| prompt_tokens / completion_tokens | int | From Anthropic usage |
+| cost_usd | float | Per-model priced, sum of agent + judge calls |
+
+**Note:** a separate `recency` metric was tracked in Stage 1/2 but dropped in Stage 3 — all strategies hit `recency=1.0` at Sonnet 4.6 level, so it was table stakes. Recency handling is now rolled into `quality`: the judge penalizes stale answers on recency-sensitive questions.
 
 ## Question categories
 
@@ -95,18 +99,19 @@ Artifacts in `output/`:
 
 N=6 HR onboarding questions (2 portal_only, 2 slack_contradicts, 1 slack_only, 1 needs_both). Full eval log in `eval/eval_runs.md`.
 
-| strategy | quality | recency | f1 | latency_s | prompt_tok | cost_usd |
-|---|---|---|---|---|---|---|
-| full_context | 0.950 | 1.00 | 0.396 | 7.5 | 18,583 | 0.384 |
-| meta_harness_optimized | **0.975** | 1.00 | 0.404 | 9.7 | 17,869 | 0.378 |
-| rag_embedding | 0.942 | 1.00 | 0.444 | 6.3 | **1,957** | **0.080** |
-| hierarchical | 0.925 | 1.00 | 0.448 | 6.3 | **1,622** | **0.074** |
+| strategy | quality | f1 | latency_s | prompt_tok | cost_usd |
+|---|---|---|---|---|---|
+| full_context | 0.950 | 0.396 | 7.5 | 18,583 | 0.384 |
+| meta_harness_optimized | **0.975** | 0.404 | 9.7 | 17,869 | 0.378 |
+| rag_embedding | 0.942 | 0.444 | 6.3 | **1,957** | **0.080** |
+| hierarchical | 0.925 | 0.448 | 6.3 | **1,622** | **0.074** |
+
+All strategies achieved `recency=1.0` on Stage 2 questions, so recency was dropped as a separate metric from Stage 3 onward — it's table stakes at Sonnet 4.6. Recency handling is now folded into `quality` (stale answers on recency-sensitive questions score ≤0.5).
 
 **Headline:** RAG hits 97% of full-context quality at **1/5 the cost**. Dominant tradeoff on this task.
 
 **Detail:**
 - **Meta-harness wins on quality by +3.5%**, but marginal on tokens. The proposer's keeper mutations: `max_chars_per_doc 3000→6000` (ensures full us-benefits policy fits), `ordering=slack_first`, `format=structured`.
-- **Recency = 1.0 for all strategies.** Sonnet 4.6 correctly prefers the recent Slack fact when it's in the context — the staleness story isn't a differentiator at this model class.
 - **Hardest question: q-004 (needs_both).** Meta-harness holds 0.95; full_context and RAG drop to 0.80. The explicit policy+recent-detail combination rewards curation that keeps BOTH sources.
 - **Hierarchical failure mode on q-002:** the router dropped the contradicting Slack thread, answer went stale (quality 0.80). Summarize-route-expand loses recency when summaries undersell time-sensitive threads.
 - **F1 is higher for RAG/hierarchical** (0.44) than full_context (0.40) — shorter retrieved chunks keep the answer closer to the terse golden.

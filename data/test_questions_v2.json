@@ -1,0 +1,142 @@
+[
+  {
+    "id": "q-v2-001",
+    "question": "I'm enrolling in the HDHP as a single filer (Team Member Only). How much does GitLab contribute to my HSA each month?",
+    "golden_answer": "As of April 1, 2026, GitLab contributes $125 per month to your HSA for Team Member Only (individual) coverage on the HDHP plan — raised from the previously published $100/month figure. The us-benefits-overview handbook page still shows the old $100/month number but PlanSource is already applying the new amount. You must be enrolled in the HDHP to be eligible, and HSA contributions are taxable at the state level in California, Alabama, and New Jersey.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "New individual HSA contribution is $125/month effective April 1, 2026",
+      "Old published value was $100/month — still in the handbook but stale",
+      "Must be enrolled in the HDHP to be eligible",
+      "Contributions taxable at state level in CA, AL, NJ"
+    ],
+    "relevant_source_ids": ["us-benefits-overview", "slack-api-001"]
+  },
+  {
+    "id": "q-v2-002",
+    "question": "How many weeks of paid parental leave does GitLab offer?",
+    "golden_answer": "Effective April 1, 2026, GitLab Paid Parental Leave is 20 weeks of fully paid leave (raised from the previously published 16 weeks). The parental-and-other-leave handbook page still shows 16 weeks because the MR has not yet merged. Pay remains 100% of weekly wages, leave can still be split into up to 3 segments, and it must still be used before the child's first birthday or the first anniversary of adoption. USA/Canada team members submit to Tilt 30-45 days before leave.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "Current paid parental leave is 20 weeks (extended from 16 weeks on 2026-04-01)",
+      "Handbook still says 16 weeks — stale",
+      "Still 100% of weekly wages",
+      "Up to 3 segments, must be used before child's 1st birthday",
+      "USA/Canada submit to Tilt 30-45 days before leave"
+    ],
+    "relevant_source_ids": ["parental-and-other-leave", "slack-api-002"]
+  },
+  {
+    "id": "q-v2-003",
+    "question": "As a US team member using my Navan corporate card, what is the single-charge receipt threshold? Do I need to upload a receipt for a $62 client dinner?",
+    "golden_answer": "The US single-charge receipt threshold was raised from $50 to $75 effective March 20, 2026. A $62 client dinner is below the new $75 threshold, so no receipt is required. The corporate-card-policy handbook page still shows $50 because the update has not yet been merged. Any charge over $75 must still be uploaded into Navan within 30 days of the transaction, and a Missing Receipt Affidavit is still required if a receipt is lost.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "Current US receipt threshold is over $75 (raised from $50 on 2026-03-20)",
+      "Handbook still says over $50 — stale",
+      "A $62 charge is below the threshold — no receipt needed",
+      "Receipts still due in Navan within 30 days of transaction",
+      "Missing Receipt Affidavit still applies for lost receipts"
+    ],
+    "relevant_source_ids": ["corporate-card-policy", "slack-api-003"]
+  },
+  {
+    "id": "q-v2-004",
+    "question": "I'm a Director. How often are Director+ bonuses paid out?",
+    "golden_answer": "Effective Q2 2026 (April 1, 2026), Director+ bonuses are paid quarterly (4 payouts per year) instead of the previously published semi-annual cadence. The total-rewards-compensation handbook page still lists semi-annual because the MR is in flight. The target percentage of base salary is unchanged and payouts remain tied to company performance — the amount is simply split into four quarterly installments. The first quarterly payout lands mid-July after Q2 closes.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "Director+ bonus cadence is now quarterly (4 payouts/year) effective 2026-04-01",
+      "Handbook still says semi-annual (2 payouts/year) — stale",
+      "Target percentage of base salary is unchanged",
+      "Still tied to company performance",
+      "First quarterly payout lands mid-July after Q2 close"
+    ],
+    "relevant_source_ids": ["total-rewards-compensation", "slack-api-004"]
+  },
+  {
+    "id": "q-v2-005",
+    "question": "What is the current mental health benefit vendor at GitLab and how many therapy sessions does it cover?",
+    "golden_answer": "GitLab migrated from Modern Health to Spring Health on April 1, 2026. Each team member gets 12 free therapy sessions per calendar year (up from 8 with Modern Health), plus unlimited coaching, a meditation library, and dependent coverage for household members aged 13+. Sign in at gitlab.springhealth.com with your GitLab email using the activation code sent by benefits@gitlab.com. The separate EAP through New York Life (3 face-to-face sessions) is unchanged.",
+    "category": "slack_only",
+    "key_facts": [
+      "Vendor changed from Modern Health to Spring Health on 2026-04-01",
+      "12 free therapy sessions per calendar year (up from 8)",
+      "Includes unlimited coaching, meditation library, dependent coverage for household members 13+",
+      "Sign-in at gitlab.springhealth.com with GitLab email",
+      "EAP through New York Life is separate and unchanged"
+    ],
+    "relevant_source_ids": ["slack-api-006"]
+  },
+  {
+    "id": "q-v2-006",
+    "question": "Can I expense a ChatGPT Plus subscription, and what are the rules for using AI tools with GitLab data?",
+    "golden_answer": "Yes — as of April 5, 2026, individual AI tool subscriptions up to $50/month per team member are pre-approved and can be expensed through Navan under the new \"AI Tools\" category, with no Zip request or Security/Privacy review required. The pre-approved list includes ChatGPT Plus/Team, Claude Pro/Max, Gemini Advanced, GitHub Copilot, Cursor, and Perplexity Pro. Data rules: no customer data, no unreleased source code, and no personnel data in any prompt. Summaries, public docs, and your own work-in-progress writing are allowed. Violations are reviewed by Security.",
+    "category": "slack_only",
+    "key_facts": [
+      "AI Tool Use policy published 2026-04-05",
+      "Up to $50/month per team member pre-approved via Navan 'AI Tools' category",
+      "No Zip request or Security/Privacy review needed for pre-approved vendors",
+      "Pre-approved list: ChatGPT Plus/Team, Claude Pro/Max, Gemini Advanced, GitHub Copilot, Cursor, Perplexity Pro",
+      "Prohibited inputs: customer data, unreleased source code, personnel data"
+    ],
+    "relevant_source_ids": ["slack-api-008"]
+  },
+  {
+    "id": "q-v2-007",
+    "question": "I'm starting as a staff-augmentation contractor next week. Who handles my onboarding and where can I ask contractor-specific questions in Slack?",
+    "golden_answer": "Contractor onboarding is handled by the Procurement team, not People Ops — the Contingent Worker Policy covers the three categories of contingent workers (Staff Augmentation, Consultancy Services, Independent Contractors). For day-to-day questions, join the dedicated #contractor-hub Slack channel (created March 28, 2026). Tag @contractor-ops during business hours (9am-6pm ET, Mon-Fri) for urgent questions; tag @procurement_team for onboarding paperwork. A pinned FAQ in the channel covers the three contractor categories and the Workday timecard process.",
+    "category": "needs_both",
+    "key_facts": [
+      "Procurement team owns contractor onboarding (handbook)",
+      "Three contingent worker categories: Staff Augmentation, Consultancy Services, Independent Contractors (handbook)",
+      "New #contractor-hub Slack channel created 2026-03-28 (Slack)",
+      "Tag @contractor-ops for urgent issues during 9-6 ET business hours",
+      "Tag @procurement_team for onboarding paperwork"
+    ],
+    "relevant_source_ids": ["procurement", "general-onboarding", "slack-api-007"]
+  },
+  {
+    "id": "q-v2-008",
+    "question": "I've been summoned for jury duty on a potential 4-week trial. How much paid leave do I get, and how do I log it?",
+    "golden_answer": "GitLab provides up to 30 working days of paid jury-duty / legal civic obligation leave per authorized leave (raised from 25 working days effective March 25, 2026). A 4-week trial is well within the cap. Pay is 100% of weekly wages. Log it in Workday under Time-Off → Jury Duty and attach a copy of your summons. The leave is available from day one of employment and runs concurrently with other job-protected or income-replacement leave as required by law. If your service exceeds 30 working days, email leaves@gitlab.com for case-by-case review.",
+    "category": "needs_both",
+    "key_facts": [
+      "Current jury-duty cap is 30 working days paid (raised from 25 on 2026-03-25)",
+      "Handbook still says 25 working days — stale (Slack has the current value)",
+      "Pay is 100% of weekly wages (from handbook)",
+      "Log in Workday → Time-Off → Jury Duty with summons attached (from handbook)",
+      "Available from day one of employment (from handbook)",
+      "Case-by-case review beyond the cap via leaves@gitlab.com"
+    ],
+    "relevant_source_ids": ["flexible-pto-and-time-off", "slack-api-005"]
+  },
+  {
+    "id": "q-v2-009",
+    "question": "What's the maximum duration of short-term disability coverage at GitLab, and what percentage of my salary does it replace?",
+    "golden_answer": "GitLab provides short-term disability insurance at no cost to employees. It replaces up to 66.7% of base salary for qualifying disabilities, with a maximum benefit period of 26 weeks. To apply, contact Absence Management at leaves@gitlab.com to submit a Short-Term Disability application. Within 3 business days, New York Life (NYLife) contacts you for additional information if needed, then issues a decision. Absence Management files all paperwork in Workday.",
+    "category": "portal_only",
+    "key_facts": [
+      "Short-term disability max period is 26 weeks",
+      "Replaces up to 66.7% of base salary",
+      "Provided at no cost",
+      "Apply via leaves@gitlab.com",
+      "NYLife responds within 3 business days"
+    ],
+    "relevant_source_ids": ["us-benefits-overview"]
+  },
+  {
+    "id": "q-v2-010",
+    "question": "I was called up for a 9-month military deployment. After service ends, how long do I have to apply for reinstatement at GitLab?",
+    "golden_answer": "For military leave exceeding 180 days (9 months qualifies), you have 90 days from the end of service to apply for reinstatement at GitLab. The \"escalator principle\" applies — you return to the position you would have attained if you had not been called to serve. Unpaid military leave can extend up to 6 months, after which you are offboarded but remain eligible for reinstatement. Healthcare may be retained at your own expense for up to 2 years or end of service, whichever comes first; otherwise benefits end on day 31. Stock vesting continues during up to 6 months of unpaid military leave.",
+    "category": "portal_only",
+    "key_facts": [
+      "90-day reinstatement window after service ends (for service >180 days)",
+      "Escalator principle applies — return to position you would have attained",
+      "Up to 6 months unpaid military leave",
+      "Healthcare retainable up to 2 years or end of service, at own expense",
+      "Stock vesting continues during up to 6 months of unpaid leave"
+    ],
+    "relevant_source_ids": ["parental-and-other-leave"]
+  }
+]

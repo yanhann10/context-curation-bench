@@ -1,0 +1,202 @@
+[
+  {
+    "id": "slack-api-001",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nTomás Reyes  9:14 AM\nHey — I'm enrolling in the HDHP this week as a single filer and I want to confirm the HSA employer contribution. The public handbook says $100/month for individual. Is that still current?\n\nAlex (People Ops)  9:21 AM\nGood timing Tomás — that figure is stale. Effective April 1, 2026 the HSA employer contribution for Team Member Only (individual) on the HDHP went up to **$125/month**. The old $100/month number is still sitting in the us-benefits-overview handbook page but it's outdated. PlanSource is already applying the new amount. Family/dependent tier also changed separately (see slack-003 from a couple weeks back).\n\nTomás Reyes  9:23 AM\nPerfect, thanks. $125 × 12 = $1,500/yr from GitLab then.\n\nAlex (People Ops)  9:24 AM\nCorrect. And that's still pre-tax at the federal level — CA/AL/NJ residents pay state tax on it.",
+    "metadata": {
+      "title": "HSA individual contribution — is $100/month still right?",
+      "source": "slack",
+      "channel_id": "C02PEOPLEOPS",
+      "channel_name": "#people-ops-questions",
+      "thread_ts": "1775908440.001234",
+      "timestamp": "2026-04-17T09:14:00Z",
+      "user_id": "U07HRADMIN",
+      "user_name": "Alex (People Ops)",
+      "reply_count": 3,
+      "reactions": [{"name": "white_check_mark", "count": 7}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "us-benefits-overview.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "slack-api-002",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nNaomi Halverson  11:02 AM\nExpecting in October and starting to plan my leave. The handbook says 16 weeks of paid parental leave. Want to confirm before I tell my manager.\n\nAlex (People Ops)  11:18 AM\nHuge congrats Naomi! Quick correction — effective **April 1, 2026** GitLab Paid Parental Leave was extended from 16 weeks to **20 weeks** of fully paid leave. The parental-and-other-leave handbook page still lists 16 weeks because the MR hasn't merged yet (tracking in gitlab-com/content-sites/handbook#2903). Everything else is the same: still up to 3 segments, still must be used before the child's 1st birthday, still 100% of weekly wages, still submit to Tilt 30–45 days before leave.\n\nNaomi Halverson  11:20 AM\nThat's amazing news. So 20 weeks paid, not 16. Anything else I should flag?\n\nAlex (People Ops)  11:23 AM\nJust the duration changed. Pay, segmentation, and the F&F Day +4 bonus are all unchanged. I'll DM you the Tilt intake link.",
+    "metadata": {
+      "title": "Parental leave — confirming 16 weeks paid",
+      "source": "slack",
+      "channel_id": "C02PEOPLEOPS",
+      "channel_name": "#people-ops-questions",
+      "thread_ts": "1775915520.002345",
+      "timestamp": "2026-04-16T11:02:00Z",
+      "user_id": "U07HRADMIN",
+      "user_name": "Alex (People Ops)",
+      "reply_count": 3,
+      "reactions": [{"name": "tada", "count": 12}, {"name": "baby", "count": 4}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "parental-and-other-leave.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "slack-api-003",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nWesley Park  2:44 PM\nQuestion on corporate card receipts. I had a $62 client dinner on my Navan card last week. US team member. Handbook says receipts required for US charges over $50, so I uploaded it. Just want to double-check I did the right thing.\n\nAlex (People Ops)  2:51 PM\nYou did the right thing by uploading it Wesley, but heads-up: the US receipt threshold was raised from **$50 to $75** effective **March 20, 2026** (Finance announcement in #whats-happening-at-gitlab). Your $62 charge actually wouldn't have required a receipt under the new rule — but uploading is never wrong. The corporate-card-policy handbook page still says $50 because the MR is pending.\n\nWesley Park  2:53 PM\nGood to know. So single US charges ≤ $75 are now receipt-free?\n\nAlex (People Ops)  2:55 PM\nCorrect — ≤ $75 no receipt needed for US team members. Still must upload within 30 days for anything over $75. Missing Receipt Affidavit still applies if you lose one.",
+    "metadata": {
+      "title": "Corporate card receipt threshold — still $50?",
+      "source": "slack",
+      "channel_id": "C02PEOPLEOPS",
+      "channel_name": "#people-ops-questions",
+      "thread_ts": "1775835840.003456",
+      "timestamp": "2026-04-15T14:44:00Z",
+      "user_id": "U07HRADMIN",
+      "user_name": "Alex (People Ops)",
+      "reply_count": 3,
+      "reactions": [{"name": "white_check_mark", "count": 5}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "corporate-card-policy.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "slack-api-004",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nDelia Okonkwo  10:12 AM\nHey — just got promoted to Director and trying to understand my bonus cadence. Handbook says Director+ bonuses are paid twice per year (semi-annual). Is that still accurate?\n\nAlex (People Ops)  10:28 AM\nCongrats Delia! Update for you: Director+ bonus cadence changed from **semi-annual to quarterly** starting **Q2 2026** (effective April 1, 2026). You'll now see four smaller payouts per year instead of two larger ones. Target % of base salary is unchanged — still based on company performance — it's just split into 4 quarterly installments. The total-rewards-compensation handbook page is being updated (MR #2897 in flight) but it still shows the old semi-annual cadence.\n\nDelia Okonkwo  10:30 AM\nGreat — so 4 equal payouts instead of 2. When's the first one?\n\nAlex (People Ops)  10:32 AM\nQ2 payout lands mid-July after the quarter closes. You'll get a calendar invite from Total Rewards with the exact date.",
+    "metadata": {
+      "title": "Director+ bonus — still semi-annual?",
+      "source": "slack",
+      "channel_id": "C02PEOPLEOPS",
+      "channel_name": "#people-ops-questions",
+      "thread_ts": "1775749920.004567",
+      "timestamp": "2026-04-14T10:12:00Z",
+      "user_id": "U07HRADMIN",
+      "user_name": "Alex (People Ops)",
+      "reply_count": 3,
+      "reactions": [{"name": "white_check_mark", "count": 4}, {"name": "chart_with_upwards_trend", "count": 2}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "total-rewards-compensation.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "slack-api-005",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nHarper Dziedzic  4:07 PM\nI got summoned for jury duty next month and the notice says potential 4-week trial. Handbook says up to 25 working days paid. Just want to confirm in case it runs long.\n\nAlex (People Ops)  4:19 PM\nThanks for flagging Harper. Update: the paid jury-duty / legal civic obligation cap was raised from **25 to 30 working days** effective **March 25, 2026**. The flexible-pto-and-time-off handbook page still says 25 days because it hasn't been updated yet. Pay is still 100% of weekly wages for the whole period, and anything beyond 30 working days still goes to Absence Management for case-by-case review. Log it in Workday → Time-Off → Jury Duty and attach your summons.\n\nHarper Dziedzic  4:21 PM\nSo I have up to 6 weeks of paid jury duty coverage now. That's a big relief.\n\nAlex (People Ops)  4:22 PM\n30 working days = roughly 6 calendar weeks yep. Email leaves@gitlab.com if it goes beyond that.",
+    "metadata": {
+      "title": "Jury duty paid leave — 25 working day cap?",
+      "source": "slack",
+      "channel_id": "C02PEOPLEOPS",
+      "channel_name": "#people-ops-questions",
+      "thread_ts": "1775664420.005678",
+      "timestamp": "2026-04-13T16:07:00Z",
+      "user_id": "U07HRADMIN",
+      "user_name": "Alex (People Ops)",
+      "reply_count": 3,
+      "reactions": [{"name": "white_check_mark", "count": 3}, {"name": "scales", "count": 2}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "flexible-pto-and-time-off.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "slack-api-006",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nQuinton Akachi  1:28 PM\nHas the mental-health benefit vendor changed? I went to book a session with Modern Health and my code isn't working.\n\nAlex (People Ops)  1:35 PM\nGood catch Quinton. We migrated from Modern Health to **Spring Health** on **April 1, 2026**. All active members were sent a re-enrollment email from benefits@gitlab.com with a new activation code. If you didn't get the email, check spam first, then ping me or file a HelpLab ticket under Benefits → Mental Health.\n\nQuinton Akachi  1:37 PM\nFound the email. What's included vs. the old Modern Health plan?\n\nAlex (People Ops)  1:42 PM\nSpring Health gives each team member **12 free therapy sessions per calendar year** (up from Modern Health's 8), plus unlimited coaching, a meditation library, and dependent coverage for household members 13+. Sign-in at gitlab.springhealth.com with your GitLab email. EAP through New York Life (3 face-to-face sessions) is separate and unchanged.",
+    "metadata": {
+      "title": "Mental health benefit vendor — Modern Health code broken",
+      "source": "slack",
+      "channel_id": "C02PEOPLEOPS",
+      "channel_name": "#people-ops-questions",
+      "thread_ts": "1775579280.006789",
+      "timestamp": "2026-04-12T13:28:00Z",
+      "user_id": "U07HRADMIN",
+      "user_name": "Alex (People Ops)",
+      "reply_count": 3,
+      "reactions": [{"name": "green_heart", "count": 9}, {"name": "brain", "count": 3}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": null,
+      "relationship": "extend"
+    }
+  },
+  {
+    "id": "slack-api-007",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nBeatrix Sandoval  10:55 AM\nI'm a staff-aug contractor starting next week — where do I ask contractor-specific questions? The general #questions channel felt wrong and the handbook just says to work with Procurement.\n\nAlex (People Ops)  11:04 AM\nWelcome Beatrix! We spun up a dedicated channel for this on **March 28, 2026** — please join **#contractor-hub** (channel ID C08CONTRHUB). It's for all contingent workers (staff-aug, consultants, independent contractors) and is staffed by Procurement + People Ops.\n\nBeatrix Sandoval  11:06 AM\nGreat — who do I tag for urgent stuff?\n\nAlex (People Ops)  11:09 AM\nTag **@contractor-ops** in the channel during business hours (9am–6pm ET, Mon–Fri). For onboarding paperwork issues tag **@procurement_team** instead. The channel also has a pinned FAQ covering the 3 categories of contingent workers (staff-aug, consultancy, independent contractor) and the timecard process in Workday — much faster than digging through the handbook.",
+    "metadata": {
+      "title": "Where do contractors ask questions? New channel?",
+      "source": "slack",
+      "channel_id": "C02PEOPLEOPS",
+      "channel_name": "#people-ops-questions",
+      "thread_ts": "1775493060.007890",
+      "timestamp": "2026-04-11T10:55:00Z",
+      "user_id": "U07HRADMIN",
+      "user_name": "Alex (People Ops)",
+      "reply_count": 3,
+      "reactions": [{"name": "wave", "count": 4}, {"name": "point_up", "count": 2}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": null,
+      "relationship": "extend"
+    }
+  },
+  {
+    "id": "slack-api-008",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nRami Bettencourt  9:36 AM\nCan I expense ChatGPT Plus and Claude Pro on my personal card? Both are ~$20/mo. I use them daily for work.\n\nAlex (People Ops)  9:44 AM\nGood question Rami. We published an **AI Tool Use policy on April 5, 2026** (not yet in the public handbook — internal only until legal review closes). Summary: **individual AI tool subscriptions up to $50/month per team member are pre-approved** and can be expensed through Navan under the new \"AI Tools\" expense category. No Zip request, no Security/Privacy review for pre-approved vendors. The approved list currently includes: ChatGPT Plus/Team, Claude Pro/Max, Gemini Advanced, GitHub Copilot, Cursor, and Perplexity Pro.\n\nRami Bettencourt  9:47 AM\nExcellent. Rules for feeding GitLab data to these tools?\n\nAlex (People Ops)  9:51 AM\n**No customer data, no unreleased source code, no personnel data** in any prompt. Summaries, public docs, and your own work-in-progress writing are fine. Full policy link is in #ai-tools-guidelines. Violations are reviewed by Security.",
+    "metadata": {
+      "title": "Can I expense AI tool subscriptions (ChatGPT / Claude)?",
+      "source": "slack",
+      "channel_id": "C02PEOPLEOPS",
+      "channel_name": "#people-ops-questions",
+      "thread_ts": "1775406960.008901",
+      "timestamp": "2026-04-10T09:36:00Z",
+      "user_id": "U07HRADMIN",
+      "user_name": "Alex (People Ops)",
+      "reply_count": 3,
+      "reactions": [{"name": "robot_face", "count": 11}, {"name": "white_check_mark", "count": 6}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": null,
+      "relationship": "extend"
+    }
+  },
+  {
+    "id": "slack-api-009",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nIona Grimaldi  3:12 PM\nMy team wants to buy a specialized design tool — annual cost is about $18k. Do I need to go through an RFP or is that below the threshold?\n\nAlex (People Ops)  3:19 PM\nHi Iona — $18k/year is under the **$25k RFP threshold**, so **no competitive bids are required**. You just submit a Zip request through Okta for a new purchase request and Procurement will route it through the standard reviews (Security, Privacy, Legal, FP&A). Timeline is usually 5 days to 3 weeks depending on whether the vendor is new and how responsive their counsel is.\n\nIona Grimaldi  3:21 PM\nGreat — and if we wanted to expand to $30k next year?\n\nAlex (People Ops)  3:24 PM\nAt $25k–$100k you'd need a **business-led quick-bid with 2 vendor bids**. $100k–$250k is 2–3 bids business-led. Over $250k is Procurement-led with 5+ bids. Exact table is in the procurement handbook page.",
+    "metadata": {
+      "title": "Do I need an RFP for an $18k software purchase?",
+      "source": "slack",
+      "channel_id": "C02PEOPLEOPS",
+      "channel_name": "#people-ops-questions",
+      "thread_ts": "1775320320.009012",
+      "timestamp": "2026-04-09T15:12:00Z",
+      "user_id": "U07HRADMIN",
+      "user_name": "Alex (People Ops)",
+      "reply_count": 3,
+      "reactions": [{"name": "white_check_mark", "count": 3}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "procurement.md",
+      "relationship": "confirm"
+    }
+  },
+  {
+    "id": "slack-api-010",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nSolene Marchetti  8:48 AM\nI'm traveling to São Paulo next week for a customer meeting. If there's a medical emergency, who do I call?\n\nAlex (People Ops)  8:56 AM\nGreat that you're thinking ahead Solene. Use **International SOS (ISOS) 24/7 Assistance: +1 215 942 8226**. Also download the **ISOS Assistance App** before you leave and register with your GitLab email (use a unique password — not your GitLab credentials). ISOS covers medical emergencies, security situations, claims assistance for the Business Travel Insurance Policy, and pre-trip health advice.\n\nSolene Marchetti  8:58 AM\nPerfect. Is the coverage automatic or do I need to enroll?\n\nAlex (People Ops)  9:01 AM\n**Automatic and year-round** — no enrollment. Coverage includes emergency medical up to $250k per occurrence and security evacuation. Family members traveling with you are also covered (spouse, domestic partner, children under 26). Email is philadelphia@internationalsos.com if you can't get through on phone.",
+    "metadata": {
+      "title": "Who do I call for a medical emergency while traveling?",
+      "source": "slack",
+      "channel_id": "C02PEOPLEOPS",
+      "channel_name": "#people-ops-questions",
+      "thread_ts": "1775234880.010123",
+      "timestamp": "2026-04-08T08:48:00Z",
+      "user_id": "U07HRADMIN",
+      "user_name": "Alex (People Ops)",
+      "reply_count": 3,
+      "reactions": [{"name": "airplane", "count": 4}, {"name": "white_check_mark", "count": 2}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "travel-policy.md",
+      "relationship": "confirm"
+    }
+  }
+]

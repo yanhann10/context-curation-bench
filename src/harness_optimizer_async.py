@@ -27,11 +27,11 @@ async def eval_spec_async(
         async with sem:
             prompt = meta_harness_optimized(q["question"], docs, spec)
             ans, _, _, _ = await answer_question_async(client, prompt, agent_model)
-            quality, recency, note, _, _ = await judge_async(client, q, ans, judge_model)
+            quality, note, _, _ = await judge_async(client, q, ans, judge_model)
             return {
                 "qid": q["id"], "question": q["question"],
                 "golden": q["golden_answer"], "category": q["category"],
-                "answer": ans, "quality": quality, "recency": recency, "note": note,
+                "answer": ans, "quality": quality, "note": note,
             }
 
     records = await asyncio.gather(*[one(q) for q in questions])
