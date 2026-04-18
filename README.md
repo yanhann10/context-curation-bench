@@ -153,12 +153,13 @@ python3 main_stage2.py --rag-k 6 --hier-ids 5
 ```
 
 Strategies compared:
-- `full_context` — stuff everything (baseline)
-- `meta_harness_optimized` — Stage 1 optimized `CurationSpec`
-- `rag_embedding` — top-k chunks over `text-embedding-3-small`
-- `hierarchical` — map (1-sentence summary per doc) → route (LLM picks ids) → expand
+- `full_context` — stuff all handbook + Slack into every prompt. No selection.
+- `meta_harness_optimized` — apply a typed `CurationSpec` (which ids to include, ordering, format, max-chars, instructions) that an LLM proposer iteratively mutated against failure traces on a train subset.
+- `rag_embedding` — chunk docs (~1200 chars, 200 overlap), embed via local `BAAI/bge-small-en-v1.5`, index in FAISS (`IndexFlatIP` on L2-normalized vectors = cosine), retrieve top-k per question. Classic RAG.
+- `hierarchical` — **no embedding retrieval.** Two LLM passes: (1) *map* — summarize each doc to 1–2 sentences once, cache; (2) *route* — LLM sees question + catalog of `(id, title, timestamp, summary)` and returns JSON `{"doc_ids": [...]}` with 2–5 picks; (3) *expand* — the full text of the selected docs goes to the answerer. Trades retrieval speed for LLM reasoning over summaries.
+- `agent_managed` — tool-use loop. The model is handed four tools (`list_handbook`, `get_handbook(doc_id)`, `list_slack`, `get_slack(thread_id)`) and a system prompt describing the corpus split (stale handbook dated 2026-01-01 vs recent HR-validated Slack). It runs up to 6 turns: typically `list_handbook` + `list_slack` first (sees titles + timestamps), then 1–3 `get_*` calls for the docs it judged relevant, then emits a final answer. Token usage is summed across **all** turns, so the reported cost reflects full loop spend.
 
-Each strategy lives in its own module: `src/strategies.py`, `src/strategies_rag.py`, `src/strategies_hierarchical.py`. All calls run async via `AsyncOpenAI` + `asyncio.gather` under a concurrency semaphore (default 8).
+Each strategy lives in its own module: `src/strategies.py` (full + meta-harness), `src/strategies_rag.py`, `src/strategies_hierarchical.py`, `src/strategies_agent_managed.py`. All calls run async via `AsyncAnthropic` + `asyncio.gather` under a concurrency semaphore (default 6).
 
 ## Stage 3 / 4 (not built yet, per PRD)
 
