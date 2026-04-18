@@ -1,0 +1,80 @@
+[
+  {
+    "id": "slack-001",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nPriya Desai  10:23 AM\nHey team — quick one. I just joined last week and I'm trying to submit an Uber receipt from my final interview trip. The ride was about 75 days ago. Am I too late to get reimbursed?\n\nMarco Alvarez (People Ops)  10:31 AM\nHi Priya! Welcome. You're still within the window. Expense claims up to 90 days from the purchase date can be submitted through Navan without any special approval. After 90 days you'd need your manager to sign off before it'll go through. Upload the receipt in Navan and you should be fine. Ping #expenses-help if Navan gives you trouble.\n\nPriya Desai  10:33 AM\nPerfect, thanks!",
+    "metadata": {
+      "title": "Can I still reimburse an expense from 75 days ago?",
+      "source": "slack",
+      "channel": "#people-ops-questions",
+      "timestamp": "2026-03-22T10:23:00Z",
+      "relates_to_handbook_file": "expenses-and-reimbursement.md",
+      "relationship": "confirm"
+    }
+  },
+  {
+    "id": "slack-002",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nJamal Okafor  2:04 PM\nHi — I want to take Thursday and Friday off next week (2 days). How much notice am I supposed to give my manager? I want to make sure I'm following the policy.\n\nLinh Tran (People Ops)  2:11 PM\nHey Jamal! The guideline is to give at least 2× as many days of notice as the time you're taking off. So for 2 days off, that's 4 business days of notice. You're cutting it close but you're probably fine — just message your manager today so you have a coverage plan. And don't forget to log it in Workday under Time-Off → Paid Time Off.\n\nJamal Okafor  2:13 PM\nGot it — going to DM my manager now.",
+    "metadata": {
+      "title": "How much PTO notice do I need to give?",
+      "source": "slack",
+      "channel": "#people-ops-questions",
+      "timestamp": "2026-04-02T14:04:00Z",
+      "relates_to_handbook_file": "flexible-pto-and-time-off.md",
+      "relationship": "confirm"
+    }
+  },
+  {
+    "id": "slack-003",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nSarah Kim  9:12 AM\nQuick question on HSA. The handbook says GitLab contributes $100/month for individual and $125/month for family if I enroll in the HDHP. Is that still accurate? I'm enrolling my family this week.\n\nDana Whitfield (Total Rewards)  9:28 AM\nGood catch Sarah — those numbers are outdated and we're fixing the handbook this sprint. Effective April 1, 2026 the HSA employer contribution went up to **$125/month for Team Member Only** and **$175/month for Team Member + Spouse / Child / Family** on the HDHP plan. If you enroll now you'll see the new amount on your first PlanSource confirmation. The old $100 / $125 figures are stale. The change was approved in the Q1 Total Rewards review and communicated in #whats-happening-at-gitlab on March 27.\n\nSarah Kim  9:30 AM\nAmazing, thank you! Will enroll with the new numbers in mind.\n\nDana Whitfield (Total Rewards)  9:32 AM\nAlso worth flagging: the Medical Waiver Allowance is still $150/month, that one didn't change.",
+    "metadata": {
+      "title": "HSA contribution amounts — handbook looks outdated",
+      "source": "slack",
+      "channel": "#people-ops-questions",
+      "timestamp": "2026-04-07T09:12:00Z",
+      "relates_to_handbook_file": "us-benefits-overview.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "slack-004",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nElias Nakamura  11:47 AM\nHey — I started 32 days ago and just realized I never enrolled in benefits. The handbook says I had 30 days. Did I miss the window?\n\nMarco Alvarez (People Ops)  11:52 AM\nDon't panic Elias — you're covered. Heads up for everyone in this channel: **as of March 15, 2026 the benefits enrollment window was extended from 30 days to 45 days** for all new US hires. The handbook hasn't been updated yet (MR is open — see gitlab-com/content-sites/handbook#2841) but PlanSource is already honoring the 45-day window.\n\nElias Nakamura  11:54 AM\nHuge relief. So I have until day 45 to log into PlanSource and pick plans?\n\nMarco Alvarez (People Ops)  11:56 AM\nCorrect. Log into Workday → View All Apps → Personal Information → External Links → US Benefits Enrollment - PlanSource. Same flow, just more time. If you don't elect by day 45 you'll auto-enroll in the Medical Waiver Allowance ($150/month) and miss other optional coverage for the year.",
+    "metadata": {
+      "title": "Did I miss my benefits enrollment window?",
+      "source": "slack",
+      "channel": "#people-ops-questions",
+      "timestamp": "2026-04-10T11:47:00Z",
+      "relates_to_handbook_file": "us-benefits-overview.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "slack-005",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nRiya Mehta  3:18 PM\nHi! New hire here (day 4). What's our home office setup budget? I need a monitor, chair, and a desk. The public handbook page on equipment redirects me to an internal page I can't open yet because my Okta access is still pending.\n\nFelipe Costa (People Ops)  3:26 PM\nWelcome Riya! The current home office equipment stipend for new hires is **$750 USD total** (was $500 before February 2026) and it covers monitor, chair, desk, keyboard, mouse, headset, webcam, and ergonomic accessories. Here's the flow:\n\n1. Wait until Okta provisions (should be by end of day 2) — you'll get an email from it-help@gitlab.com.\n2. Log into **Navan** and use the \"Home Office Setup\" expense category for reimbursements, or submit a request for a virtual card in advance through the **Home Office Stipend Form** linked in #new_team_members pinned messages.\n3. You have until day 90 of employment to spend it. Leftover budget doesn't roll over.\n4. Questions → expenses@gitlab.com or ping #expenses-help.\n\nRiya Mehta  3:28 PM\nExactly what I needed, thanks!\n\nFelipe Costa (People Ops)  3:29 PM\nOne more thing — software purchases (Notion, Figma, etc.) don't come out of this budget. Those go through the Individual Use Software process via Zip.",
+    "metadata": {
+      "title": "What's the home office setup budget for new hires?",
+      "source": "slack",
+      "channel": "#people-ops-questions",
+      "timestamp": "2026-04-12T15:18:00Z",
+      "relates_to_handbook_file": null,
+      "relationship": "extend"
+    }
+  },
+  {
+    "id": "slack-006",
+    "type": "slack",
+    "content": "#people-ops-questions\n\nKenji Walsh  8:42 AM\nKind of a weird question — my official start date is Monday May 26, which is Memorial Day in the US. Does my onboarding actually start that day, or does it push to Tuesday? I don't want to miss the TaNewKi call or Day 1 stuff.\n\nLinh Tran (People Ops)  9:03 AM\nGreat question Kenji — this comes up every federal holiday. Policy: **if your official start date lands on a US federal holiday (or a GitLab Family & Friends Day), your onboarding kicks off the next business day** and your start-date paperwork is backdated to the holiday. Here's what that means for you:\n\n- Payroll still records Monday May 26 as Day 1 (you get paid for the holiday).\n- Your **onboarding issue becomes active on Tuesday May 27** — that's when you start the checklist, meet your buddy, and do Slack intros.\n- Your **TaNewKi call is unaffected** — those happen 1–2 weeks before start date on a rolling Thursday schedule so you should've already attended one.\n- Your **Day 2 Access Request** (the Okta / tooling one owned by IT) gets auto-generated on Wednesday May 28 instead of Tuesday.\n\nKenji Walsh  9:05 AM\nClear, thanks. So effectively I get a free day off before I start.\n\nLinh Tran (People Ops)  9:06 AM\nExactly 🙂. Enjoy the long weekend.",
+    "metadata": {
+      "title": "What if my start date is a US federal holiday?",
+      "source": "slack",
+      "channel": "#people-ops-questions",
+      "timestamp": "2026-04-15T08:42:00Z",
+      "relates_to_handbook_file": "general-onboarding.md",
+      "relationship": "extend"
+    }
+  }
+]

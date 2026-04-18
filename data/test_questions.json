@@ -1,0 +1,83 @@
+[
+  {
+    "id": "q-001",
+    "question": "What is the maximum dollar amount GitLab will match on my 401(k) contributions each year?",
+    "golden_answer": "GitLab matches 50% of your contributions on the first 6% of earnings, up to a maximum of $1,500 annually. The 401(k) plan has immediate eligibility and vesting, with investments through Fidelity NetBenefits.",
+    "category": "portal_only",
+    "key_facts": [
+      "50% match on the first 6% of earnings",
+      "$1,500 annual maximum match",
+      "Immediate eligibility and vesting",
+      "Administered through Fidelity NetBenefits"
+    ],
+    "relevant_source_ids": ["us-benefits-overview"]
+  },
+  {
+    "id": "q-002",
+    "question": "How much does GitLab contribute to my HSA each month if I enroll in the HDHP with family coverage?",
+    "golden_answer": "As of April 1, 2026, GitLab contributes $175 per month to your HSA for Team Member + Spouse / Child / Family coverage on the HDHP plan (raised from the previously published $125/month figure). The handbook page for US benefits has not yet been updated, but PlanSource is already applying the new amount. You must be enrolled in the HDHP to be eligible.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "New family HSA contribution is $175/month effective April 1, 2026",
+      "Old published value was $125/month — still in the handbook but stale",
+      "Handbook MR is open but not yet merged",
+      "Must be enrolled in the HDHP to be eligible for HSA contributions"
+    ],
+    "relevant_source_ids": ["us-benefits-overview", "slack-003"]
+  },
+  {
+    "id": "q-003",
+    "question": "I'm a new hire and need to buy a monitor, chair, and desk. What's my home office setup budget and how do I spend it?",
+    "golden_answer": "The home office equipment stipend for new hires is $750 USD total (raised from $500 in February 2026) and covers monitor, chair, desk, keyboard, mouse, headset, webcam, and ergonomic accessories. Spend it through Navan using the \"Home Office Setup\" expense category, or request a virtual card in advance via the Home Office Stipend Form linked in #new_team_members pinned messages. You have until day 90 of employment to spend it and leftover budget does not roll over. Software is not covered — that goes through the Individual Use Software process via Zip.",
+    "category": "slack_only",
+    "key_facts": [
+      "$750 total stipend for new hires (raised from $500 in Feb 2026)",
+      "Covers monitor, chair, desk, keyboard, mouse, headset, webcam, ergonomic accessories",
+      "Submit through Navan Home Office Setup category or via the Home Office Stipend Form",
+      "Must be spent within 90 days of start date; no rollover",
+      "Software purchases are NOT covered — they go through Individual Use Software via Zip"
+    ],
+    "relevant_source_ids": ["slack-005"]
+  },
+  {
+    "id": "q-004",
+    "question": "I have a receipt from an Uber ride I took 45 days ago for a work trip. Can I still get reimbursed, and what's the process?",
+    "golden_answer": "Yes — you can still submit it. Expense claims up to 90 days from the purchase date are reimbursable without special approval (over 90 days requires manager sign-off). Upload the receipt into Navan within 30 days of the transaction date; since you are a US team member the receipt is required because the charge is over $50. If Navan gives you trouble, ping the #expenses-help Slack channel or email expenses@gitlab.com.",
+    "category": "needs_both",
+    "key_facts": [
+      "90-day window for expense reimbursement (from handbook)",
+      "Over 90 days requires manager approval",
+      "Receipts must be uploaded in Navan within 30 days of transaction",
+      "US team members need receipts for any single charge over $50",
+      "Current support channel is #expenses-help / expenses@gitlab.com (from Slack)"
+    ],
+    "relevant_source_ids": ["expenses-and-reimbursement", "slack-001"]
+  },
+  {
+    "id": "q-005",
+    "question": "I want to take a 30-day vacation in August. Is there anything special I need to do since it's longer than normal?",
+    "golden_answer": "Yes — any time off exceeding 25 consecutive calendar days (including weekends and holidays) requires special permission from your Manager, your People Business Partner, AND the Absence Management team at leaves@gitlab.com. You also need to give at least 2× as many days of advance notice as the time off, coordinate coverage, and log the time in Workday. GitLab does not set an upper limit on total PTO per year, but the 25-day consecutive threshold triggers the extra approval chain.",
+    "category": "portal_only",
+    "key_facts": [
+      "25 consecutive calendar days is the threshold requiring extra approval",
+      "Approval required from Manager, People Business Partner, and leaves@gitlab.com",
+      "2x notice rule (e.g., 60 days notice for 30 days off)",
+      "No annual PTO cap at GitLab",
+      "Must be logged in Workday"
+    ],
+    "relevant_source_ids": ["flexible-pto-and-time-off"]
+  },
+  {
+    "id": "q-006",
+    "question": "How many days do I have after my start date to enroll in benefits through PlanSource?",
+    "golden_answer": "You have 45 days from your start date to enroll in benefits through PlanSource. The enrollment window was extended from 30 days to 45 days effective March 15, 2026 — the public handbook still lists 30 days but PlanSource is already honoring the longer window. If you don't elect a plan within 45 days you'll auto-enroll in the Medical Waiver Allowance ($150/month) and lose access to other optional coverage for the year. Enroll via Workday → View All Apps → Personal Information → External Links → US Benefits Enrollment - PlanSource.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "Current enrollment window is 45 days (extended from 30 days on 2026-03-15)",
+      "Handbook still says 30 days — stale",
+      "Missing the window auto-enrolls you in the $150/month Medical Waiver Allowance only",
+      "Enroll through Workday → Personal Information → External Links → PlanSource"
+    ],
+    "relevant_source_ids": ["us-benefits-overview", "slack-004"]
+  }
+]
