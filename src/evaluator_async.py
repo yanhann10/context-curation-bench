@@ -8,6 +8,7 @@ import time
 from openai import AsyncOpenAI
 
 from .evaluator import JUDGE_SYSTEM, cost_usd, RunResult
+from .metrics import f1 as _f1, exact_match as _em, key_facts_recall as _kfr
 
 
 async def answer_question_async(
@@ -71,11 +72,17 @@ async def evaluate_one(
         ans, latency, in_tok, out_tok, quality, recency, note, fail = (
             "", 0.0, 0, 0, 0.0, 0, "", f"error: {e}"
         )
+    gold = question["golden_answer"]
+    key_facts = question.get("key_facts", [])
     return RunResult(
         question_id=question["id"], strategy=strategy_name,
         question=question["question"], answer=ans,
-        golden_answer=question["golden_answer"],
-        quality=quality, recency=recency, latency_s=round(latency, 3),
+        golden_answer=gold,
+        quality=quality, recency=recency,
+        f1=round(_f1(ans, gold), 3),
+        exact_match=_em(ans, gold),
+        key_fact_recall=round(_kfr(ans, key_facts), 3),
+        latency_s=round(latency, 3),
         prompt_tokens=in_tok, completion_tokens=out_tok,
         total_tokens=in_tok + out_tok,
         cost_usd=round(cost_usd(in_tok, out_tok), 5),

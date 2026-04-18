@@ -32,8 +32,11 @@ class RunResult:
     question: str
     answer: str
     golden_answer: str
-    quality: float
-    recency: int
+    quality: float       # LLM-judge 0..1
+    recency: int         # LLM-judge 0|1
+    f1: float            # SQuAD-style token F1 vs golden
+    exact_match: float   # normalized EM vs golden
+    key_fact_recall: float  # fraction of key_facts present in answer
     latency_s: float
     prompt_tokens: int
     completion_tokens: int
@@ -139,6 +142,9 @@ def summarize(results: list[RunResult]) -> dict:
             "n": n,
             "quality_mean": round(sum(r.quality for r in rs) / n, 3),
             "recency_mean": round(sum(r.recency for r in rs) / n, 3),
+            "f1_mean": round(sum(r.f1 for r in rs) / n, 3),
+            "exact_match_mean": round(sum(r.exact_match for r in rs) / n, 3),
+            "key_fact_recall_mean": round(sum(r.key_fact_recall for r in rs) / n, 3),
             "latency_s_mean": round(sum(r.latency_s for r in rs) / n, 3),
             "prompt_tokens_mean": round(sum(r.prompt_tokens for r in rs) / n),
             "completion_tokens_mean": round(sum(r.completion_tokens for r in rs) / n),

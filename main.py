@@ -105,16 +105,19 @@ async def amain(args) -> int:
         for k, v in s.items():
             print(f"    {k:>22s}: {v}")
 
-    print("\nPer-question head-to-head:")
-    print(f"  {'qid':<8s} {'category':<18s} {'full_q':>6s} {'mh_q':>6s} {'full_tok':>9s} {'mh_tok':>7s}")
+    print("\nPer-question head-to-head (quality | f1 | tokens):")
+    print(f"  {'qid':<8s} {'category':<18s} "
+          f"{'full_q':>6s} {'full_f1':>7s} {'full_tok':>9s} "
+          f"{'mh_q':>6s} {'mh_f1':>7s} {'mh_tok':>7s}")
     by_q: dict[str, dict] = {}
     for r in all_results:
         by_q.setdefault(r.question_id, {})[r.strategy] = r
     for qid, d in by_q.items():
-        f = d.get("full_context"); m = d.get("meta_harness_optimized")
+        fc = d.get("full_context"); m = d.get("meta_harness_optimized")
         cat = next(q["category"] for q in questions if q["id"] == qid)
-        print(f"  {qid:<8s} {cat:<18s} {f.quality:>6.2f} {m.quality:>6.2f} "
-              f"{f.total_tokens:>9d} {m.total_tokens:>7d}")
+        print(f"  {qid:<8s} {cat:<18s} "
+              f"{fc.quality:>6.2f} {fc.f1:>7.2f} {fc.total_tokens:>9d} "
+              f"{m.quality:>6.2f} {m.f1:>7.2f} {m.total_tokens:>7d}")
 
     print(f"\nArtifacts written under {OUTPUT_DIR}/")
     return 0

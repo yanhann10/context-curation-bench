@@ -1,13 +1,13 @@
-"""Stage 2 — RAG strategy.
+"""Stage 2 — RAG strategy with FAISS.
 
-Chunk docs, embed with OpenAI text-embedding-3-small, retrieve top-k.
-Kept minimal: one function per chunking scheme, one retrieval call.
+Chunk docs, embed with OpenAI text-embedding-3-small, retrieve top-k via
+FAISS flat inner-product (embeddings are L2-normalized so IP == cosine).
 """
 from __future__ import annotations
-import asyncio
 import hashlib
 from dataclasses import dataclass
 
+import faiss
 import numpy as np
 from openai import AsyncOpenAI
 
@@ -41,29 +41,28 @@ def chunk_doc(doc: dict, chunk_chars: int = CHUNK_CHARS, overlap: int = OVERLAP_
 
 
 async def embed_texts(client: AsyncOpenAI, texts: list[str], model: str = EMBED_MODEL) -> np.ndarray:
-    # OpenAI embed endpoint accepts batches; 100 per call is safe.
     vecs: list[list[float]] = []
     for i in range(0, len(texts), 96):
         batch = texts[i : i + 96]
         resp = await client.embeddings.create(model=model, input=batch)
         vecs.extend([d.embedding for d in resp.data])
     arr = np.asarray(vecs, dtype=np.float32)
-    # L2-normalize so dot == cosine.
-    norms = np.linalg.norm(arr, axis=1, keepdims=True) + 1e-8
-    return arr / norms
+    faiss.normalize_L2(arr)  # in-place L2 normalization so IP == cosine
+    return arr
 
 
 class RagIndex:
     def __init__(self, chunks: list[Chunk], vectors: np.ndarray):
         assert len(chunks) == vectors.shape[0]
         self.chunks = chunks
-        self.vectors = vectors
+        self.dim = vectors.shape[1]
+        self.index = faiss.IndexFlatIP(self.dim)
+        self.index.add(vectors)
 
     async def top_k(self, client: AsyncOpenAI, query: str, k: int = 6) -> list[Chunk]:
         qv = await embed_texts(client, [query])
-        sims = self.vectors @ qv[0]
-        idx = np.argsort(-sims)[:k]
-        return [self.chunks[i] for i in idx]
+        _, idx = self.index.search(qv, k)
+        return [self.chunks[i] for i in idx[0] if 0 <= i < len(self.chunks)]
 
 
 async def build_index(client: AsyncOpenAI, docs: list[dict]) -> RagIndex:
@@ -88,8 +87,8 @@ def render_chunks(chunks: list[Chunk]) -> str:
 def rag_prompt(question: str, retrieved: list[Chunk]) -> str:
     return (
         "You are a helpful New Hire Onboarding assistant. "
-        "Answer the user's question using ONLY the sources below. "
-        "If sources disagree, prefer the most recent. Cite source titles.\n\n"
+        "Answer using ONLY the sources below. If sources disagree, prefer the most recent. "
+        "Cite source titles in square brackets.\n\n"
         f"=== RETRIEVED SOURCES ({len(retrieved)}) ===\n"
         f"{render_chunks(retrieved)}\n\n"
         f"=== QUESTION ===\n{question}"
