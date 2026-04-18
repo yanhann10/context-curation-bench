@@ -91,9 +91,30 @@ Artifacts in `output/`:
 - `slack_only` — info only in Slack, not in handbook
 - `needs_both` — handbook gives policy, Slack gives a current detail
 
-## Findings (to fill after first run)
+## Findings (Stage 1 + Stage 2, Claude Sonnet 4.6 throughout)
 
-_TBD after running Stage 1._
+N=6 HR onboarding questions (2 portal_only, 2 slack_contradicts, 1 slack_only, 1 needs_both). Full eval log in `eval/eval_runs.md`.
+
+| strategy | quality | recency | f1 | latency_s | prompt_tok | cost_usd |
+|---|---|---|---|---|---|---|
+| full_context | 0.950 | 1.00 | 0.396 | 7.5 | 18,583 | 0.384 |
+| meta_harness_optimized | **0.975** | 1.00 | 0.404 | 9.7 | 17,869 | 0.378 |
+| rag_embedding | 0.942 | 1.00 | 0.444 | 6.3 | **1,957** | **0.080** |
+| hierarchical | 0.925 | 1.00 | 0.448 | 6.3 | **1,622** | **0.074** |
+
+**Headline:** RAG hits 97% of full-context quality at **1/5 the cost**. Dominant tradeoff on this task.
+
+**Detail:**
+- **Meta-harness wins on quality by +3.5%**, but marginal on tokens. The proposer's keeper mutations: `max_chars_per_doc 3000→6000` (ensures full us-benefits policy fits), `ordering=slack_first`, `format=structured`.
+- **Recency = 1.0 for all strategies.** Sonnet 4.6 correctly prefers the recent Slack fact when it's in the context — the staleness story isn't a differentiator at this model class.
+- **Hardest question: q-004 (needs_both).** Meta-harness holds 0.95; full_context and RAG drop to 0.80. The explicit policy+recent-detail combination rewards curation that keeps BOTH sources.
+- **Hierarchical failure mode on q-002:** the router dropped the contradicting Slack thread, answer went stale (quality 0.80). Summarize-route-expand loses recency when summaries undersell time-sensitive threads.
+- **F1 is higher for RAG/hierarchical** (0.44) than full_context (0.40) — shorter retrieved chunks keep the answer closer to the terse golden.
+
+**When to pick what:**
+- Cost-sensitive, policy-heavy domain → **RAG** (1,957 avg tokens vs 18,583)
+- Max quality, 6-12 question budget to optimize → **meta_harness_optimized**
+- Default without engineering effort → **full_context** still fine at Sonnet 4.6 level
 
 ## Sources
 
