@@ -78,13 +78,31 @@ async def optimize_async(
     proposer_model: str,
     n_iter: int = 3,
     concurrency: int = 8,
+    dev_questions: list[dict] | None = None,
 ) -> tuple[CurationSpec, list[dict]]:
+    """Propose-mutate-score loop over CurationSpec.
+
+    dev_questions: optional held-out dev split. If provided, each accepted
+    (kept) candidate is also scored on the dev set so the history records
+    train/dev pairs — exposes overfit without changing the optimization
+    signal (we still optimize on train).
+    """
     spec = baseline_spec(docs)
     score, records = await eval_spec_async(
         spec, train_questions, docs, client, agent_model, judge_model, concurrency,
     )
-    history = [{"iter": 0, "score": round(score, 3), "spec": asdict(spec), "rationale": "baseline"}]
-    print(f"[optimizer] iter 0 baseline score={score:.3f}")
+    dev_score = None
+    if dev_questions:
+        dev_score, _ = await eval_spec_async(
+            spec, dev_questions, docs, client, agent_model, judge_model, concurrency,
+        )
+    history = [{
+        "iter": 0, "train_score": round(score, 3),
+        "dev_score": round(dev_score, 3) if dev_score is not None else None,
+        "spec": asdict(spec), "rationale": "baseline",
+    }]
+    dev_str = f" dev={dev_score:.3f}" if dev_score is not None else ""
+    print(f"[optimizer] iter 0 baseline train={score:.3f}{dev_str}")
     for i in range(1, n_iter + 1):
         candidate, rationale = await propose_async(
             client, spec, records, docs, proposer_model,
@@ -93,10 +111,18 @@ async def optimize_async(
             candidate, train_questions, docs, client, agent_model, judge_model, concurrency,
         )
         kept = cand_score > score
-        print(f"[optimizer] iter {i} proposed score={cand_score:.3f} "
+        # Dev-score every candidate (not just kept) so we see overfit candidates too.
+        cand_dev = None
+        if dev_questions:
+            cand_dev, _ = await eval_spec_async(
+                candidate, dev_questions, docs, client, agent_model, judge_model, concurrency,
+            )
+        dev_str = f" dev={cand_dev:.3f}" if cand_dev is not None else ""
+        print(f"[optimizer] iter {i} proposed train={cand_score:.3f}{dev_str} "
               f"({'KEEP' if kept else 'reject'}) — {rationale[:100]}")
         history.append({
-            "iter": i, "score": round(cand_score, 3),
+            "iter": i, "train_score": round(cand_score, 3),
+            "dev_score": round(cand_dev, 3) if cand_dev is not None else None,
             "spec": asdict(candidate), "rationale": rationale, "kept": kept,
         })
         if kept:

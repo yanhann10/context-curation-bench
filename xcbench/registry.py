@@ -2,7 +2,7 @@
 
 Usage:
 
-    from ccbench import strategy, grader
+    from xcbench import strategy, grader
 
     @strategy("my_strategy")
     async def my_strategy(ctx, question, corpus):

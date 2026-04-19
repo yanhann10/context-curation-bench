@@ -1,4 +1,4 @@
-"""Render a Pareto-frontier scatterplot from a ccbench summary.json.
+"""Render a Pareto-frontier scatterplot from a xcbench summary.json.
 
 Usage:
   python scripts/render_frontier.py output/summary_stage3.json assets/frontier_stage3.png

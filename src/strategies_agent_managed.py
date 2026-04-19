@@ -21,30 +21,44 @@ import time
 from anthropic import AsyncAnthropic
 
 
-SYSTEM_PROMPT = (
-    "You are a New Hire Onboarding assistant. You have two tools:\n"
-    "  - list_handbook() / get_handbook(doc_id): static GitLab Handbook (dated 2026-01-01)\n"
-    "  - list_slack() / get_slack(thread_id): recent People-Ops Slack threads (last 30 days, HR-validated)\n"
-    "\n"
-    "Workflow:\n"
-    "  1. Call list_handbook AND list_slack first to see titles and dates.\n"
-    "  2. Fetch 1-3 relevant docs per source with get_* calls.\n"
-    "  3. Answer. Prefer the recent Slack value over the stale handbook value when they disagree.\n"
-    "  4. Cite the source titles in square brackets in your final answer.\n"
-    "\n"
-    "Be concise: 1-3 sentences in the final answer."
+DEFAULT_DOMAIN_DESCRIPTION = (
+    "static reference documents (potentially older) and more-recent chat/discussion "
+    "threads (potentially authoritative updates)"
 )
+
+
+def build_system_prompt(domain_description: str | None = None) -> str:
+    """Build a domain-agnostic system prompt. Pass domain_description to specialize."""
+    domain = domain_description or DEFAULT_DOMAIN_DESCRIPTION
+    return (
+        "You answer the user's question using ONLY the corpus available through "
+        "your tools. The corpus has two sources: " + domain + ".\n\n"
+        "You have four tools:\n"
+        "  - list_handbook() / get_handbook(doc_id): the static/reference source\n"
+        "  - list_slack() / get_slack(thread_id): the recent/discussion source\n\n"
+        "Workflow:\n"
+        "  1. Call list_handbook AND list_slack first to see titles and timestamps.\n"
+        "  2. Fetch 1-3 relevant items per source via get_* calls.\n"
+        "  3. Answer. Prefer the recent source when timestamps indicate the static one is outdated.\n"
+        "  4. Cite source titles in square brackets. Be concise: 1-3 sentences.\n\n"
+        "Do NOT refuse based on domain assumptions — if the tools contain relevant material, "
+        "use it regardless of what the topic sounds like."
+    )
+
+
+# Backwards-compat alias (was hardcoded HR before; default is now domain-agnostic)
+SYSTEM_PROMPT = build_system_prompt()
 
 
 TOOLS = [
     {
         "name": "list_handbook",
-        "description": "List all GitLab Handbook documents by id, title, timestamp. No args.",
+        "description": "List all static/reference documents in the corpus (id, title, timestamp). No args.",
         "input_schema": {"type": "object", "properties": {}},
     },
     {
         "name": "get_handbook",
-        "description": "Fetch the full text of a handbook document by id.",
+        "description": "Fetch the full text of a static/reference document by id.",
         "input_schema": {
             "type": "object",
             "properties": {"doc_id": {"type": "string", "description": "doc id from list_handbook"}},
@@ -53,12 +67,12 @@ TOOLS = [
     },
     {
         "name": "list_slack",
-        "description": "List all recent People-Ops Slack threads by id, title, timestamp, channel, user.",
+        "description": "List all recent discussion threads (id, title, timestamp, channel, user).",
         "input_schema": {"type": "object", "properties": {}},
     },
     {
         "name": "get_slack",
-        "description": "Fetch the full text of a Slack thread by id.",
+        "description": "Fetch the full text of a discussion thread by id.",
         "input_schema": {
             "type": "object",
             "properties": {"thread_id": {"type": "string", "description": "thread id from list_slack"}},
@@ -115,8 +129,17 @@ async def agent_managed_runner(
     model: str,
     max_iter: int = 6,
     max_tokens: int = 1024,
+    domain_description: str | None = None,
 ) -> tuple[str, float, int, int]:
-    """Run the agent-managed tool-use loop. Returns same shape as answer_question_async."""
+    """Run the agent-managed tool-use loop. Returns same shape as answer_question_async.
+
+    domain_description: optional one-line corpus description. If None, uses a
+    neutral default ('static reference docs + recent chat threads'). Pass a
+    specific description when the domain matters (e.g., 'GitLab HR policy docs
+    and People-Ops Slack threads'). Stage 4 finding: hardcoding 'HR assistant'
+    here caused agent_managed to refuse q-polars-009 as 'not GitLab HR' (0.20).
+    """
+    system_prompt = build_system_prompt(domain_description)
     t0 = time.time()
     messages: list[dict] = [{"role": "user", "content": question}]
     in_tok_total = 0
@@ -128,7 +151,7 @@ async def agent_managed_runner(
             model=model,
             max_tokens=max_tokens,
             temperature=0.0,
-            system=[{"type": "text", "text": SYSTEM_PROMPT, "cache_control": {"type": "ephemeral"}}],
+            system=[{"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}],
             tools=TOOLS,
             messages=messages,
         )

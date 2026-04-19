@@ -9,14 +9,14 @@ from __future__ import annotations
 
 import pytest
 
-from ccbench import frontier
-from ccbench.spec import load_suite, validate
-from ccbench.registry import STRATEGIES, GRADERS, CORPUS_LOADERS
+from xcbench import frontier
+from xcbench.spec import load_suite, validate
+from xcbench.registry import STRATEGIES, GRADERS, CORPUS_LOADERS
 
 
 def test_registries_populated_by_builtins():
-    # importing ccbench.cli triggers registration of strategies + judge
-    import ccbench.cli  # noqa: F401
+    # importing xcbench.cli triggers registration of strategies + judge
+    import xcbench.cli  # noqa: F401
     for s in ("full_context", "rag_embedding", "hierarchical",
               "agent_managed", "ensemble", "meta_harness"):
         assert s in STRATEGIES, f"built-in strategy '{s}' not registered"
@@ -56,7 +56,7 @@ def test_frontier_render_has_axes_and_winners():
     "examples/toy/suite.yaml",
 ])
 def test_suite_parses_and_validates(suite_path):
-    import ccbench.cli  # noqa: F401  register built-ins
+    import xcbench.cli  # noqa: F401  register built-ins
     spec = load_suite(suite_path)
     errs = validate(spec)
     assert errs == [], f"{suite_path} did not validate: {errs}"

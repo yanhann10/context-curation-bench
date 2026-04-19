@@ -1,10 +1,10 @@
-"""One-shot: convert legacy data/ layout into ccbench JSONL format.
+"""One-shot: convert legacy data/ layout into xcbench JSONL format.
 
   data/handbook/*.md + data/slack_api.json  ->  data/corpus.jsonl
   data/test_questions_v2.json               ->  data/questions.jsonl
 
 Run:
-  python -m ccbench.convert_data
+  python -m xcbench.convert_data
 """
 from __future__ import annotations
 import json

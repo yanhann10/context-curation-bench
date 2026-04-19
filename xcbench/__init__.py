@@ -1,4 +1,4 @@
-"""ccbench — a barebones context-curation benchmark.
+"""xcbench — a barebones context-curation benchmark.
 
 Shape borrowed from letta-evals (YAML suite, JSONL data, decorator registry,
 runner CLI). Four things that are novel to this bench:

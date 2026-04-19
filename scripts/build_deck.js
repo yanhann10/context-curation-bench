@@ -1,4 +1,4 @@
-// ccbench 3-slide deck — warm-ink / coral aesthetic
+// xcbench 3-slide deck — warm-ink / coral aesthetic
 //
 // Regenerate after new benchmark runs:
 //   1. Update the Findings table in README.md.
@@ -8,7 +8,7 @@
 //        - Slide 3 headline: "64% the cost" ratio (= ensemble / full_ctx)
 //   3. Run:  npm i -g pptxgenjs  (once)
 //           NODE_PATH=$(npm root -g) node scripts/build_deck.js
-//      Writes assets/ccbench_3slides.pptx.
+//      Writes assets/xcbench_3slides.pptx.
 const pptxgen = require("pptxgenjs");
 
 const C = {
@@ -26,7 +26,7 @@ const F = { head: "Georgia", body: "Calibri" };
 
 let pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";  // 13.33 × 7.5
-pres.author = "ccbench";
+pres.author = "xcbench";
 pres.title  = "Context Curation Benchmark";
 
 const W = 13.333, H = 7.5;
@@ -52,7 +52,7 @@ function chrome(slide, { idx, total, dark = false }) {
   );
 
   // tiny project wordmark bottom-left
-  slide.addText("CCBENCH  ·  HR LIVING DOCS", {
+  slide.addText("XCBENCH  ·  HR LIVING DOCS", {
     x: 0.55, y: H - 0.5, w: 5, h: 0.3,
     fontFace: F.body, fontSize: 9, charSpacing: 3,
     color: dark ? C.rule : C.muted, margin: 0
@@ -456,5 +456,5 @@ function chrome(slide, { idx, total, dark = false }) {
 }
 
 const path = require("path");
-const outPath = path.join(__dirname, "..", "assets", "ccbench_3slides.pptx");
+const outPath = path.join(__dirname, "..", "assets", "xcbench_3slides.pptx");
 pres.writeFile({ fileName: outPath }).then(n => console.log("wrote", n));

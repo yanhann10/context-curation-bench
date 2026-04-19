@@ -1,10 +1,10 @@
-"""ccbench CLI.
+"""xcbench CLI.
 
-  python -m ccbench demo                                      # one-shot sample suite
-  python -m ccbench run suites/sample_data_hr_policy.yaml [--output output/matrix.csv]
-  python -m ccbench validate suites/sample_data_hr_policy.yaml
-  python -m ccbench list-strategies
-  python -m ccbench list-graders
+  python -m xcbench demo                                      # one-shot sample suite
+  python -m xcbench run suites/sample_data_hr_policy.yaml [--output output/matrix.csv]
+  python -m xcbench validate suites/sample_data_hr_policy.yaml
+  python -m xcbench list-strategies
+  python -m xcbench list-graders
 """
 from __future__ import annotations
 import argparse
@@ -142,7 +142,7 @@ def cmd_run(suite_path: str, output: str) -> int:
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(prog="ccbench")
+    ap = argparse.ArgumentParser(prog="xcbench")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     r = sub.add_parser("run")

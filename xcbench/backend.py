@@ -1,7 +1,7 @@
 """Backend selection: anthropic (direct API) or bedrock (AWS).
 
 Env:
-  CCBENCH_BACKEND = anthropic (default) | bedrock
+  XCBENCH_BACKEND = anthropic (default) | bedrock
   AWS_REGION      = us-east-1 (bedrock default)
 
 When backend=bedrock, logical model names in the YAML are rewritten to
@@ -25,9 +25,9 @@ def resolve_model(name: str, backend: str) -> str:
 
 
 def make_client():
-    backend = os.getenv("CCBENCH_BACKEND", "anthropic").lower()
-    max_retries = int(os.getenv("CCBENCH_MAX_RETRIES", "10"))
-    timeout = float(os.getenv("CCBENCH_TIMEOUT", "120"))
+    backend = os.getenv("XCBENCH_BACKEND", "anthropic").lower()
+    max_retries = int(os.getenv("XCBENCH_MAX_RETRIES", "10"))
+    timeout = float(os.getenv("XCBENCH_TIMEOUT", "120"))
     if backend == "bedrock":
         from anthropic import AsyncAnthropicBedrock
         region = os.getenv("AWS_REGION", "us-east-1")
@@ -37,7 +37,7 @@ def make_client():
     from anthropic import AsyncAnthropic
     key = os.getenv("ANTHROPIC_API_KEY")
     if not key:
-        raise RuntimeError("ANTHROPIC_API_KEY not set (or set CCBENCH_BACKEND=bedrock)")
+        raise RuntimeError("ANTHROPIC_API_KEY not set (or set XCBENCH_BACKEND=bedrock)")
     return AsyncAnthropic(
         api_key=key, max_retries=max_retries, timeout=timeout,
     ), backend

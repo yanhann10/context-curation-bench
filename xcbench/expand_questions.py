@@ -1,6 +1,6 @@
 """Expand questions JSONL to target size by LLM-generating new goldens.
 
-  python -m ccbench.expand_questions --target 100 --out data/questions.jsonl
+  python -m xcbench.expand_questions --target 100 --out data/questions.jsonl
 
 Strategy:
   - Read the existing corpus.jsonl (static + fresh docs).
@@ -12,7 +12,7 @@ Strategy:
     15 needs_both (slack_contradicts is the hardest + most interesting).
   - Dedupe by normalized question text. Merge with seeds, write out.
 
-Uses the same backend switch as `ccbench run`. Bedrock-friendly.
+Uses the same backend switch as `xcbench run`. Bedrock-friendly.
 """
 from __future__ import annotations
 import argparse

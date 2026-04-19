@@ -22,8 +22,8 @@ A minimal 3-doc / 2-question suite. Useful for:
 ## Run
 
 ```bash
-.venv/bin/python -m ccbench validate examples/toy/suite.yaml
-.venv/bin/python -m ccbench run      examples/toy/suite.yaml
+.venv/bin/python -m xcbench validate examples/toy/suite.yaml
+.venv/bin/python -m xcbench run      examples/toy/suite.yaml
 ```
 
 Artifacts land in `output/toy-coffee-budget_{matrix.csv,summary.json,frontier.json}`.

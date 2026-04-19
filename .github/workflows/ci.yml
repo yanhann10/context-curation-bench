@@ -26,8 +26,8 @@ jobs:
 
       - name: validate bundled suites
         run: |
-          python -m ccbench validate suites/sample_data_hr_policy.yaml
-          python -m ccbench validate examples/toy/suite.yaml
-          python -m ccbench list-strategies
-          python -m ccbench list-graders
-          python -m ccbench list-corpus-loaders
+          python -m xcbench validate suites/sample_data_hr_policy.yaml
+          python -m xcbench validate examples/toy/suite.yaml
+          python -m xcbench list-strategies
+          python -m xcbench list-graders
+          python -m xcbench list-corpus-loaders

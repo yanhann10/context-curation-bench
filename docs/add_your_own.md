@@ -1,6 +1,6 @@
 # Add your own strategy, corpus loader, or grader
 
-ccbench is a decorator-registry. Anything you decorate becomes usable as a
+xcbench is a decorator-registry. Anything you decorate becomes usable as a
 `name:` in a suite YAML. Three extension points, each ~10 lines.
 
 ## 1. Add a strategy
@@ -14,8 +14,8 @@ A strategy is an async function `(ctx, question, corpus, **params) -> str | dict
   want to report aggregated tokens across turns.
 
 ```python
-# ccbench/strategies/keyword_filter.py
-from ccbench.registry import strategy
+# xcbench/strategies/keyword_filter.py
+from xcbench.registry import strategy
 
 @strategy("keyword_filter")
 async def keyword_filter(ctx, question, corpus, terms=None):
@@ -26,8 +26,8 @@ async def keyword_filter(ctx, question, corpus, terms=None):
     return f"Context:\n{blob}\n\nQuestion: {question.input}\n\nAnswer concisely."
 ```
 
-Make sure it's imported somewhere the CLI loads (e.g. from `ccbench/strategies/__init__.py`
-or added to the `from . import strategies` line in `ccbench/cli.py`). Then:
+Make sure it's imported somewhere the CLI loads (e.g. from `xcbench/strategies/__init__.py`
+or added to the `from . import strategies` line in `xcbench/cli.py`). Then:
 
 ```yaml
 strategies:
@@ -42,10 +42,10 @@ loader is the reference. Use this if your docs live in a DB, a different file
 format, or a remote index.
 
 ```python
-# ccbench/corpus_loaders/markdown_dir.py
+# xcbench/corpus_loaders/markdown_dir.py
 from pathlib import Path
-from ccbench.registry import corpus_loader
-from ccbench.corpus import CorpusSpec, Doc
+from xcbench.registry import corpus_loader
+from xcbench.corpus import CorpusSpec, Doc
 
 @corpus_loader("markdown_dir")
 def load_markdown_dir(path: str) -> CorpusSpec:
@@ -76,8 +76,8 @@ key (0..1). The bundled `llm_judge` calls Claude; you can swap in SQuAD-style
 token F1, an ensemble judge, or a human-in-the-loop queue.
 
 ```python
-# ccbench/graders/contains_key_facts.py
-from ccbench.registry import grader
+# xcbench/graders/contains_key_facts.py
+from xcbench.registry import grader
 
 @grader("contains_key_facts")
 async def contains_key_facts(ctx, question, answer):
@@ -95,18 +95,18 @@ grader:
 ## 4. Verify
 
 ```bash
-python -m ccbench list-strategies
-python -m ccbench list-graders
-python -m ccbench list-corpus-loaders
-python -m ccbench validate path/to/your/suite.yaml
-python -m ccbench run      path/to/your/suite.yaml
+python -m xcbench list-strategies
+python -m xcbench list-graders
+python -m xcbench list-corpus-loaders
+python -m xcbench validate path/to/your/suite.yaml
+python -m xcbench run      path/to/your/suite.yaml
 ```
 
 ## Where existing extensions live
 
-- `ccbench/strategies/` — `full_context`, `rag_embedding`, `hierarchical`,
+- `xcbench/strategies/` — `full_context`, `rag_embedding`, `hierarchical`,
   `agent_managed`, `cascade`, `ensemble`, `meta_harness`.
-- `ccbench/corpus.py` — `jsonl` loader.
-- `ccbench/judge.py` — `llm_judge` grader.
+- `xcbench/corpus.py` — `jsonl` loader.
+- `xcbench/judge.py` — `llm_judge` grader.
 
 Read any of them as a template before writing your own.

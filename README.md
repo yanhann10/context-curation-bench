@@ -1,4 +1,4 @@
-# ccbench — Context Curation Benchmark
+# xcbench — Context Curation Benchmark
 
 [![ci](https://github.com/yanhann10/context-curation-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/yanhann10/context-curation-bench/actions/workflows/ci.yml)
 [![python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
@@ -42,14 +42,14 @@ _On latency:_ per-question wall clock ranges from **6.0s (hierarchical)** to **2
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 cp .env.example .env          # edit ANTHROPIC_API_KEY
-.venv/bin/python -m ccbench demo
+.venv/bin/python -m xcbench demo
 ```
 
 `demo` runs the bundled HR-policy suite end-to-end (7 strategies × 10 questions, LLM-judged, plus the meta-harness optimize loop). ~2–3 min, artifacts in `output/`.
 
 ### Illustrative output
 
-The block below mocks up the `ccbench demo` terminal output. Per-strategy numbers (quality, f1, tokens, cost, latency) are taken verbatim from the committed Stage 3 run (`output/summary_stage3.json`, produced by `legacy/main_stage3.py` on N=10 HR-policy questions); the surrounding wrapper lines (progress messages, frontier phrasing, exact column widths) are indicative, not a captured transcript. Run it yourself to see the real output.
+The block below mocks up the `xcbench demo` terminal output. Per-strategy numbers (quality, f1, tokens, cost, latency) are taken verbatim from the committed Stage 3 run (`output/summary_stage3.json`, produced by `legacy/main_stage3.py` on N=10 HR-policy questions); the surrounding wrapper lines (progress messages, frontier phrasing, exact column widths) are indicative, not a captured transcript. Run it yourself to see the real output.
 
 ```text
 suite=sample-data-hr-policy  corpus=21 docs  questions=10
@@ -82,36 +82,44 @@ Per-axis winners:
       total_tokens: hierarchical
 ```
 
-### Live run (screenshots)
-
-Drop your own terminal captures into `assets/` and they render here. Suggested shots:
+### Charts — 9-strategy × 10-question eval (Stage 4 Polars)
 
 | | |
 |---|---|
-| ![demo run — matrix progress](assets/demo_run.png) | ![demo run — frontier summary](assets/demo_frontier.png) |
-| `python -m ccbench demo` — 7×10 matrix executing | Final Pareto frontier + per-axis winners |
+| ![quality bar + cost-vs-tokens scatter](assets/demo_run.png) | ![per-question × strategy quality heatmap](assets/demo_frontier.png) |
+| Quality by strategy (left); cost vs prompt-tokens on log-x (right) | 9 strategies × 10 questions, RdYlGn — thick_harness lights up the one 0.10 cell |
 
-_Replace the two `assets/demo_*.png` files with real captures; the layout above will re-render. A good pair is one shot of the in-flight progress (optimize loop + matrix) and one of the `SUITE SUMMARY` block at the end._
+Both images are the real `chart_stage4.png` and `chart_stage4_heatmap.png` from `output/` after running on AWS Bedrock claude-sonnet-4-6. Full forensic analysis in [`eval/stage4_polars_results.md`](eval/stage4_polars_results.md).
+
+## Honest framing: what this is and isn't
+
+**This is not a faithful Meta-Harness port.** [Meta-Harness (Stanford IRIS Lab, 2025)](https://yoonholee.com/meta-harness/) evolves *arbitrary Python harness code* using execution traces and a Claude Code subprocess as the proposer. Faithful integration is 8–16 hrs of setup — out of scope here.
+
+What this project ships instead: a **deliberate simplification** of the propose → evaluate → keep-best loop, applied to a **typed `CurationSpec` dataclass** (which docs to include, ordering, format, max-chars, instructions) rather than free-form code. Same loop shape, safer to execute, fully interpretable. See [`notes/meta_harness_analysis.md`](notes/meta_harness_analysis.md) for the integration-difficulty breakdown.
+
+**What this project is good for:** a reproducible context-curation eval harness with a Pareto frontier report, 9 pre-built strategies (full, RAG, hierarchical, agent-managed, thin/thick harness axis, cascade, ensemble, meta-harness-optimized), and forensic evidence that *no single strategy wins across domains*.
+
+**What it's not:** a production benchmark at N≥200 with multi-seed bootstrap CIs. The N=10 cells report a direction, not a significance claim. See `eval/eval_runs.md` → "From Stage 3 to a real benchmark" for what's missing.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-  Y[suite.yaml] --> S[SuiteSpec]
-  S --> C[CorpusSpec<br/>@corpus_loader]
-  S --> D[Questions<br/>jsonl]
-  S --> M[Strategy matrix<br/>@strategy]
-  C --> R[runner.py<br/>async matrix]
+  Y["suite.yaml"] --> S["SuiteSpec"]
+  S --> C["CorpusSpec<br>@corpus_loader"]
+  S --> D["Questions<br>jsonl"]
+  S --> M["Strategy matrix<br>@strategy"]
+  C --> R["runner.py<br>async matrix"]
   D --> R
   M --> R
-  R --> G[grader<br/>@grader llm_judge]
-  G --> U[summary.json]
-  U --> F[frontier.json<br/>Pareto non-dominated]
-  U --> O[optimize loop<br/>propose → eval → keep]
+  R --> G["grader<br>@grader llm_judge"]
+  G --> U["summary.json"]
+  U --> F["frontier.json<br>Pareto non-dominated"]
+  U --> O["optimize loop<br>propose → eval → keep"]
   O -.-> M
 ```
 
-Four things ccbench does differently from a typical evals harness (shape borrowed from [letta-evals](https://github.com/letta-ai/letta-evals), novelties are ours):
+Four things xcbench does differently from a typical evals harness (shape borrowed from [letta-evals](https://github.com/letta-ai/letta-evals), novelties are ours):
 
 1. **`strategies:` is a list** — a suite IS a matrix, not a single `target:`.
 2. **`CorpusSpec` is first-class**, separate from dataset. Docs carry `kind` (static|fresh), `timestamp`, `freshness_priority`. Questions reference corpus slices by name.
@@ -120,10 +128,10 @@ Four things ccbench does differently from a typical evals harness (shape borrowe
 
 ## Add your own strategy
 
-ccbench is a decorator-registry. A new strategy / corpus loader / grader is ~10 lines:
+xcbench is a decorator-registry. A new strategy / corpus loader / grader is ~10 lines:
 
 ```python
-from ccbench.registry import strategy
+from xcbench.registry import strategy
 
 @strategy("keyword_filter")
 async def keyword_filter(ctx, question, corpus, terms=None):
@@ -137,8 +145,8 @@ Full walkthrough: [`docs/add_your_own.md`](docs/add_your_own.md). Minimal 3-doc 
 ## Repo layout
 
 ```
-ccbench/
-├── cli.py              # python -m ccbench demo|run|validate|list-strategies
+xcbench/
+├── cli.py              # python -m xcbench demo|run|validate|list-strategies
 ├── registry.py         # @strategy / @grader / @corpus_loader decorators
 ├── spec.py             # YAML → SuiteSpec
 ├── corpus.py           # CorpusSpec, Doc (kind/timestamp/freshness_priority)
@@ -155,7 +163,7 @@ data/corpus.jsonl, questions.jsonl
 
 Artifacts from any run: `output/{suite}_matrix.csv`, `{suite}_summary.json`, `{suite}_frontier.json`, `{suite}_optimizer_history.json`.
 
-**Legacy scripts** (`legacy/main_stage2.py`, `legacy/main_stage3.py`) hard-code strategies and print stage-specific tables — kept for reproducibility of the historical stage runs. `main.py` is now a shim that points at `python -m ccbench demo`; `ccbench` makes the same pipeline a declarative suite, and the existing `src/` code is reused as strategy adapters — no rewrite.
+**Legacy scripts** (`legacy/main_stage2.py`, `legacy/main_stage3.py`) hard-code strategies and print stage-specific tables — kept for reproducibility of the historical stage runs. `main.py` is now a shim that points at `python -m xcbench demo`; `xcbench` makes the same pipeline a declarative suite, and the existing `src/` code is reused as strategy adapters — no rewrite.
 
 ## Thesis
 
@@ -180,7 +188,7 @@ What we can legitimately claim: *"inspired by Meta-Harness; applies the propose/
 
 ```
 .
-├── main.py                  # redirect shim → `python -m ccbench demo`
+├── main.py                  # redirect shim → `python -m xcbench demo`
 ├── src/
 │   ├── data_loader.py       # load handbook/*.md + slack.json + test_questions.json
 │   ├── strategies.py        # full_context + meta_harness_optimized + CurationSpec
