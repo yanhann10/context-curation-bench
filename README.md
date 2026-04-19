@@ -11,16 +11,18 @@ A **contradiction-aware**, YAML-driven benchmark for 7 LLM context-curation stra
 
 ![Pareto frontier — Stage 3, 7 strategies on N=10 HR-policy questions](assets/frontier_stage3.png)
 
-### Key numbers (N=10, Claude Sonnet 4.6)
+### Key numbers
 
-| strategy | quality | cost / 10q | vs full-context | notes |
-|---|---:|---:|---|---|
-| **oracle router** (theoretical) | **1.000** | **$0.138** | **4.9× cheaper** | pick cheapest max-quality per Q; `hierarchical` wins 9/10 |
-| **ensemble** (deployed) | **0.995** | **$0.428** | **1.6× cheaper** | parallel `hierarchical` + `agent_managed`, judge picks |
-| agent_managed | 0.990 | $0.320 | 2.1× cheaper | best single strategy for quality/cost |
-| hierarchical | 0.910 | **$0.118** | 5.7× cheaper | cheapest; 1 catastrophic miss on `needs_both` |
-| full_context (baseline) | 0.995 | $0.670 | — | stuff everything; dominated by ensemble |
-| cascade_router | 0.925 | $0.904 | 1.3× **more** | self-verifier fails — over-confident on wrong tier-1 |
+Cost is reported in multiples of the cheapest strategy (`hierarchical`). Model and N are [configurable ↓](#reproducing-these-numbers).
+
+| strategy | quality | cost / 10q | cost (× hier) | notes |
+|---|---:|---:|---:|---|
+| **oracle router** (theoretical) | **1.000** | **$0.138** | **1.2×** | pick cheapest max-quality per Q; `hierarchical` wins 9/10 |
+| **ensemble** (deployed) | **0.995** | **$0.428** | **3.6×** | parallel `hierarchical` + `agent_managed`, judge picks |
+| agent_managed | 0.990 | $0.320 | 2.7× | best single strategy for quality/cost |
+| hierarchical | 0.910 | **$0.118** | **1.0×** (baseline) | cheapest; 1 catastrophic miss on `needs_both` |
+| full_context | 0.995 | $0.670 | 5.7× | stuff everything; dominated by ensemble |
+| cascade_router | 0.925 | $0.904 | 7.7× | self-verifier fails — over-confident on wrong tier-1 |
 
 Full 7-strategy table + per-category failure forensics: [Findings ↓](#findings-stage-3-7-strategies-claude-sonnet-46-throughout). Chart regeneration: `python scripts/render_frontier.py output/summary_stage3.json assets/frontier_stage3.png`.
 
@@ -301,6 +303,22 @@ Aggregate quality hides where each strategy actually fails. Splitting by questio
 - **Theoretical ceiling**: oracle router ($0.138, 1.000) — implementable with a learned router or cross-model verifier
 
 Recency-handling: all strategies correctly prefer the recent Slack value on `slack_contradicts` questions. Recency is table stakes at Sonnet 4.6 and was dropped as a separate metric.
+
+## Reproducing these numbers
+
+Every number in the Key numbers table and the Findings block was produced on **Claude Sonnet 4.6** answering, **Claude Opus 4.7** judging, **N=10** HR-policy questions. None of that is hardcoded — it's configuration.
+
+```yaml
+# suites/sample_data_hr_policy.yaml
+models:
+  agent: claude-sonnet-4-6     # answerer — the dominant cost
+  judge: claude-opus-4-7       # LLM-as-judge grader
+  proposer: claude-opus-4-7    # meta-harness spec mutator
+```
+
+Swap in `claude-haiku-4-5` for the agent to push costs down ~10×; swap to `claude-opus-4-7` to push quality up at higher cost. `N` is the length of `data/questions.jsonl` — add rows, add questions. The runner is model-agnostic as long as the Anthropic SDK exposes the model id.
+
+Expected qualitative shift when you change agents: **strategy ordering is likely to be more stable than absolute cost** — if `ensemble ≈ full_context` at Sonnet 4.6, that relationship probably holds at Opus too, while both costs scale roughly with the per-token price. The one exception is `cascade_router`: its quality depends on the self-verifier being well-calibrated, which is model-specific.
 
 ## Sources
 
