@@ -24,6 +24,8 @@ A **contradiction-aware**, YAML-driven benchmark for 7 LLM context-curation stra
 
 Full 7-strategy table + per-category failure forensics: [Findings ↓](#findings-stage-3-7-strategies-claude-sonnet-46-throughout). Chart regeneration: `python scripts/render_frontier.py output/summary_stage3.json assets/frontier_stage3.png`.
 
+_On latency:_ per-question wall clock ranges from **6.0s (hierarchical)** to **23.5s (cascade_router)**. The single-shot strategies cluster at 6–9s, which is dominated by Claude Sonnet 4.6 answer-generation (~4–6s for a ~300-token response); retrieval/ranking itself — FAISS lookup in RAG, catalog summarisation in hierarchical — is sub-second on this corpus. The 11.3s for ensemble is two concurrent Sonnet calls + a judge pick. Cascade's 23.5s is by construction (sequential tiers 1→2→3 with verifier calls between). In other words: _nothing here is RAG-slow; the LLM is._
+
 ## Quick start
 
 ```bash
@@ -35,7 +37,9 @@ cp .env.example .env          # edit ANTHROPIC_API_KEY
 
 `demo` runs the bundled HR-policy suite end-to-end (7 strategies × 10 questions, LLM-judged, plus the meta-harness optimize loop). ~2–3 min, artifacts in `output/`.
 
-### What `demo` prints (abridged, real numbers from `output/summary_stage3.json`)
+### Illustrative output
+
+The block below mocks up the `ccbench demo` terminal output. Per-strategy numbers (quality, f1, tokens, cost, latency) are taken verbatim from the committed Stage 3 run (`output/summary_stage3.json`, produced by `legacy/main_stage3.py` on N=10 HR-policy questions); the surrounding wrapper lines (progress messages, frontier phrasing, exact column widths) are indicative, not a captured transcript. Run it yourself to see the real output.
 
 ```text
 suite=sample-data-hr-policy  corpus=21 docs  questions=10
@@ -48,14 +52,14 @@ strategies=['full_context','rag_embedding','hierarchical','agent_managed','casca
 ========================================================================
 SUITE SUMMARY — sample-data-hr-policy
 ========================================================================
-strategy                 quality    f1   tokens  cost_usd  latency
-full_context               0.995 0.534   20231     0.670     6.59
-rag_embedding              0.925 0.455    2459     0.141     6.75
-hierarchical               0.910 0.491    1775     0.118     6.05
-agent_managed              0.990 0.524    8142     0.320     8.95
-cascade_router             0.925 0.546   24920     0.904    23.54
-ensemble                   0.995 0.527   10219     0.428    11.34
-meta_harness_optimized     0.890 0.467   12154     0.431     7.46
+strategy                 quality    f1   tokens  cost_usd  latency_s
+full_context               0.995 0.534   20231     0.670       6.59
+rag_embedding              0.925 0.455    2459     0.141       6.75
+hierarchical               0.910 0.491    1775     0.118       6.05
+agent_managed              0.990 0.524    8142     0.320       8.95
+cascade_router             0.925 0.546   24920     0.904      23.54
+ensemble                   0.995 0.527   10219     0.428      11.34
+meta_harness_optimized     0.890 0.467   12154     0.431       7.46
 
 Pareto frontier over ['quality', 'cost_usd', 'total_tokens']:
   * hierarchical       <-- non-dominated (cheapest, fewest tokens)
