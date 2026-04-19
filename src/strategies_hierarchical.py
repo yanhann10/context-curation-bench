@@ -87,9 +87,8 @@ def hierarchical_prompt(question: str, selected: list[dict]) -> str:
         parts.append(f"{header}\n{d['content'][:5000]}")
     body = "\n\n".join(parts)
     return (
-        "You are a helpful New Hire Onboarding assistant. "
         "Answer using ONLY the sources below. Prefer recent when they disagree. "
-        "Cite source titles.\n\n"
+        "Cite source titles. Do NOT refuse based on domain assumptions.\n\n"
         f"=== SELECTED SOURCES ({len(selected)}) ===\n{body}\n\n"
         f"=== QUESTION ===\n{question}"
     )

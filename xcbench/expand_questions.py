@@ -54,12 +54,13 @@ CATEGORY_DEFS = {
 }
 
 GEN_SYSTEM = (
-    "You are writing evaluation questions for a GitLab New Hire Onboarding "
-    "agent. Given a corpus of static handbook docs and fresh Slack threads, "
-    "produce realistic new-hire questions with golden answers. "
+    "You are writing evaluation questions over a provided corpus of static "
+    "reference documents and recent discussion threads. Produce realistic "
+    "end-user questions with golden answers. "
     "Questions must be answerable from the docs shown. "
-    "Goldens must be concrete (dollar amounts, policy durations, specific "
-    "process steps). Avoid vague phrasings. Do NOT repeat any seed question. "
+    "Goldens must be concrete (specific values, durations, named steps, "
+    "etc., drawn from the corpus). Avoid vague phrasings. Do NOT repeat "
+    "any seed question. "
     "Return STRICT JSON only, an array of objects with shape: "
     '{"question": str, "golden_answer": str, '
     '"key_facts": [str, str, ...], "relevant_source_ids": [str, ...]}'

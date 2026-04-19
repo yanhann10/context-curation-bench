@@ -71,9 +71,8 @@ def render_chunks(chunks: list[Chunk]) -> str:
 
 def rag_prompt(question: str, retrieved: list[Chunk]) -> str:
     return (
-        "You are a helpful New Hire Onboarding assistant. "
         "Answer using ONLY the sources below. If sources disagree, prefer the most recent. "
-        "Cite source titles in square brackets.\n\n"
+        "Cite source titles in square brackets. Do NOT refuse based on domain assumptions.\n\n"
         f"=== RETRIEVED SOURCES ({len(retrieved)}) ===\n"
         f"{render_chunks(retrieved)}\n\n"
         f"=== QUESTION ===\n{question}"

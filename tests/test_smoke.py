@@ -62,3 +62,41 @@ def test_suite_parses_and_validates(suite_path):
     assert errs == [], f"{suite_path} did not validate: {errs}"
     assert spec.strategies, "suite should declare at least one strategy"
     assert spec.frontier.axes and spec.frontier.direction
+
+
+def test_no_hardcoded_domain_persona_in_prompts():
+    """Guard against the Stage-4 portability bug.
+
+    Strategy and question-gen prompts must not hardcode the HR/GitLab
+    persona. Banned tokens are the ones that caused agent_managed to
+    refuse q-polars-009 ("not GitLab HR"). If you add a new domain-specific
+    prompt, take a `domain_description` parameter instead.
+    """
+    import pathlib
+    banned = ["New Hire Onboarding", "GitLab team", "GitLab New Hire"]
+    files = [
+        "src/strategies.py",
+        "src/strategies_hierarchical.py",
+        "src/strategies_rag.py",
+        "src/strategies_agent_managed.py",
+        "src/strategies_harness.py",
+        "src/strategies_cascade.py",
+        "src/strategies_ensemble.py",
+        "src/harness_optimizer.py",
+        "src/harness_optimizer_async.py",
+        "xcbench/expand_questions.py",
+    ]
+    root = pathlib.Path(__file__).parent.parent
+    offenders = []
+    for rel in files:
+        p = root / rel
+        if not p.exists():
+            continue
+        text = p.read_text(encoding="utf-8")
+        for b in banned:
+            if b in text:
+                offenders.append(f"{rel}: contains banned token {b!r}")
+    assert not offenders, (
+        "Hardcoded domain persona found — strategy/gen prompts must stay "
+        "domain-agnostic:\n  " + "\n  ".join(offenders)
+    )

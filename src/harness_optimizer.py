@@ -8,11 +8,11 @@ from __future__ import annotations
 from .strategies import CurationSpec
 
 
-PROPOSER_SYSTEM = """You are optimizing a New Hire Onboarding Agent's context curation strategy.
+PROPOSER_SYSTEM = """You are optimizing an agent's context curation strategy.
 
 You are given:
   - the current CurationSpec (which documents to include, in what order, how to format)
-  - the full list of available document ids (static handbook + slack threads)
+  - the full list of available document ids (static reference docs + recent discussion threads)
   - failure traces from a train set (questions the current spec got wrong, with the golden answer)
 
 Your job: propose ONE mutation to the CurationSpec that plausibly addresses the failures. Mutations you can make:
@@ -43,7 +43,7 @@ def baseline_spec(docs: list[dict]) -> CurationSpec:
         ordering="static_first",
         doc_format="titled",
         prepend_instructions=(
-            "You are a helpful New Hire Onboarding assistant. "
+            "Answer using ONLY the provided sources. "
             "Prefer the most recent source when sources disagree. Cite source titles."
         ),
         max_chars_per_doc=3000,

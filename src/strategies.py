@@ -76,9 +76,9 @@ def full_context(question: str, docs: list[dict]) -> str:
     parts = [_format_doc(d, "titled", max_chars=10_000) for d in ordered]
     body = "\n\n".join(parts)
     return (
-        "You are a helpful New Hire Onboarding assistant for GitLab team members. "
         "Answer the user's question using ONLY the sources below. If the sources disagree, "
-        "prefer the most recent. Cite source titles in square brackets.\n\n"
+        "prefer the most recent. Cite source titles in square brackets. "
+        "Do NOT refuse based on domain assumptions — use the sources regardless of what the topic sounds like.\n\n"
         f"=== SOURCES ===\n{body}\n\n=== QUESTION ===\n{question}"
     )
 
@@ -107,7 +107,7 @@ def meta_harness_optimized(question: str, docs: list[dict], spec: CurationSpec) 
 
     instructions = (
         spec.prepend_instructions
-        or "You are a helpful New Hire Onboarding assistant. Prefer the most recent info when sources disagree."
+        or "Answer using ONLY the provided sources. Prefer the most recent info when sources disagree. Do NOT refuse based on domain assumptions."
     )
     return (
         f"{instructions}\n\n"
