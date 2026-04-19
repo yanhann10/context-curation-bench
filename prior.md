@@ -93,6 +93,41 @@ Full 7-way ensemble would cost ~$2.9/10q (sum of all strategies) for the same ce
 
 **Only cheaper ensemble worth trying:** swap the judge-picker from Sonnet to Haiku. Expected cost: ~$0.35/10q, quality should hold. Blocked only on writing a small helper.
 
+### 3.4.1 How ensemble is optimization — the combination it actually is
+
+The Stage 3 ensemble isn't a generic "run N strategies and vote." It's a **specific combination of two qualitatively different curation regimes picked because their failure modes are disjoint:**
+
+| component | what it is | what it's good at | what it fails on |
+|---|---|---|---|
+| `hierarchical` (= optimized curator) | map-summarize-route-expand: LLM chooses 2–5 docs based on titles + summaries | cheap, fast, right 91% of the time on this corpus | routes to wrong doc when the question's keywords don't match the relevant doc's summary (q-v2-010 military leave) |
+| `agent_managed` (= self-managed curator) | tool-use loop: model calls `list_*` + `get_*` itself, runs up to 6 turns | 99% quality because the model sees titles *and* reasons about which to fetch, with retries | slower, ~5× the tokens of hierarchical; can still miss nuance on needs_both questions |
+| **judge-LLM picker** | sees both answers + the question, picks A or B on correctness + specificity | selects the right answer when one of the two is wrong, catches staleness/hedging mismatches | tied on quality-ceiling — if both are wrong, picker can't fix it |
+
+**Why it beats "simple agent" (agent_managed alone) by only 0.5pp while adding 34% cost:**
+- agent_managed alone covers ~9/10 of the failure space already. The marginal question where hier catches something agent misses is rare.
+- The judge-pick is essentially **insurance**, not a quality lift. At this N it's within noise; at higher N with harder questions the gap should widen.
+
+**Why it beats "simple context" (full_context) at 64% the cost with the same quality:**
+- full_context pays for every doc on every question — the model has to do its own in-context retrieval, and those tokens are charged.
+- Ensemble pays for (cheap curator's fetch of 2–5 docs) + (smart curator's tool-use of 2–3 more) + (tiny judge-pick call). Total tokens ~10k vs full_context's 20k.
+- Same quality ceiling because, between hier and agent_managed, one of them almost always has the right answer.
+
+**Framing: ensemble is a learned(-in-context) *selection function* over two curators.**
+- Hierarchical answers a "short-horizon retrieval" view. Agent-managed answers a "long-horizon reasoning" view. They're complementary by design.
+- The judge-LLM is a single-shot classifier that reads both answers and picks. It's NOT running its own retrieval — it's arbitrating between two pre-computed candidates.
+- This is exactly what a hand-crafted router would do if you didn't have training data — ensemble *is* the training-data-free router for this pair.
+
+**What ensemble is NOT:**
+- Not self-consistency (not running one strategy N times).
+- Not majority voting (only 2 votes; judge-LLM breaks ties, not majority).
+- Not a quality boost over the SOTA single strategy (agent_managed) — it's a *variance reduction* over the SOTA single strategy.
+
+**Why cascade failed and ensemble worked despite using the SAME two strategies under the hood:**
+- Cascade asks the model "are you confident?" about its own answer — single-view, self-referential, notoriously miscalibrated.
+- Ensemble asks the model "A or B?" about two independently-produced answers — two-view, comparative, much better calibrated. Judge-pick is the same architectural trick that makes RLHF-style reward models work: comparing beats scoring-in-isolation.
+
+**The implication for the meta-meta-harness direction:** the optimization target isn't just "pick a strategy," it's **"pick a PAIR of complementary strategies + a selector."** The search space is (strategy_A × strategy_B × selector_model × selector_prompt). At N=10 the Pareto frontier is thin; at N=100+ it becomes a real search problem.
+
 ### 3.5 What a router demo would need
 
 - ≥50 labeled questions with per-strategy quality scores (for training a real router)
