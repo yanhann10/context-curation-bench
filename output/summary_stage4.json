@@ -1,0 +1,101 @@
+{
+  "full_context": {
+    "n": 10,
+    "quality_mean": 0.995,
+    "f1_mean": 0.37,
+    "exact_match_mean": 0.0,
+    "key_fact_recall_mean": 0.103,
+    "latency_s_mean": 6.953,
+    "prompt_tokens_mean": 15715,
+    "completion_tokens_mean": 375,
+    "cost_usd_total": 0.55947
+  },
+  "meta_harness_optimized": {
+    "n": 10,
+    "quality_mean": 1.0,
+    "f1_mean": 0.361,
+    "exact_match_mean": 0.0,
+    "key_fact_recall_mean": 0.07,
+    "latency_s_mean": 8.713,
+    "prompt_tokens_mean": 14914,
+    "completion_tokens_mean": 405,
+    "cost_usd_total": 0.54106
+  },
+  "rag_embedding": {
+    "n": 10,
+    "quality_mean": 1.0,
+    "f1_mean": 0.365,
+    "exact_match_mean": 0.0,
+    "key_fact_recall_mean": 0.045,
+    "latency_s_mean": 10.011,
+    "prompt_tokens_mean": 2377,
+    "completion_tokens_mean": 405,
+    "cost_usd_total": 0.16488
+  },
+  "hierarchical": {
+    "n": 10,
+    "quality_mean": 0.995,
+    "f1_mean": 0.385,
+    "exact_match_mean": 0.0,
+    "key_fact_recall_mean": 0.07,
+    "latency_s_mean": 11.403,
+    "prompt_tokens_mean": 1705,
+    "completion_tokens_mean": 366,
+    "cost_usd_total": 0.13797
+  },
+  "agent_managed": {
+    "n": 10,
+    "quality_mean": 0.905,
+    "f1_mean": 0.427,
+    "exact_match_mean": 0.0,
+    "key_fact_recall_mean": 0.02,
+    "latency_s_mean": 17.835,
+    "prompt_tokens_mean": 6190,
+    "completion_tokens_mean": 500,
+    "cost_usd_total": 0.29015
+  },
+  "cascade_router": {
+    "n": 10,
+    "quality_mean": 1.0,
+    "f1_mean": 0.397,
+    "exact_match_mean": 0.0,
+    "key_fact_recall_mean": 0.07,
+    "latency_s_mean": 22.859,
+    "prompt_tokens_mean": 5544,
+    "completion_tokens_mean": 623,
+    "cost_usd_total": 0.29073
+  },
+  "ensemble": {
+    "n": 10,
+    "quality_mean": 1.0,
+    "f1_mean": 0.391,
+    "exact_match_mean": 0.0,
+    "key_fact_recall_mean": 0.045,
+    "latency_s_mean": 35.518,
+    "prompt_tokens_mean": 8660,
+    "completion_tokens_mean": 902,
+    "cost_usd_total": 0.42731
+  },
+  "thin_harness": {
+    "n": 10,
+    "quality_mean": 0.955,
+    "f1_mean": 0.415,
+    "exact_match_mean": 0.0,
+    "key_fact_recall_mean": 0.0,
+    "latency_s_mean": 20.526,
+    "prompt_tokens_mean": 6483,
+    "completion_tokens_mean": 535,
+    "cost_usd_total": 0.30528
+  },
+  "thick_harness": {
+    "n": 10,
+    "quality_mean": 0.81,
+    "f1_mean": 0.299,
+    "exact_match_mean": 0.0,
+    "key_fact_recall_mean": 0.05,
+    "latency_s_mean": 45.449,
+    "prompt_tokens_mean": 14116,
+    "completion_tokens_mean": 2108,
+    "cost_usd_total": 0.77231
+  }
+}
