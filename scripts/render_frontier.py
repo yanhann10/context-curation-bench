@@ -51,6 +51,9 @@ def render(summary_path: str, out_path: str,
     fig, ax = plt.subplots(figsize=(8, 5.2), dpi=144)
     fig.patch.set_facecolor("#F4EFE6")
     ax.set_facecolor("#F4EFE6")
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.tick_params(length=0)
 
     for name, qi, ci, dom in zip(names, q, c, dominated):
         color = "#6E6557" if dom else "#C25B3F"
@@ -79,8 +82,8 @@ def render(summary_path: str, out_path: str,
 
     ax.set_xlabel("cost per 10 questions (USD)", fontsize=11)
     ax.set_ylabel("quality (LLM-judge, 0–1)", fontsize=11)
-    ax.set_title("ccbench Stage 3 — Pareto frontier (7 strategies, N=10)",
-                 fontsize=12, fontweight="bold", pad=12)
+    ax.set_title("context curation bench",
+                 fontsize=13, fontweight="bold", pad=12)
     ax.grid(True, alpha=0.25, linestyle="--", zorder=1)
     ax.set_xlim(0, max(c) * 1.15)
     ax.set_ylim(min(q) - 0.02, 1.015)
