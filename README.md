@@ -7,9 +7,9 @@
 
 A **contradiction-aware**, YAML-driven benchmark for 7 LLM context-curation strategies — full-context, RAG, hierarchical, agent-managed, cascade-router, ensemble, and meta-harness-optimized. The corpus is intentionally split into a **stale portal** (GitLab Handbook, timestamped 2026-01-01) and a **fresh chat layer** (HR-validated Slack threads); 40% of eval questions require overriding the stale value with the newer Slack value. Results are a **Pareto frontier** over (quality, cost, tokens) — not a single winner.
 
-> **Headline** — an **oracle router** over the 7 strategies hits **1.000 quality at $0.138 per 10 questions**: ~**5× cheaper than stuffing the full context** ($0.670) at equal quality. Best deployed strategy is **ensemble** (0.995 quality at 64% of full-context cost). Full breakdown and failure modes: [Findings ↓](#findings).
+> **Headline** — an **oracle router** over the 7 strategies hits **1.000 quality at ~5× cheaper than stuffing the full context** at equal quality. Best deployed strategy is **ensemble** (0.995 quality at 64% of full-context cost). Full breakdown and failure modes: [Findings ↓](#findings). Setup and model/N config: [Reproducing these numbers ↓](#reproducing-these-numbers).
 
-![Pareto frontier — Stage 3, 7 strategies on N=10 HR-policy questions](assets/frontier_stage3.png)
+![Pareto frontier — 7 context-curation strategies](assets/frontier_stage3.png)
 
 ### Key numbers
 
@@ -34,7 +34,7 @@ Cost is reported in multiples of the cheapest strategy (`hierarchical`). Model a
 
 Full 7-strategy table + per-category failure forensics: [Findings ↓](#findings). Chart regeneration: `python scripts/render_frontier.py output/summary_stage3.json assets/frontier_stage3.png`.
 
-_On latency:_ per-question wall clock ranges from **6.0s (hierarchical)** to **23.5s (cascade_router)**. The single-shot strategies cluster at 6–9s, which is dominated by Claude Sonnet 4.6 answer-generation (~4–6s for a ~300-token response); retrieval/ranking itself — FAISS lookup in RAG, catalog summarisation in hierarchical — is sub-second on this corpus. The 11.3s for ensemble is two concurrent Sonnet calls + a judge pick. Cascade's 23.5s is by construction (sequential tiers 1→2→3 with verifier calls between). In other words: _nothing here is RAG-slow; the LLM is._
+_On latency:_ per-question wall clock ranges from **6.0s (hierarchical)** to **23.5s (cascade_router)**. The single-shot strategies cluster at 6–9s, which is dominated by answer-generation (~4–6s for a ~300-token response); retrieval/ranking itself — FAISS lookup in RAG, catalog summarisation in hierarchical — is sub-second on this corpus. The 11.3s for ensemble is two concurrent answerer calls + a judge pick. Cascade's 23.5s is by construction (sequential tiers 1→2→3 with verifier calls between). In other words: _nothing here is RAG-slow; the LLM is._
 
 ## Quick start
 
