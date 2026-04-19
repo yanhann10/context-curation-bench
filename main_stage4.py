@@ -36,6 +36,7 @@ from src.strategies_hierarchical import hierarchical_build_prompt_fn
 from src.strategies_agent_managed import agent_managed_runner
 from src.strategies_cascade import make_cascade_runner
 from src.strategies_ensemble import make_ensemble_runner
+from src.strategies_harness import thin_harness_runner, thick_harness_runner
 
 
 ROOT = Path(__file__).resolve().parent
@@ -124,11 +125,22 @@ async def amain(args) -> int:
         agent_model, judge_model, concurrency=2,
     ))
 
-    print("[run] phase 3/3 — ensemble")
+    print("[run] phase 3/4 — ensemble")
     all_results.extend(await run_agent_strategy_async(
         client, "ensemble", ensemble_runner, questions, docs,
         agent_model, judge_model, concurrency=2,
     ))
+
+    # Harness axis: thin / thick. Medium = agent_managed (already run in phase 1).
+    print("[run] phase 4/4 — harness axis (thin + thick)")
+    harness_results = await asyncio.gather(
+        run_agent_strategy_async(client, "thin_harness", thin_harness_runner,
+                                 questions, docs, agent_model, judge_model, concurrency=3),
+        run_agent_strategy_async(client, "thick_harness", thick_harness_runner,
+                                 questions, docs, agent_model, judge_model, concurrency=2),
+    )
+    for rs in harness_results:
+        all_results.extend(rs)
 
     log_results(all_results, OUTPUT_DIR / "results_stage4.csv")
     summary = summarize(all_results)
@@ -144,9 +156,10 @@ async def amain(args) -> int:
         for k, v in s.items():
             print(f"    {k:>22s}: {v}")
 
-    # per-question grid
+    # per-question grid — harness axis placed adjacent to agent_managed (= medium harness)
     strat_order = ["full_context", "meta_harness_optimized", "rag_embedding",
-                   "hierarchical", "agent_managed", "cascade_router", "ensemble"]
+                   "hierarchical", "thin_harness", "agent_managed", "thick_harness",
+                   "cascade_router", "ensemble"]
     print("\nPer-question × strategy quality grid:")
     print(f"  {'qid':<12s} {'category':<20s}" + " ".join(f"{s[:11]:>11s}" for s in strat_order))
     by_q: dict[str, dict] = {}
