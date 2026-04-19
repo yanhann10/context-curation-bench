@@ -27,6 +27,9 @@ PRICE = {
     # long-context fallbacks if env uses the [1m] variants
     "claude-sonnet-4-6[1m]": (3.00, 15.00),
     "claude-opus-4-7[1m]": (15.00, 75.00),
+    # Bedrock IDs — same token prices as Anthropic direct API
+    "us.anthropic.claude-sonnet-4-5-20250929-v1:0": (3.00, 15.00),
+    "us.anthropic.claude-haiku-4-5-20251001-v1:0": (1.00, 5.00),
 }
 
 

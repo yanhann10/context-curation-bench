@@ -8,7 +8,7 @@ Novelty vs letta-evals:
 
 YAML shape:
 
-    name: hr-living-docs
+    name: sample-data-hr-policy
     corpus:
       loader: jsonl
       path: data/corpus.jsonl
