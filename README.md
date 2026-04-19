@@ -1,8 +1,28 @@
 # ccbench — Context Curation Benchmark
 
+[![ci](https://github.com/yanhann10/context-curation-benchmark/actions/workflows/ci.yml/badge.svg)](https://github.com/yanhann10/context-curation-benchmark/actions/workflows/ci.yml)
+[![python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![claude](https://img.shields.io/badge/LLM-Claude%20Sonnet%204.6-D97757)](https://www.anthropic.com/)
+
 A **contradiction-aware**, YAML-driven benchmark for 7 LLM context-curation strategies — full-context, RAG, hierarchical, agent-managed, cascade-router, ensemble, and meta-harness-optimized. The corpus is intentionally split into a **stale portal** (GitLab Handbook, timestamped 2026-01-01) and a **fresh chat layer** (HR-validated Slack threads); 40% of eval questions require overriding the stale value with the newer Slack value. Results are a **Pareto frontier** over (quality, cost, tokens) — not a single winner.
 
 > **Headline** (N=10 HR-policy questions, Claude Sonnet 4.6) — an **oracle router** over the 7 strategies hits **1.000 quality at $0.138/10q**: ~**5× cheaper than stuffing the full context** ($0.670) at equal quality. Best deployed strategy is **ensemble** (0.995 quality at 64% of full-context cost). Full breakdown and failure modes: [Findings ↓](#findings-stage-3-7-strategies-claude-sonnet-46-throughout).
+
+![Pareto frontier — Stage 3, 7 strategies on N=10 HR-policy questions](assets/frontier_stage3.png)
+
+### Key numbers (N=10, Claude Sonnet 4.6)
+
+| strategy | quality | cost / 10q | vs full-context | notes |
+|---|---:|---:|---|---|
+| **oracle router** (theoretical) | **1.000** | **$0.138** | **4.9× cheaper** | pick cheapest max-quality per Q; `hierarchical` wins 9/10 |
+| **ensemble** (deployed) | **0.995** | **$0.428** | **1.6× cheaper** | parallel `hierarchical` + `agent_managed`, judge picks |
+| agent_managed | 0.990 | $0.320 | 2.1× cheaper | best single strategy for quality/cost |
+| hierarchical | 0.910 | **$0.118** | 5.7× cheaper | cheapest; 1 catastrophic miss on `needs_both` |
+| full_context (baseline) | 0.995 | $0.670 | — | stuff everything; dominated by ensemble |
+| cascade_router | 0.925 | $0.904 | 1.3× **more** | self-verifier fails — over-confident on wrong tier-1 |
+
+Full 7-strategy table + per-category failure forensics: [Findings ↓](#findings-stage-3-7-strategies-claude-sonnet-46-throughout). Chart regeneration: `python scripts/render_frontier.py output/summary_stage3.json assets/frontier_stage3.png`.
 
 ## Quick start
 
@@ -47,6 +67,17 @@ Per-axis winners:
           cost_usd: hierarchical
       total_tokens: hierarchical
 ```
+
+### Live run (screenshots)
+
+Drop your own terminal captures into `assets/` and they render here. Suggested shots:
+
+| | |
+|---|---|
+| ![demo run — matrix progress](assets/demo_run.png) | ![demo run — frontier summary](assets/demo_frontier.png) |
+| `python -m ccbench demo` — 7×10 matrix executing | Final Pareto frontier + per-axis winners |
+
+_Replace the two `assets/demo_*.png` files with real captures; the layout above will re-render. A good pair is one shot of the in-flight progress (optimize loop + matrix) and one of the `SUITE SUMMARY` block at the end._
 
 ## Architecture
 
@@ -110,7 +141,7 @@ data/corpus.jsonl, questions.jsonl
 
 Artifacts from any run: `output/{suite}_matrix.csv`, `{suite}_summary.json`, `{suite}_frontier.json`, `{suite}_optimizer_history.json`.
 
-**Legacy scripts** (`main.py` / `main_stage2.py` / `main_stage3.py` / `main_stage4.py`) hard-code strategies and print stage-specific tables. `ccbench` makes the same thing a declarative suite; the existing `src/` code is reused as strategy adapters — no rewrite.
+**Legacy scripts** (`legacy/main_stage2.py`, `legacy/main_stage3.py`, `main_stage4.py`) hard-code strategies and print stage-specific tables — kept for reproducibility of the historical stage runs. `main.py` is now a shim that points at `python -m ccbench demo`; `ccbench` makes the same pipeline a declarative suite, and the existing `src/` code is reused as strategy adapters — no rewrite.
 
 ## Thesis
 
@@ -135,7 +166,7 @@ What we can legitimately claim: *"inspired by Meta-Harness; applies the propose/
 
 ```
 .
-├── main.py                  # Stage 1 entry point
+├── main.py                  # redirect shim → `python -m ccbench demo`
 ├── src/
 │   ├── data_loader.py       # load handbook/*.md + slack.json + test_questions.json
 │   ├── strategies.py        # full_context + meta_harness_optimized + CurationSpec
