@@ -2,6 +2,42 @@
 
 Stage 1 experiment comparing **Full Context stuffing** vs **Meta-Harness-inspired optimized curation** on a New Hire Onboarding Agent. Corpus = public GitLab Handbook sections + synthetic Slack threads.
 
+## `ccbench` — the barebones bench layer
+
+Shape borrowed from [letta-evals](https://github.com/letta-ai/letta-evals) (YAML suite → JSONL data → decorator registry → runner CLI). Four twists that are novel to context curation:
+
+1. **`strategies:` is a list** — a suite IS a matrix, not a single `target:`.
+2. **`CorpusSpec` is first-class**, separate from the dataset. Docs carry `kind` (static|fresh), `timestamp`, `freshness_priority`. Questions reference corpus slices by name.
+3. **`frontier:` replaces `gate:`** — output is the Pareto-non-dominated set over `(quality, cost, tokens)` plus per-axis winners, instead of a boolean threshold.
+4. **`optimize:` is a built-in phase** — propose → evaluate → keep-best on a typed `StrategySpec` runs before final scoring.
+
+```
+ccbench/
+├── cli.py              # python -m ccbench run|validate|list-strategies
+├── registry.py         # @strategy / @grader / @corpus_loader decorators
+├── spec.py             # YAML → SuiteSpec
+├── corpus.py           # CorpusSpec, Doc (kind/timestamp/freshness_priority)
+├── dataset.py          # Question
+├── runner.py           # async matrix + per-category summary
+├── judge.py            # llm_judge grader
+├── frontier.py         # Pareto report
+├── optimizer.py        # built-in propose/eval/keep loop
+└── strategies/         # full_context, rag_embedding, hierarchical, agent_managed, meta_harness
+suites/hr_living_docs.yaml
+data/corpus.jsonl, questions.jsonl
+```
+
+**Run:**
+```bash
+.venv/bin/python -m ccbench.convert_data      # one-shot: legacy → JSONL
+.venv/bin/python -m ccbench validate suites/hr_living_docs.yaml
+.venv/bin/python -m ccbench run      suites/hr_living_docs.yaml
+```
+
+Artifacts: `output/{suite}_matrix.csv`, `{suite}_summary.json`, `{suite}_frontier.json`, `{suite}_optimizer_history.json`.
+
+**What the old `main.py` / `main_stage2.py` / `main_stage3.py` scripts still do:** they hard-code strategies and print specific tables. `ccbench` makes the same thing a declarative suite. The existing `src/` code is re-used as strategy adapters — no rewrite.
+
 ## Thesis
 
 "Just stuff the full context window" is the default assumption as windows expand. When the corpus mixes static policy docs (GitLab Handbook) with noisy fresh chat answers (Slack), does that default still win? And can a Meta-Harness-style proposer auto-discover a better curation strategy?

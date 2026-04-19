@@ -15,6 +15,12 @@ SLACK_API_FILE = ROOT / "data" / "slack_api.json"
 QUESTIONS_FILE = ROOT / "data" / "test_questions.json"
 QUESTIONS_V2_FILE = ROOT / "data" / "test_questions_v2.json"
 
+# Polars domain (Stage 4)
+POLARS_DIR = ROOT / "data" / "polars"
+POLARS_DOCS_DIR = POLARS_DIR / "docs"
+POLARS_SLACK_FILE = POLARS_DIR / "slack_api.json"
+POLARS_QUESTIONS_FILE = POLARS_DIR / "test_questions.json"
+
 # All handbook docs share this synthetic source date — strategies that are
 # recency-aware will compare it against Slack thread timestamps.
 HANDBOOK_SOURCE_TIMESTAMP = "2026-01-01T00:00:00Z"
@@ -68,6 +74,43 @@ def load_all_docs(slack_source: str = "simple") -> list[dict]:
     if slack_source == "api":
         return load_handbook() + load_slack_api()
     return load_handbook() + load_slack()
+
+
+# ---------- Polars domain (Stage 4) ----------
+
+def load_polars_docs() -> list[dict]:
+    """Load 12-13 Polars user-guide markdown pages. Uniform source_timestamp=2026-01-01."""
+    docs = []
+    for path in sorted(POLARS_DOCS_DIR.glob("*.md")):
+        if path.name == "INDEX.md":
+            continue
+        text = path.read_text(encoding="utf-8")
+        title = text.split("\n", 1)[0].lstrip("# ").strip() or path.stem
+        docs.append({
+            "id": f"polars-docs/{path.stem}",
+            "type": "static",
+            "content": text,
+            "metadata": {
+                "title": title,
+                "source": "polars-docs",
+                "path": str(path.relative_to(ROOT)),
+                "timestamp": HANDBOOK_SOURCE_TIMESTAMP,
+            },
+        })
+    return docs
+
+
+def load_polars_slack() -> list[dict]:
+    """Load 10 GitHub-discussion-shaped threads (Slack-API schema)."""
+    return load_slack(POLARS_SLACK_FILE)
+
+
+def load_polars_questions() -> list[dict]:
+    return load_questions(POLARS_QUESTIONS_FILE)
+
+
+def load_polars_all() -> list[dict]:
+    return load_polars_docs() + load_polars_slack()
 
 
 if __name__ == "__main__":

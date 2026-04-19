@@ -1,0 +1,202 @@
+[
+  {
+    "id": "polars-thread-001",
+    "type": "slack",
+    "content": "pola-rs/polars GitHub Discussion #17821\n\n@data_eng_alex (opened 2026-04-02)\nI'm migrating a pandas pipeline and have code that does `df.groupby(\"user_id\").agg(pl.sum(\"amount\"))`. Is `groupby` still the right name? The docs I'm reading show `group_by` in some places and `groupby` in others.\n\n@ritchie46 (Polars Maintainer, replied 2026-04-02)\nUse `group_by` — with the underscore. The camelCase-ish `groupby` method was renamed to the snake_cased `group_by` in Polars 0.19 (Sept 2023) and the old spelling was fully removed later that year. If you're on any version from 0.20 onward, `df.groupby(...)` will raise AttributeError. Snake-case everywhere for consistency with `with_columns`, `sort_by`, etc. So your code should be `df.group_by(\"user_id\").agg(pl.col(\"amount\").sum())`.\n\n@data_eng_alex\nGot it, thanks. Updating all call sites.",
+    "metadata": {
+      "title": "Is groupby or group_by correct?",
+      "source": "github",
+      "channel_id": "pola-rs/polars-discussions",
+      "channel_name": "pola-rs/polars GitHub Discussions",
+      "thread_ts": "1775424000.000001",
+      "timestamp": "2026-04-02T10:00:00Z",
+      "user_id": "U-POLARS-MAINTAINER",
+      "user_name": "ritchie46",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 8}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "group-by-aggregation.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "polars-thread-002",
+    "type": "slack",
+    "content": "pola-rs/polars GitHub Discussion #17903\n\n@ml_intern_priya (opened 2026-04-05)\nI need to apply a custom Python function to a column — scoring each row with a model. I see `pl.col(\"x\").apply(my_fn)` in an old Stack Overflow answer. It doesn't work on 1.2. What should I use?\n\n@orlp (Polars Maintainer, replied 2026-04-05)\n`apply` has been gone for a while. The replacement is `map_elements` for per-row Python calls, and `map_batches` when you want the whole Series at once. `apply` was deprecated in 0.18 and fully removed in 0.20+. Correct usage: `pl.col(\"x\").map_elements(my_fn, return_dtype=pl.Float64)`. Always pass `return_dtype` — the inferred type from the first value will bite you otherwise. For anything vectorizable, prefer expressions or `map_batches` with a NumPy ufunc; `map_elements` is row-by-row Python and very slow.\n\n@ml_intern_priya\nPerfect — map_elements with return_dtype. Thanks.",
+    "metadata": {
+      "title": "Does pl.col().apply() still work?",
+      "source": "github",
+      "channel_id": "pola-rs/polars-discussions",
+      "channel_name": "pola-rs/polars GitHub Discussions",
+      "thread_ts": "1775683200.000002",
+      "timestamp": "2026-04-05T14:20:00Z",
+      "user_id": "U-POLARS-MAINTAINER",
+      "user_name": "orlp",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 12}, {"name": "rocket", "count": 3}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "user-defined-functions.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "polars-thread-003",
+    "type": "slack",
+    "content": "pola-rs/polars GitHub Discussion #18012\n\n@analytics_mo (opened 2026-04-07)\nFor a running total I've been using `pl.col(\"amount\").cumsum()`. Just upgraded to 1.3 and it's throwing a deprecation warning. Is there a new name?\n\n@stinodego (Polars Maintainer, replied 2026-04-07)\nYes — the whole cum_* family was snake-cased to match the rest of the API. `cumsum` → `cum_sum`, `cumprod` → `cum_prod`, `cummax` → `cum_max`, `cummin` → `cum_min`, `cumcount` → `cum_count`. The old names were deprecated in 0.19.14 and removed in 1.0. Use `pl.col(\"amount\").cum_sum()` going forward. Same pattern: underscore between cum and the operation.\n\n@analytics_mo\nMakes sense, matches `group_by` style. Thanks Stijn.",
+    "metadata": {
+      "title": "cumsum deprecation warning in 1.3?",
+      "source": "github",
+      "channel_id": "pola-rs/polars-discussions",
+      "channel_name": "pola-rs/polars GitHub Discussions",
+      "thread_ts": "1775856000.000003",
+      "timestamp": "2026-04-07T09:15:00Z",
+      "user_id": "U-POLARS-MAINTAINER",
+      "user_name": "stinodego",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 6}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "basic-operations.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "polars-thread-004",
+    "type": "slack",
+    "content": "pola-rs/polars GitHub Discussion #18145\n\n@etl_dan (opened 2026-04-10)\nAdding a row index to a LazyFrame. I've been using `lf.with_row_count(\"row_nr\")`. Seeing a deprecation message — is there an official replacement?\n\n@ritchie46 (Polars Maintainer, replied 2026-04-10)\nThe method was renamed to `with_row_index` — more consistent with how we talk about row indices elsewhere (and it matches pandas terminology too). `with_row_count` was deprecated around 0.20 and removed in 1.0. New signature: `lf.with_row_index(name=\"index\", offset=0)`. Same semantics otherwise: monotonic, starts at `offset`, respects current row order. Works on both DataFrame and LazyFrame.\n\n@etl_dan\nUpdated — `with_row_index(\"row_nr\")` works. Thanks.",
+    "metadata": {
+      "title": "with_row_count deprecation",
+      "source": "github",
+      "channel_id": "pola-rs/polars-discussions",
+      "channel_name": "pola-rs/polars GitHub Discussions",
+      "thread_ts": "1776115200.000004",
+      "timestamp": "2026-04-10T11:02:00Z",
+      "user_id": "U-POLARS-MAINTAINER",
+      "user_name": "ritchie46",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 9}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "data-types-and-structures.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "polars-thread-005",
+    "type": "slack",
+    "content": "pola-rs/polars GitHub Discussion #18278\n\n@viz_team_sam (opened 2026-04-12)\nRestructuring a wide table to long. `df.melt(id_vars=[\"date\"], value_vars=[\"a\",\"b\",\"c\"])` worked on 0.20 but fails on 1.4 with AttributeError. Did this move?\n\n@stinodego (Polars Maintainer, replied 2026-04-12)\nRenamed. `melt` → `unpivot` in Polars 1.0 (July 2024). The signature is the same: `df.unpivot(on=[\"a\",\"b\",\"c\"], index=[\"date\"], variable_name=\"variable\", value_name=\"value\")`. Also note the parameter names shifted — `id_vars` → `index`, `value_vars` → `on`. The rename was part of the 1.0 stabilization to match the pivot/unpivot convention used in SQL and Spark.\n\n@viz_team_sam\nThanks, renaming works. Also good call on `id_vars` → `index`, that caught me.",
+    "metadata": {
+      "title": "melt renamed?",
+      "source": "github",
+      "channel_id": "pola-rs/polars-discussions",
+      "channel_name": "pola-rs/polars GitHub Discussions",
+      "thread_ts": "1776288000.000005",
+      "timestamp": "2026-04-12T16:45:00Z",
+      "user_id": "U-POLARS-MAINTAINER",
+      "user_name": "stinodego",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 7}, {"name": "sparkles", "count": 2}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "data-types-and-structures.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "polars-thread-006",
+    "type": "slack",
+    "content": "pola-rs/polars GitHub Discussion #18341\n\n@kafka_kate (opened 2026-04-14)\nStreaming question. I have a 120 GB NDJSON dump and want to filter-then-groupby-then-sink to Parquet without loading into memory. Does `collect(engine=\"streaming\")` actually run end-to-end streaming, or does it buffer the group-by?\n\n@ritchie46 (Polars Maintainer, replied 2026-04-14)\nFor a pipeline that ends in a sink, skip `collect` entirely — use `lf.sink_parquet(\"out.parquet\")` directly. That guarantees chunked execution all the way to disk. If you use `collect(engine=\"streaming\")` followed by `write_parquet`, Polars still has to materialize the whole result in memory before writing. Also note: the streaming group-by aggregates in a spill-to-disk hash table since 1.2; earlier versions buffered. Finally, not every op is streamable — `show_graph(engine=\"streaming\")` colors the non-streaming nodes so you can see where the plan falls back.\n\n@kafka_kate\nMoving to `sink_parquet`. Thanks!",
+    "metadata": {
+      "title": "End-to-end streaming for 120GB NDJSON pipeline",
+      "source": "github",
+      "channel_id": "pola-rs/polars-discussions",
+      "channel_name": "pola-rs/polars GitHub Discussions",
+      "thread_ts": "1776460800.000006",
+      "timestamp": "2026-04-14T08:30:00Z",
+      "user_id": "U-POLARS-MAINTAINER",
+      "user_name": "ritchie46",
+      "reply_count": 2,
+      "reactions": [{"name": "rocket", "count": 11}, {"name": "white_check_mark", "count": 4}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "lazy-streaming.md",
+      "relationship": "extend"
+    }
+  },
+  {
+    "id": "polars-thread-007",
+    "type": "slack",
+    "content": "pola-rs/polars GitHub Discussion #18402\n\n@quant_jules (opened 2026-04-15)\nQuestion on `join_asof` tolerance with unsorted keys. My trades and quotes DataFrames are partially sorted (by stock, then time) but not globally sorted. Docs say the `on` column needs to be sorted. Is `by=\"stock\"` enough?\n\n@orlp (Polars Maintainer, replied 2026-04-15)\nYes — with `by=\"stock\"`, the `on` column only needs to be sorted within each `by` group, not globally. That's exactly the usecase. Pass `check_sortedness=False` to skip the upfront validation if you're confident (or already sorted by (stock, time)) — it shaves real time off large joins. Also: `tolerance` now accepts both Python timedeltas and Polars duration strings like `\"5m\"`, `\"1h30m\"`. If the tolerance is exceeded, that row gets null from the right side — it is not filtered out.\n\n@quant_jules\nPerfect, null instead of drop is what I want. Thanks.",
+    "metadata": {
+      "title": "join_asof on partially sorted data",
+      "source": "github",
+      "channel_id": "pola-rs/polars-discussions",
+      "channel_name": "pola-rs/polars GitHub Discussions",
+      "thread_ts": "1776547200.000007",
+      "timestamp": "2026-04-15T13:10:00Z",
+      "user_id": "U-POLARS-MAINTAINER",
+      "user_name": "orlp",
+      "reply_count": 2,
+      "reactions": [{"name": "chart_with_upwards_trend", "count": 5}, {"name": "white_check_mark", "count": 3}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "joins.md",
+      "relationship": "extend"
+    }
+  },
+  {
+    "id": "polars-thread-008",
+    "type": "slack",
+    "content": "pola-rs/polars GitHub Discussion #18455\n\n@plugin_author_ren (opened 2026-04-16)\nI want to ship a Polars extension that registers a custom expression — e.g. `pl.col(\"x\").my_ns.fast_hash()`. The docs I've seen only cover Python UDFs. Is there an official plugin API now?\n\n@stinodego (Polars Maintainer, replied 2026-04-16)\nYes. The Polars plugin API is stable as of 1.0. It lets you write expressions in Rust (or any language that emits a cdylib exposing the Polars Arrow ABI) and register them via `polars.plugins.register_plugin_function(plugin_path=..., function_name=..., args=..., is_elementwise=...)`. Template: github.com/pola-rs/pyo3-polars — has a cookiecutter. Plugins are ~10–100x faster than `map_elements` and participate in the optimizer (predicate/projection pushdown). Elementwise plugins also stream correctly when `is_elementwise=True`. Recommended path for any numerically heavy custom op.\n\n@plugin_author_ren\nWill use the pyo3-polars template. Thanks!",
+    "metadata": {
+      "title": "Official plugin API for custom expressions?",
+      "source": "github",
+      "channel_id": "pola-rs/polars-discussions",
+      "channel_name": "pola-rs/polars GitHub Discussions",
+      "thread_ts": "1776633600.000008",
+      "timestamp": "2026-04-16T09:50:00Z",
+      "user_id": "U-POLARS-MAINTAINER",
+      "user_name": "stinodego",
+      "reply_count": 2,
+      "reactions": [{"name": "rocket", "count": 14}, {"name": "fire", "count": 5}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "user-defined-functions.md",
+      "relationship": "extend"
+    }
+  },
+  {
+    "id": "polars-thread-009",
+    "type": "slack",
+    "content": "pola-rs/polars GitHub Discussion #18501\n\n@learner_tim (opened 2026-04-17)\nQuick sanity check. For interpolating missing values in a numeric column I'm using `pl.col(\"x\").interpolate()`. Is that still the recommended way? Saw some old forum thread suggesting `fill_null` with a strategy.\n\n@ritchie46 (Polars Maintainer, replied 2026-04-17)\nYou're doing it right. `interpolate()` is the recommended and current API — linear interpolation between neighboring non-null values, numeric columns only. It intentionally leaves leading/trailing nulls untouched because there's no anchor to interpolate from. `fill_null(strategy=\"forward\"|\"backward\")` is a different operation (carry last/next observation, no interpolation). Both have been stable since well before 1.0. Nothing has changed here.\n\n@learner_tim\nGood, sticking with `interpolate()`.",
+    "metadata": {
+      "title": "Is interpolate() still current?",
+      "source": "github",
+      "channel_id": "pola-rs/polars-discussions",
+      "channel_name": "pola-rs/polars GitHub Discussions",
+      "thread_ts": "1776720000.000009",
+      "timestamp": "2026-04-17T10:25:00Z",
+      "user_id": "U-POLARS-MAINTAINER",
+      "user_name": "ritchie46",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 4}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "null-handling.md",
+      "relationship": "confirm"
+    }
+  },
+  {
+    "id": "polars-thread-010",
+    "type": "slack",
+    "content": "pola-rs/polars GitHub Discussion #18530\n\n@new_user_elena (opened 2026-04-18)\nTrying to scan a CSV file lazily. Just want to confirm: `pl.scan_csv(\"file.csv\")` returns a LazyFrame and doesn't actually read the file until I call `.collect()`, right? And predicate pushdown is on by default?\n\n@orlp (Polars Maintainer, replied 2026-04-18)\nCorrect on both. `pl.scan_csv(path)` returns a `LazyFrame`, no bytes read beyond the header (needed for schema inference). Predicate pushdown, projection pushdown, and slice pushdown are all default-on in the optimizer. Filters that sit behind a `with_columns` expression can sometimes get blocked from pushing down — check `lf.explain()` if you suspect that. Otherwise nothing special to toggle; the behavior you described is exactly how it works today.\n\n@new_user_elena\nGreat, thanks for confirming.",
+    "metadata": {
+      "title": "scan_csv laziness + predicate pushdown default",
+      "source": "github",
+      "channel_id": "pola-rs/polars-discussions",
+      "channel_name": "pola-rs/polars GitHub Discussions",
+      "thread_ts": "1776806400.000010",
+      "timestamp": "2026-04-18T11:40:00Z",
+      "user_id": "U-POLARS-MAINTAINER",
+      "user_name": "orlp",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 3}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "lazy-using.md",
+      "relationship": "confirm"
+    }
+  }
+]
