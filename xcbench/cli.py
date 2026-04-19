@@ -71,10 +71,16 @@ async def _run(suite_path: str, output_path: str) -> int:
     print(f"suite={spec.name}  backend={backend}  corpus={len(corpus.docs)} docs  "
           f"questions={len(questions)}  strategies={[s.name for s in spec.strategies]}")
 
+    agent_model = resolve_model(spec.models.agent, backend)
+    judge_model = resolve_model(spec.models.judge, backend)
+    if agent_model == judge_model:
+        print(f"  ⚠️  agent and judge use the same model ({agent_model})."
+              "  Self-preference bias likely. Set models.judge to a different model.")
+
     ctx = {
         "client": client,
-        "agent_model": resolve_model(spec.models.agent, backend),
-        "judge_model": resolve_model(spec.models.judge, backend),
+        "agent_model": agent_model,
+        "judge_model": judge_model,
         "proposer_model": resolve_model(spec.models.proposer, backend),
         "concurrency": spec.concurrency,
         "grader_name": spec.grader.kind,
@@ -83,12 +89,20 @@ async def _run(suite_path: str, output_path: str) -> int:
 
     history = None
     if spec.optimize:
-        train = questions[: spec.optimize.train_size]
+        train_end = spec.optimize.train_size
+        dev_end = train_end + spec.optimize.dev_size
+        train = questions[:train_end]
+        dev = questions[train_end:dev_end] if spec.optimize.dev_size > 0 else None
+        held_out = questions[dev_end:]
+        dev_label = f", dev={len(dev)}" if dev else ""
+        held_label = f", held-out={len(held_out)}" if held_out else ""
         print(f"\n[optimize] fitting '{spec.optimize.strategy}' on "
-              f"{len(train)} questions, {spec.optimize.iterations} iterations")
+              f"{len(train)} train{dev_label}{held_label} questions, "
+              f"{spec.optimize.iterations} iterations")
         fitted, history = await optimizer.fit(
             ctx, spec.optimize.strategy, train, corpus,
             iterations=spec.optimize.iterations,
+            dev_questions=dev,
         )
         ctx["fitted_spec"] = fitted
         print(f"[optimize] final spec: {fitted.describe()}")

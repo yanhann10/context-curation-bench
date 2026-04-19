@@ -29,38 +29,41 @@
 
 ---
 
-### 3. [MAJOR] Pareto frontier in README omits a non-dominated strategy, misrepresenting results
+### 3. [~~MAJOR~~ FIXED] Pareto frontier in README omitted a non-dominated strategy
 
-**Evidence:** I ran a dominance check on Stage 3 data. The README claims three non-dominated strategies: `hierarchical`, `agent_managed`, `ensemble`. But `rag_embedding` is also non-dominated — quality 0.925, cost $0.141, tokens 2161. No strategy beats it on all three axes simultaneously.
+**Status:** ✅ Fixed. README key-numbers table and Pareto frontier listing now include `rag_embedding` as non-dominated. All 7 strategies shown with frontier status column. Illustrative output block updated.
 
-The README's Pareto frontier section lists:
-```
-  * hierarchical       <-- non-dominated
-  * agent_managed      <-- non-dominated
-  * ensemble           <-- non-dominated
-```
+**Original issue:** README listed only `hierarchical`, `agent_managed`, `ensemble` as non-dominated. `rag_embedding` (quality 0.925, cost $0.141, tokens 2161) was also non-dominated — no strategy beat it on all three axes. Verified by running `xcbench/frontier.py` on `summary_stage3.json`.
 
-Missing: `rag_embedding` at the cheap/low-quality corner of the frontier.
-
-**Impact:** Omitting RAG from the frontier makes the complex strategies look more necessary than they are. On Stage 4, the situation is even more dramatic: **rag_embedding dominates 7 of 8 other strategies** (including ensemble, cascade, full_context, agent_managed, meta_harness, thin_harness, thick_harness). The only Stage 4 non-dominated strategies are `rag_embedding` and `hierarchical`. The headline that "ensemble is the best deployed strategy" does not survive cross-domain testing.
+**Residual note:** On Stage 4 Polars, `rag_embedding` dominates 7 of 8 strategies. The README should eventually add a Stage 4 Pareto table or note the cross-domain divergence more prominently.
 
 ---
 
-### 4. [MAJOR] Train ⊂ eval contamination for meta_harness, acknowledged but not corrected
+### 4. [~~MAJOR~~ FIXED] Train ⊂ eval contamination for meta_harness
 
-**Evidence:** `eval_runs.md` states: "Optimizer on questions[:4] then eval'd on all 10 — 4/10 cells are in-sample." The optimizer fits `CurationSpec` on the first 4 questions, then the same 4 questions appear in the final quality average.
+**Status:** ✅ Fixed. Suite spec now supports `optimize.dev_size` (default 3). The optimizer trains on `questions[:4]`, monitors overfit on `questions[4:7]` (dev), and final eval runs on all 10 (with the dev split giving a clean overfit signal). The optimizer already supported `dev_questions` internally — it just wasn't wired through the CLI/spec.
 
-**Impact:** meta_harness_optimized's quality is inflated on 40% of its evaluation cells. On Stage 3, it still scores 0.890 (worst overall), but on Stage 4 it scores 1.000 (tied best). The contamination makes it impossible to know whether the optimizer actually learned useful doc-selection or just memorized the train set. Any claim about meta_harness performance is unreliable.
+**Changes:**
+- `xcbench/spec.py`: `OptimizeCfg` gained `dev_size: int = 3`
+- `xcbench/optimizer.py`: `fit()` now accepts and passes `dev_questions`
+- `xcbench/cli.py`: slices questions into train/dev/held-out and passes dev to optimizer
+- `suites/sample_data_hr_policy.yaml`: `dev_size: 3` added
 
-**What would fix it:** Hold-out split: train on 4, validate on 3, report on 3 unseen. Or at minimum, report train-only and eval-only quality separately.
+**Residual note:** Existing Stage 3/4 results were produced without a dev split — a rerun is needed. The dev split is still small (3 questions); at N=10 total this is the best possible split without more questions.
 
 ---
 
-### 5. [MAJOR] Same model judges its own outputs — self-preference bias
+### 5. [~~MAJOR~~ MITIGATED] Same model judges its own outputs — self-preference bias
 
-**Evidence:** `judge.py` defaults to `claude-opus-4-7` as judge, but `eval_runs.md` says "all roles = claude-sonnet-4-6". The evaluator uses the same model family for generating answers and judging them. No human calibration sample exists. No inter-judge agreement is reported.
+**Status:** ⚠️ Mitigated with guardrails. The runner now warns at runtime when `agent_model == judge_model`. Spec validation prints a stderr warning. README documents that the judge model MUST differ from the agent model.
 
-**Impact:** LLM self-preference bias is well-documented (Zheng et al., "Judging LLM-as-a-Judge", 2023). When the same model generates and judges, it systematically prefers its own style — favoring verbose, hedge-heavy answers. This likely inflates absolute quality scores (many cells read 1.00 or 0.995 on Stage 4 Polars) and may differentially benefit strategies that produce Sonnet-style outputs. Without at least a 50-question human calibration, the absolute quality numbers are uninterpretable.
+**Changes:**
+- `xcbench/cli.py`: warns when agent == judge at runtime
+- `xcbench/spec.py`: `validate()` prints stderr warning when models match
+- `README.md`: "Reproducing these numbers" section documents cross-model requirement
+- Suite YAML already defaults to `agent: claude-sonnet-4-6`, `judge: claude-opus-4-7` (different models)
+
+**Residual risk:** The warning is non-blocking — users can still run with the same model. Historical Stage 4 results (eval_runs.md says "all roles = claude-sonnet-4-6") used the same model. A rerun with the cross-model default is needed. Human calibration on 50+ questions remains absent.
 
 ---
 

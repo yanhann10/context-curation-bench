@@ -10,13 +10,15 @@ import asyncio
 from src.harness_optimizer_async import optimize_async
 
 
-async def fit(ctx, strategy_name: str, train_questions, corpus, *, iterations: int = 3):
+async def fit(ctx, strategy_name: str, train_questions, corpus, *,
+              iterations: int = 3, dev_questions=None):
     if strategy_name != "meta_harness":
         raise ValueError(f"optimize not implemented for strategy '{strategy_name}'")
 
     client = ctx["client"]
     docs_legacy = corpus.as_legacy_list()
     train_legacy = [q.as_legacy_dict() for q in train_questions]
+    dev_legacy = [q.as_legacy_dict() for q in dev_questions] if dev_questions else None
 
     spec, history = await optimize_async(
         train_legacy,
@@ -27,5 +29,6 @@ async def fit(ctx, strategy_name: str, train_questions, corpus, *, iterations: i
         proposer_model=ctx.get("proposer_model", "claude-opus-4-7"),
         n_iter=iterations,
         concurrency=ctx.get("concurrency", 8),
+        dev_questions=dev_legacy,
     )
     return spec, history

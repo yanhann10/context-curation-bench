@@ -15,14 +15,16 @@ A **contradiction-aware**, YAML-driven benchmark for 7 LLM context-curation stra
 
 Cost is reported in multiples of the cheapest strategy (`hierarchical`). Model and N are [configurable ↓](#reproducing-these-numbers).
 
-| strategy | quality | cost (× hier) |
-|---|---:|---:|
-| **oracle router** (theoretical) | **1.000** | **1.2×** |
-| **ensemble** (deployed) | **0.995** | **3.6×** |
-| agent_managed | 0.990 | 2.7× |
-| hierarchical | 0.910 | **1.0×** (baseline) |
-| full_context | 0.995 | 5.7× |
-| cascade_router | 0.925 | 7.7× |
+| strategy | quality | cost (× hier) | frontier |
+|---|---:|---:|:---:|
+| **oracle router** (theoretical) | **1.000** | **1.2×** | — |
+| **ensemble** (deployed) | **0.995** | **3.6×** | ✅ |
+| agent_managed | 0.990 | 2.7× | ✅ |
+| rag_embedding | 0.925 | 1.2× | ✅ |
+| hierarchical | 0.910 | **1.0×** (baseline) | ✅ |
+| full_context | 0.995 | 5.7× | dominated |
+| cascade_router | 0.925 | 7.7× | dominated |
+| meta_harness_optimized | 0.890 | 3.6× | dominated |
 
 **Best deployed strategy per axis** (oracle excluded — it's a theoretical upper bound, not a runnable strategy):
 
@@ -30,7 +32,7 @@ Cost is reported in multiples of the cheapest strategy (`hierarchical`). Model a
 - **Cost** → `hierarchical` ($0.118 per 10 questions)
 - **Latency** → `hierarchical` (6.05s/question)
 
-**Pareto reading.** A strategy is **non-dominated** (on the frontier) if no other strategy is at least as good on every axis *and* strictly better on one — so nothing else makes it obsolete. A strategy is **dominated** if some other strategy matches or beats it on every axis and beats it on at least one — which means you should never pick the dominated one over its dominator. Here `ensemble`, `agent_managed`, and `hierarchical` are non-dominated; `full_context`, `cascade_router`, and `meta_harness_optimized` are dominated.
+**Pareto reading.** A strategy is **non-dominated** (on the frontier) if no other strategy is at least as good on every axis *and* strictly better on one — so nothing else makes it obsolete. A strategy is **dominated** if some other strategy matches or beats it on every axis and beats it on at least one — which means you should never pick the dominated one over its dominator. Here `ensemble`, `agent_managed`, `rag_embedding`, and `hierarchical` are non-dominated; `full_context`, `cascade_router`, and `meta_harness_optimized` are dominated.
 
 Full 7-strategy table + per-category failure forensics: [Findings ↓](#findings). Chart regeneration: `python scripts/render_frontier.py output/summary_stage3.json assets/frontier_stage3.png`.
 
@@ -73,6 +75,7 @@ meta_harness_optimized     0.890 0.467   12154     0.431       7.46
 
 Pareto frontier over ['quality', 'cost_usd', 'total_tokens']:
   * hierarchical       <-- non-dominated (cheapest, fewest tokens)
+  * rag_embedding      <-- non-dominated (cheap retrieval, 0.925 quality)
   * agent_managed      <-- non-dominated (best single-strategy quality/cost)
   * ensemble           <-- non-dominated (max quality at 64% full-ctx cost)
 
@@ -328,11 +331,11 @@ Every number in the Key numbers table and the Findings block was produced on **C
 # suites/sample_data_hr_policy.yaml
 models:
   agent: claude-sonnet-4-6     # answerer — the dominant cost
-  judge: claude-opus-4-7       # LLM-as-judge grader
+  judge: claude-opus-4-7       # LLM-as-judge grader — MUST differ from agent to avoid self-preference bias
   proposer: claude-opus-4-7    # meta-harness spec mutator
 ```
 
-Swap in `claude-haiku-4-5` for the agent to push costs down ~10×; swap to `claude-opus-4-7` to push quality up at higher cost. `N` is the length of `data/questions.jsonl` — add rows, add questions. The runner is model-agnostic as long as the Anthropic SDK exposes the model id.
+**Important:** the judge model should differ from the agent model to avoid self-preference bias (the runner warns if they match). Swap in `claude-haiku-4-5` for the agent to push costs down ~10×; swap to `claude-opus-4-7` to push quality up at higher cost. `N` is the length of `data/questions.jsonl` — add rows, add questions. The runner is model-agnostic as long as the Anthropic SDK exposes the model id.
 
 Expected qualitative shift when you change agents: **strategy ordering is likely to be more stable than absolute cost** — if `ensemble ≈ full_context` at Sonnet 4.6, that relationship probably holds at Opus too, while both costs scale roughly with the per-token price. The one exception is `cascade_router`: its quality depends on the self-verifier being well-calibrated, which is model-specific.
 

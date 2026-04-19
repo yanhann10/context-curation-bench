@@ -34,6 +34,7 @@ frontier:
 optimize:
   strategy: meta_harness
   train_size: 4
+  dev_size: 3          # held-out dev split — optimizer trains on [:4], monitors overfit on [4:7], final eval on [7:]
   iterations: 3
 
 models:

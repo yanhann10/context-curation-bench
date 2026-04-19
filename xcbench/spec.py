@@ -77,6 +77,7 @@ class FrontierCfg:
 class OptimizeCfg:
     strategy: str | None = None
     train_size: int = 4
+    dev_size: int = 3
     iterations: int = 3
 
 
@@ -133,4 +134,15 @@ def validate(spec: SuiteSpec) -> list[str]:
         errs.append(f"dataset path missing: {spec.dataset.path}")
     if spec.optimize and spec.optimize.strategy not in STRATEGIES:
         errs.append(f"optimize.strategy '{spec.optimize.strategy}' not registered")
+    # Warnings (non-blocking, printed to stderr)
+    import sys
+    if spec.models.agent == spec.models.judge:
+        print(f"⚠️  models.agent == models.judge ({spec.models.agent}). "
+              "Self-preference bias likely — use a different judge model.",
+              file=sys.stderr)
+    if spec.optimize:
+        total = spec.optimize.train_size + spec.optimize.dev_size
+        if spec.optimize.dev_size == 0:
+            print("⚠️  optimize.dev_size=0 — no held-out dev split. "
+                  "Optimizer may overfit to the train set.", file=sys.stderr)
     return errs
