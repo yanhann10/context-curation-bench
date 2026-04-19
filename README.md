@@ -141,7 +141,7 @@ data/corpus.jsonl, questions.jsonl
 
 Artifacts from any run: `output/{suite}_matrix.csv`, `{suite}_summary.json`, `{suite}_frontier.json`, `{suite}_optimizer_history.json`.
 
-**Legacy scripts** (`legacy/main_stage2.py`, `legacy/main_stage3.py`, `main_stage4.py`) hard-code strategies and print stage-specific tables — kept for reproducibility of the historical stage runs. `main.py` is now a shim that points at `python -m ccbench demo`; `ccbench` makes the same pipeline a declarative suite, and the existing `src/` code is reused as strategy adapters — no rewrite.
+**Legacy scripts** (`legacy/main_stage2.py`, `legacy/main_stage3.py`) hard-code strategies and print stage-specific tables — kept for reproducibility of the historical stage runs. `main.py` is now a shim that points at `python -m ccbench demo`; `ccbench` makes the same pipeline a declarative suite, and the existing `src/` code is reused as strategy adapters — no rewrite.
 
 ## Thesis
 
@@ -323,7 +323,3 @@ Strategies compared:
 
 Each strategy lives in its own module: `src/strategies.py` (full + meta-harness), `src/strategies_rag.py`, `src/strategies_hierarchical.py`, `src/strategies_agent_managed.py`, `src/strategies_cascade.py`, `src/strategies_ensemble.py`. All calls run async via `AsyncAnthropic` + `asyncio.gather` with staggered phases for rate-limit hygiene (5 base strategies concurrent → cascade → ensemble).
 
-## Stage 3 / 4 (not built yet, per PRD)
-
-- Stage 3: generate synthetic Slack-API-shaped updates with validated-more-recent facts; set original doc timestamps to 2026-01-01; benchmark token+accuracy across strategies.
-- Stage 4: `ai4research` + [open-harness](https://github.com/MaxGfeller/open-harness) to auto-generate curation strategies.
