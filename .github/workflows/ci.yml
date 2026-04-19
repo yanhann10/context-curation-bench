@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: install (skip torch/sentence-transformers; those load lazily at RAG runtime only)
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml pytest python-dotenv anthropic numpy faiss-cpu
+
+      - name: smoke tests
+        run: python -m pytest tests/ -v
+
+      - name: validate bundled suites
+        run: |
+          python -m ccbench validate suites/sample_data_hr_policy.yaml
+          python -m ccbench validate examples/toy/suite.yaml
+          python -m ccbench list-strategies
+          python -m ccbench list-graders
+          python -m ccbench list-corpus-loaders

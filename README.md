@@ -1,21 +1,99 @@
-# Stale-Context Bench
+# ccbench — Context Curation Benchmark
 
-A **contradiction-aware** benchmark for context curation strategies. The corpus is intentionally split into a **stale portal** (GitLab Handbook, timestamped 2026-01-01) and a **fresh chat layer** (HR-validated Slack threads) where 40% of the eval questions have a stale handbook value that a correct answer must override with a newer Slack value. We score 7 strategies (full-context, RAG, hierarchical, agent-managed, cascade, ensemble, meta-harness-optimized) on quality × cost × tokens and report a Pareto frontier — not a single winner.
+A **contradiction-aware**, YAML-driven benchmark for 7 LLM context-curation strategies — full-context, RAG, hierarchical, agent-managed, cascade-router, ensemble, and meta-harness-optimized. The corpus is intentionally split into a **stale portal** (GitLab Handbook, timestamped 2026-01-01) and a **fresh chat layer** (HR-validated Slack threads); 40% of eval questions require overriding the stale value with the newer Slack value. Results are a **Pareto frontier** over (quality, cost, tokens) — not a single winner.
 
-**Why this is not Letta Context-Bench:** staleness/contradiction structure is first-class (40% of Qs are `slack_contradicts`), there's a meta-harness proposer as a strategy axis, and results are broken out per category so you can see *where* each strategy fails, not just an aggregate.
+> **Headline** (N=10 HR-policy questions, Claude Sonnet 4.6) — an **oracle router** over the 7 strategies hits **1.000 quality at $0.138/10q**: ~**5× cheaper than stuffing the full context** ($0.670) at equal quality. Best deployed strategy is **ensemble** (0.995 quality at 64% of full-context cost). Full breakdown and failure modes: [Findings ↓](#findings-stage-3-7-strategies-claude-sonnet-46-throughout).
 
-## `ccbench` — the barebones bench layer
+## Quick start
 
-Shape borrowed from [letta-evals](https://github.com/letta-ai/letta-evals) (YAML suite → JSONL data → decorator registry → runner CLI). Four twists that are novel to context curation:
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+cp .env.example .env          # edit ANTHROPIC_API_KEY
+.venv/bin/python -m ccbench demo
+```
+
+`demo` runs the bundled HR-policy suite end-to-end (7 strategies × 10 questions, LLM-judged, plus the meta-harness optimize loop). ~2–3 min, artifacts in `output/`.
+
+### What `demo` prints (abridged, real numbers from `output/summary_stage3.json`)
+
+```text
+suite=sample-data-hr-policy  corpus=21 docs  questions=10
+strategies=['full_context','rag_embedding','hierarchical','agent_managed','cascade','ensemble','meta_harness']
+
+[optimize] fitting 'meta_harness' on 4 questions, 3 iterations
+[optimize] final spec: 11 static docs + 10 slack threads, order=by-slice
+
+[matrix] running 7 × 10 cells
+========================================================================
+SUITE SUMMARY — sample-data-hr-policy
+========================================================================
+strategy                 quality    f1   tokens  cost_usd  latency
+full_context               0.995 0.534   20231     0.670     6.59
+rag_embedding              0.925 0.455    2459     0.141     6.75
+hierarchical               0.910 0.491    1775     0.118     6.05
+agent_managed              0.990 0.524    8142     0.320     8.95
+cascade_router             0.925 0.546   24920     0.904    23.54
+ensemble                   0.995 0.527   10219     0.428    11.34
+meta_harness_optimized     0.890 0.467   12154     0.431     7.46
+
+Pareto frontier over ['quality', 'cost_usd', 'total_tokens']:
+  * hierarchical       <-- non-dominated (cheapest, fewest tokens)
+  * agent_managed      <-- non-dominated (best single-strategy quality/cost)
+  * ensemble           <-- non-dominated (max quality at 64% full-ctx cost)
+
+Per-axis winners:
+           quality: ensemble
+          cost_usd: hierarchical
+      total_tokens: hierarchical
+```
+
+## Architecture
+
+```mermaid
+flowchart LR
+  Y[suite.yaml] --> S[SuiteSpec]
+  S --> C[CorpusSpec<br/>@corpus_loader]
+  S --> D[Questions<br/>jsonl]
+  S --> M[Strategy matrix<br/>@strategy]
+  C --> R[runner.py<br/>async matrix]
+  D --> R
+  M --> R
+  R --> G[grader<br/>@grader llm_judge]
+  G --> U[summary.json]
+  U --> F[frontier.json<br/>Pareto non-dominated]
+  U --> O[optimize loop<br/>propose → eval → keep]
+  O -.-> M
+```
+
+Four things ccbench does differently from a typical evals harness (shape borrowed from [letta-evals](https://github.com/letta-ai/letta-evals), novelties are ours):
 
 1. **`strategies:` is a list** — a suite IS a matrix, not a single `target:`.
-2. **`CorpusSpec` is first-class**, separate from the dataset. Docs carry `kind` (static|fresh), `timestamp`, `freshness_priority`. Questions reference corpus slices by name.
-3. **`frontier:` replaces `gate:`** — output is the Pareto-non-dominated set over `(quality, cost, tokens)` plus per-axis winners, instead of a boolean threshold.
-4. **`optimize:` is a built-in phase** — propose → evaluate → keep-best on a typed `StrategySpec` runs before final scoring.
+2. **`CorpusSpec` is first-class**, separate from dataset. Docs carry `kind` (static|fresh), `timestamp`, `freshness_priority`. Questions reference corpus slices by name.
+3. **`frontier:` replaces `gate:`** — output is the Pareto non-dominated set over `(quality, cost, tokens)` plus per-axis winners, instead of a boolean threshold.
+4. **`optimize:` is a built-in phase** — propose → evaluate → keep-best on a typed `CurationSpec` runs before final scoring.
+
+## Add your own strategy
+
+ccbench is a decorator-registry. A new strategy / corpus loader / grader is ~10 lines:
+
+```python
+from ccbench.registry import strategy
+
+@strategy("keyword_filter")
+async def keyword_filter(ctx, question, corpus, terms=None):
+    picks = [d for d in corpus.docs if any(t in d.title.lower() for t in terms or [])]
+    blob = "\n\n".join(f"# {d.title}\n{d.content}" for d in picks)
+    return f"Context:\n{blob}\n\nQuestion: {question.input}"
+```
+
+Full walkthrough: [`docs/add_your_own.md`](docs/add_your_own.md). Minimal 3-doc / 2-question example: [`examples/toy/`](examples/toy/).
+
+## Repo layout
 
 ```
 ccbench/
-├── cli.py              # python -m ccbench run|validate|list-strategies
+├── cli.py              # python -m ccbench demo|run|validate|list-strategies
 ├── registry.py         # @strategy / @grader / @corpus_loader decorators
 ├── spec.py             # YAML → SuiteSpec
 ├── corpus.py           # CorpusSpec, Doc (kind/timestamp/freshness_priority)
@@ -25,20 +103,14 @@ ccbench/
 ├── frontier.py         # Pareto report
 ├── optimizer.py        # built-in propose/eval/keep loop
 └── strategies/         # full_context, rag_embedding, hierarchical, agent_managed, meta_harness
-suites/hr_living_docs.yaml
+suites/sample_data_hr_policy.yaml
+examples/toy/{corpus.jsonl,questions.jsonl,suite.yaml}
 data/corpus.jsonl, questions.jsonl
 ```
 
-**Run:**
-```bash
-.venv/bin/python -m ccbench.convert_data      # one-shot: legacy → JSONL
-.venv/bin/python -m ccbench validate suites/hr_living_docs.yaml
-.venv/bin/python -m ccbench run      suites/hr_living_docs.yaml
-```
+Artifacts from any run: `output/{suite}_matrix.csv`, `{suite}_summary.json`, `{suite}_frontier.json`, `{suite}_optimizer_history.json`.
 
-Artifacts: `output/{suite}_matrix.csv`, `{suite}_summary.json`, `{suite}_frontier.json`, `{suite}_optimizer_history.json`.
-
-**What the old `main.py` / `main_stage2.py` / `main_stage3.py` scripts still do:** they hard-code strategies and print specific tables. `ccbench` makes the same thing a declarative suite. The existing `src/` code is re-used as strategy adapters — no rewrite.
+**Legacy scripts** (`main.py` / `main_stage2.py` / `main_stage3.py` / `main_stage4.py`) hard-code strategies and print stage-specific tables. `ccbench` makes the same thing a declarative suite; the existing `src/` code is reused as strategy adapters — no rewrite.
 
 ## Thesis
 

@@ -1,0 +1,33 @@
+name: toy-coffee-budget
+
+# 3 docs, 2 questions — a minimal example to show the suite shape.
+# One slack_contradicts question (handbook stale) + one portal_only.
+
+corpus:
+  loader: jsonl
+  path: examples/toy/corpus.jsonl
+
+dataset:
+  path: examples/toy/questions.jsonl
+
+strategies:
+  - name: full_context
+  - name: hierarchical
+    params: {max_ids: 2}
+  - name: agent_managed
+    params: {max_iter: 4}
+
+grader:
+  kind: llm_judge
+  model: claude-opus-4-7
+
+frontier:
+  axes: [quality, cost_usd, total_tokens]
+  direction: [max, min, min]
+
+models:
+  agent: claude-sonnet-4-6
+  judge: claude-opus-4-7
+  proposer: claude-opus-4-7
+
+concurrency: 4

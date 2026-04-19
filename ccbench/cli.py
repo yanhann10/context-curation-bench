@@ -1,7 +1,8 @@
 """ccbench CLI.
 
-  python -m ccbench run suites/hr_living_docs.yaml [--output output/matrix.csv]
-  python -m ccbench validate suites/hr_living_docs.yaml
+  python -m ccbench demo                                      # one-shot sample suite
+  python -m ccbench run suites/sample_data_hr_policy.yaml [--output output/matrix.csv]
+  python -m ccbench validate suites/sample_data_hr_policy.yaml
   python -m ccbench list-strategies
   python -m ccbench list-graders
 """
@@ -16,7 +17,6 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from dotenv import load_dotenv
-from anthropic import AsyncAnthropic
 
 from . import (  # noqa: F401  register built-ins
     judge, strategies,
@@ -25,6 +25,7 @@ from .registry import STRATEGIES, GRADERS, CORPUS_LOADERS
 from .spec import load_suite, validate
 from .dataset import load_questions
 from .runner import run_matrix, summarize, CellResult
+from .backend import make_client, resolve_model
 from . import frontier, optimizer
 
 
@@ -58,26 +59,27 @@ async def _run(suite_path: str, output_path: str) -> int:
         return 1
 
     load_dotenv(Path(".env"))
-    key = os.getenv("ANTHROPIC_API_KEY")
-    if not key:
-        print("ERROR: ANTHROPIC_API_KEY not set", file=sys.stderr)
+    try:
+        client, backend = make_client()
+    except RuntimeError as e:
+        print(f"ERROR: {e}", file=sys.stderr)
         return 2
 
-    client = AsyncAnthropic(api_key=key)
     loader = CORPUS_LOADERS[spec.corpus.loader]
     corpus = loader(spec.corpus.path)
     questions = load_questions(spec.dataset.path)
-    print(f"suite={spec.name}  corpus={len(corpus.docs)} docs  "
+    print(f"suite={spec.name}  backend={backend}  corpus={len(corpus.docs)} docs  "
           f"questions={len(questions)}  strategies={[s.name for s in spec.strategies]}")
 
     ctx = {
         "client": client,
-        "agent_model": spec.models.agent,
-        "judge_model": spec.models.judge,
-        "proposer_model": spec.models.proposer,
+        "agent_model": resolve_model(spec.models.agent, backend),
+        "judge_model": resolve_model(spec.models.judge, backend),
+        "proposer_model": resolve_model(spec.models.proposer, backend),
         "concurrency": spec.concurrency,
         "grader_name": spec.grader.kind,
     }
+    print(f"  agent={ctx['agent_model']}  judge={ctx['judge_model']}")
 
     history = None
     if spec.optimize:
@@ -150,12 +152,20 @@ def main(argv=None) -> int:
     v = sub.add_parser("validate")
     v.add_argument("suite")
 
+    d = sub.add_parser("demo", help="run the bundled sample HR-policy suite end-to-end")
+    d.add_argument("--suite", default="suites/sample_data_hr_policy.yaml")
+    d.add_argument("--output", default="")
+
     sub.add_parser("list-strategies")
     sub.add_parser("list-graders")
     sub.add_parser("list-corpus-loaders")
 
     args = ap.parse_args(argv)
     if args.cmd == "run":
+        return cmd_run(args.suite, args.output)
+    if args.cmd == "demo":
+        print(f"[demo] running bundled suite: {args.suite}")
+        print("[demo] tip: set ANTHROPIC_API_KEY in .env; first run takes ~2–3 min\n")
         return cmd_run(args.suite, args.output)
     if args.cmd == "validate":
         return cmd_validate(args.suite)
