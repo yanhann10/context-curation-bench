@@ -21,6 +21,9 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
+# repo-root shim so `python legacy/main_stage3.py` resolves `from src...`
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from dotenv import load_dotenv
 from anthropic import AsyncAnthropic
 

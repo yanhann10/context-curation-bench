@@ -2,13 +2,20 @@
 
 Usage:
   python scripts/render_frontier.py output/summary_stage3.json assets/frontier_stage3.png
+  python scripts/render_frontier.py <summary> <out> --oracle 1.000 0.138
 
 Produces a cost-vs-quality scatter with the non-dominated set highlighted.
 No LLM calls — just reads the committed summary numbers.
+
+NOTE — the oracle marker is NOT derivable from summary.json (which only
+holds per-strategy means). It is a meta-analysis over the per-question
+matrix (cheapest max-quality pick per Q). Pass `--oracle Q C` to plot
+one; omit to skip. Default matches the committed Stage-3 result
+(1.000, $0.138).
 """
 from __future__ import annotations
+import argparse
 import json
-import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -32,7 +39,8 @@ def is_dominated(name: str, summary: dict) -> bool:
     return False
 
 
-def render(summary_path: str, out_path: str) -> None:
+def render(summary_path: str, out_path: str,
+           oracle: tuple[float, float] | None = None) -> None:
     summary = load(summary_path)
 
     names = list(summary.keys())
@@ -60,13 +68,14 @@ def render(summary_path: str, out_path: str) -> None:
             zorder=4,
         )
 
-    # oracle annotation
-    oracle_q, oracle_c = 1.000, 0.138
-    ax.scatter([oracle_c], [oracle_q], s=260, marker="*", c="#D4A11A",
-               edgecolor="#141414", linewidth=1.2, zorder=5)
-    ax.annotate("oracle router\n(theoretical)", xy=(oracle_c, oracle_q),
-                xytext=(oracle_c + 0.03, oracle_q - 0.005),
-                fontsize=9, fontweight="bold", color="#141414", zorder=5)
+    # oracle annotation (optional — not derivable from summary means)
+    if oracle is not None:
+        oracle_q, oracle_c = oracle
+        ax.scatter([oracle_c], [oracle_q], s=260, marker="*", c="#D4A11A",
+                   edgecolor="#141414", linewidth=1.2, zorder=5)
+        ax.annotate("oracle router\n(theoretical)", xy=(oracle_c, oracle_q),
+                    xytext=(oracle_c + 0.03, oracle_q - 0.005),
+                    fontsize=9, fontweight="bold", color="#141414", zorder=5)
 
     ax.set_xlabel("cost per 10 questions (USD)", fontsize=11)
     ax.set_ylabel("quality (LLM-judge, 0–1)", fontsize=11)
@@ -81,8 +90,9 @@ def render(summary_path: str, out_path: str) -> None:
                linewidth=1.2, label="Pareto non-dominated")
     ax.scatter([], [], s=90, c="#6E6557", edgecolor="#141414",
                linewidth=1.2, alpha=0.55, label="dominated")
-    ax.scatter([], [], s=260, marker="*", c="#D4A11A",
-               edgecolor="#141414", linewidth=1.2, label="oracle (per-Q pick)")
+    if oracle is not None:
+        ax.scatter([], [], s=260, marker="*", c="#D4A11A",
+                   edgecolor="#141414", linewidth=1.2, label="oracle (per-Q pick)")
     ax.legend(loc="lower right", framealpha=0.9, facecolor="#EBE3D3")
 
     Path(out_path).parent.mkdir(parents=True, exist_ok=True)
@@ -91,6 +101,14 @@ def render(summary_path: str, out_path: str) -> None:
 
 
 if __name__ == "__main__":
-    summary_path = sys.argv[1] if len(sys.argv) > 1 else "output/summary_stage3.json"
-    out_path = sys.argv[2] if len(sys.argv) > 2 else "assets/frontier_stage3.png"
-    render(summary_path, out_path)
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("summary", nargs="?", default="output/summary_stage3.json")
+    ap.add_argument("out", nargs="?", default="assets/frontier_stage3.png")
+    ap.add_argument("--oracle", nargs=2, type=float, metavar=("QUALITY", "COST"),
+                    default=[1.000, 0.138],
+                    help="oracle router point (quality, cost). Pass '--oracle 0 0' or "
+                         "'--no-oracle' to omit.")
+    ap.add_argument("--no-oracle", action="store_true", help="skip the oracle marker")
+    args = ap.parse_args()
+    oracle = None if args.no_oracle else tuple(args.oracle)
+    render(args.summary, args.out, oracle=oracle)

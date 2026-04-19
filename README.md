@@ -307,9 +307,9 @@ Recency-handling: all strategies correctly prefer the recent Slack value on `sla
 ## Stage 2 (built — runs all 4 strategies)
 
 ```bash
-python3 main_stage2.py                 # reuses output/final_spec.json from Stage 1
-python3 main_stage2.py --reoptimize    # re-run the meta-harness proposer first
-python3 main_stage2.py --rag-k 6 --hier-ids 5
+python3 legacy/main_stage2.py                 # reuses output/final_spec.json from Stage 1
+python3 legacy/main_stage2.py --reoptimize    # re-run the meta-harness proposer first
+python3 legacy/main_stage2.py --rag-k 6 --hier-ids 5
 ```
 
 Strategies compared:
