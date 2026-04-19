@@ -1,42 +1,26 @@
-# xcbench — Context Curation Benchmark
+# xcbench: Context Curation Benchmark
 
 [![ci](https://github.com/yanhann10/context-curation-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/yanhann10/context-curation-bench/actions/workflows/ci.yml)
 [![python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![claude](https://img.shields.io/badge/LLM-Claude%20Sonnet%204.6-D97757)](https://www.anthropic.com/)
+[![claude](https://img.shields.io/badge/LLM-Claude%20Sonnet%204.5-D97757)](https://www.anthropic.com/)
 
-A **contradiction-aware**, YAML-driven benchmark for 7 LLM context-curation strategies — full-context, RAG, hierarchical, agent-managed, cascade-router, ensemble, and meta-harness-optimized. The corpus is intentionally split into a **stale portal** (GitLab Handbook, timestamped 2026-01-01) and a **fresh chat layer** (HR-validated Slack threads); 40% of eval questions require overriding the stale value with the newer Slack value. Results are a **Pareto frontier** over (quality, cost, tokens) — not a single winner.
+**Status: work in progress.** Single-seed N=108 run on AWS Bedrock with Claude Sonnet 4.5. No confidence intervals and no multi-seed bootstrap, so numbers are directional rather than significance claims. Three of the seven strategies (`hierarchical`, `cascade`, `ensemble`) did not complete due to a `summarize_all` concurrency leak that triggers Bedrock throttling; they are omitted from the table below pending a fix.
 
-> **Headline** — an **oracle router** over the 7 strategies hits **1.000 quality at ~5× cheaper than stuffing the full context** at equal quality. Best deployed strategy is **ensemble** (0.995 quality at 64% of full-context cost). Full breakdown and failure modes: [Findings ↓](#findings). Setup and model/N config: [Reproducing these numbers ↓](#reproducing-these-numbers).
+A YAML-driven benchmark for seven LLM context-curation strategies: full-context, RAG, hierarchical, agent-managed, cascade-router, ensemble, and meta-harness-optimized. Each strategy answers the same question set over the same corpus (GitLab public handbook plus synthetic Slack threads on HR policy topics). Results are reported as a trade-off table over quality, cost, latency, and tokens rather than a single headline metric.
 
-![Pareto frontier — 7 context-curation strategies](assets/frontier_stage3.png)
+### N=108 results (Claude Sonnet 4.5, AWS Bedrock)
 
-### Key numbers
+Latency and token cost are both reported relative to the cheapest and fastest strategy (`rag_embedding` = 1×), computed from per-question means.
 
-Cost is reported in multiples of the cheapest strategy (`hierarchical`). Model and N are [configurable ↓](#reproducing-these-numbers).
+| strategy       | quality   | latency (× rag) | token cost |
+|----------------|----------:|----------------:|-----------:|
+| full_context   | **0.927** | 1.2×            | 9.3× |
+| rag_embedding  | 0.888     | **1.0×**        | **1.0×** |
+| meta_harness   | 0.866     | 1.1×            | 5.4× |
+| agent_managed  | 0.823     | 2.5×            | 3.5× |
 
-| strategy | quality | cost (× hier) | frontier |
-|---|---:|---:|:---:|
-| **oracle router** (theoretical) | **1.000** | **1.2×** | — |
-| **ensemble** (deployed) | **0.995** | **3.6×** | ✅ |
-| agent_managed | 0.990 | 2.7× | ✅ |
-| rag_embedding | 0.925 | 1.2× | ✅ |
-| hierarchical | 0.910 | **1.0×** (baseline) | ✅ |
-| full_context | 0.995 | 5.7× | dominated |
-| cascade_router | 0.925 | 7.7× | dominated |
-| meta_harness_optimized | 0.890 | 3.6× | dominated |
-
-**Best deployed strategy per axis** (oracle excluded — it's a theoretical upper bound, not a runnable strategy):
-
-- **Quality** → `ensemble` (0.995) — tied with `full_context` but at 64% the cost
-- **Cost** → `hierarchical` ($0.118 per 10 questions)
-- **Latency** → `hierarchical` (6.05s/question)
-
-**Pareto reading.** A strategy is **non-dominated** (on the frontier) if no other strategy is at least as good on every axis *and* strictly better on one — so nothing else makes it obsolete. A strategy is **dominated** if some other strategy matches or beats it on every axis and beats it on at least one — which means you should never pick the dominated one over its dominator. Here `ensemble`, `agent_managed`, `rag_embedding`, and `hierarchical` are non-dominated; `full_context`, `cascade_router`, and `meta_harness_optimized` are dominated.
-
-Full 7-strategy table + per-category failure forensics: [Findings ↓](#findings). Chart regeneration: `python scripts/render_frontier.py output/summary_stage3.json assets/frontier_stage3.png`.
-
-_On latency:_ per-question wall clock ranges from **6.0s (hierarchical)** to **23.5s (cascade_router)**. The single-shot strategies cluster at 6–9s, which is dominated by answer-generation (~4–6s for a ~300-token response); retrieval/ranking itself — FAISS lookup in RAG, catalog summarisation in hierarchical — is sub-second on this corpus. The 11.3s for ensemble is two concurrent answerer calls + a judge pick. Cascade's 23.5s is by construction (sequential tiers 1→2→3 with verifier calls between). In other words: _nothing here is RAG-slow; the LLM is._
+`rag_embedding` reaches 96 percent of `full_context` accuracy at roughly 11 percent of the token cost. The 4 pp accuracy gap concentrates in the `slack_contradicts` category (full 0.974, rag 0.886). Per-strategy failure analysis is in [Findings ↓](#findings).
 
 ## Quick start
 
@@ -51,7 +35,7 @@ cp .env.example .env          # edit ANTHROPIC_API_KEY
 
 ### Illustrative output
 
-The block below mocks up the `xcbench demo` terminal output. Per-strategy numbers (quality, f1, tokens, cost, latency) are taken verbatim from the committed Stage 3 run (`output/summary_stage3.json`, produced by `legacy/main_stage3.py` on N=10 HR-policy questions); the surrounding wrapper lines (progress messages, frontier phrasing, exact column widths) are indicative, not a captured transcript. Run it yourself to see the real output.
+The block below mocks up the `xcbench demo` terminal output. Per-strategy numbers (quality, f1, tokens, cost ×hier, latency ×hier) are derived from the committed Stage 3 run (`output/summary_stage3.json`, produced by `legacy/main_stage3.py` on N=10 HR-policy questions); the surrounding wrapper lines (progress messages, phrasing, exact column widths) are indicative, not a captured transcript. Run it yourself to see the real output.
 
 ```text
 suite=sample-data-hr-policy  corpus=21 docs  questions=10
@@ -64,25 +48,20 @@ strategies=['full_context','rag_embedding','hierarchical','agent_managed','casca
 ========================================================================
 SUITE SUMMARY — sample-data-hr-policy
 ========================================================================
-strategy                 quality    f1   tokens  cost_usd  latency_s
-full_context               0.995 0.534   20231     0.670       6.59
-rag_embedding              0.925 0.455    2459     0.141       6.75
-hierarchical               0.910 0.491    1775     0.118       6.05
-agent_managed              0.990 0.524    8142     0.320       8.95
-cascade_router             0.925 0.546   24920     0.904      23.54
-ensemble                   0.995 0.527   10219     0.428      11.34
-meta_harness_optimized     0.890 0.467   12154     0.431       7.46
-
-Pareto frontier over ['quality', 'cost_usd', 'total_tokens']:
-  * hierarchical       <-- non-dominated (cheapest, fewest tokens)
-  * rag_embedding      <-- non-dominated (cheap retrieval, 0.925 quality)
-  * agent_managed      <-- non-dominated (best single-strategy quality/cost)
-  * ensemble           <-- non-dominated (max quality at 64% full-ctx cost)
+strategy                 quality    f1   tokens  cost(×hier)  latency(×hier)
+full_context               0.995 0.534   20231        5.7×            1.1×
+rag_embedding              0.925 0.455    2459        1.2×            1.1×
+hierarchical               0.910 0.491    1775        1.0×            1.0×
+agent_managed              0.990 0.524    8142        2.7×            1.5×
+cascade_router             0.925 0.546   24920        7.7×            3.9×
+ensemble                   0.995 0.527   10219        3.6×            1.9×
+meta_harness_optimized     0.890 0.467   12154        3.6×            1.2×
 
 Per-axis winners:
-           quality: ensemble
-          cost_usd: hierarchical
-      total_tokens: hierarchical
+       quality: ensemble
+          cost: hierarchical
+       latency: hierarchical
+        tokens: hierarchical
 ```
 
 ### Charts — 9-strategy × 10-question eval (Stage 4 Polars)
@@ -100,7 +79,7 @@ Both images are the real `chart_stage4.png` and `chart_stage4_heatmap.png` from 
 
 What this project ships instead: a **deliberate simplification** of the propose → evaluate → keep-best loop, applied to a **typed `CurationSpec` dataclass** (which docs to include, ordering, format, max-chars, instructions) rather than free-form code. Same loop shape, safer to execute, fully interpretable. See [`notes/meta_harness_analysis.md`](notes/meta_harness_analysis.md) for the integration-difficulty breakdown.
 
-**What this project is good for:** a reproducible context-curation eval harness with a Pareto frontier report, 9 pre-built strategies (full, RAG, hierarchical, agent-managed, thin/thick harness axis, cascade, ensemble, meta-harness-optimized), and forensic evidence that *no single strategy wins across domains*.
+**What this project is good for:** a reproducible context-curation eval harness with a trade-off summary, 9 pre-built strategies (full, RAG, hierarchical, agent-managed, thin/thick harness axis, cascade, ensemble, meta-harness-optimized), and forensic evidence that *no single strategy wins across domains*.
 
 **What it's not:** a production benchmark at N≥200 with multi-seed bootstrap CIs. The N=10 cells report a direction, not a significance claim. See `eval/eval_runs.md` → "From Stage 3 to a real benchmark" for what's missing.
 
@@ -117,7 +96,7 @@ flowchart LR
   M --> R
   R --> G["grader<br>@grader llm_judge"]
   G --> U["summary.json"]
-  U --> F["frontier.json<br>Pareto non-dominated"]
+  U --> F["trade-offs<br>per-axis winners"]
   U --> O["optimize loop<br>propose → eval → keep"]
   O -.-> M
 ```
@@ -126,7 +105,7 @@ Four things xcbench does differently from a typical evals harness (shape borrowe
 
 1. **`strategies:` is a list** — a suite IS a matrix, not a single `target:`.
 2. **`CorpusSpec` is first-class**, separate from dataset. Docs carry `kind` (static|fresh), `timestamp`, `freshness_priority`. Questions reference corpus slices by name.
-3. **`frontier:` replaces `gate:`** — output is the Pareto non-dominated set over `(quality, cost, tokens)` plus per-axis winners, instead of a boolean threshold.
+3. **`frontier:` replaces `gate:`** — output is per-axis winners over `(quality, cost, tokens)` plus a trade-off summary, instead of a boolean pass/fail threshold.
 4. **`optimize:` is a built-in phase** — propose → evaluate → keep-best on a typed `CurationSpec` runs before final scoring.
 
 ## Add your own strategy
@@ -156,7 +135,7 @@ xcbench/
 ├── dataset.py          # Question
 ├── runner.py           # async matrix + per-category summary
 ├── judge.py            # llm_judge grader
-├── frontier.py         # Pareto report
+├── frontier.py         # trade-off summary
 ├── optimizer.py        # built-in propose/eval/keep loop
 └── strategies/         # full_context, rag_embedding, hierarchical, agent_managed, meta_harness
 suites/sample_data_hr_policy.yaml
@@ -265,44 +244,24 @@ Artifacts in `output/`:
 
 N=10 v2 HR onboarding questions (4 slack_contradicts, 2 slack_only, 2 needs_both, 2 portal_only). Corpus: 11 handbook docs (timestamped 2026-01-01) + 10 Slack-API-shape threads (HR-validated, recent). Full eval log in `eval/eval_runs.md`.
 
-| strategy | quality | f1 | latency_s | prompt_tok | cost_usd |
+| strategy | quality | f1 | latency (× hier) | prompt_tok | cost (× hier) |
 |---|---|---|---|---|---|
-| full_context | 0.995 | 0.534 | 6.6 | 19,957 | 0.670 |
-| meta_harness_optimized | 0.890 | 0.467 | 7.5 | 11,863 | 0.431 |
-| rag_embedding | 0.925 | 0.455 | 6.7 | 2,161 | **0.141** |
-| hierarchical | 0.910 | 0.491 | 6.1 | **1,489** | **0.118** |
-| agent_managed | 0.990 | 0.524 | 8.9 | 7,739 | 0.320 |
-| cascade_router | 0.925 | 0.546 | 23.5 | 24,522 | 0.904 |
-| **ensemble** | **0.995** | 0.527 | 11.3 | 9,817 | 0.428 |
+| full_context | 0.995 | 0.534 | 1.1× | 19,957 | 5.7× |
+| meta_harness_optimized | 0.890 | 0.467 | 1.2× | 11,863 | 3.6× |
+| rag_embedding | 0.925 | 0.455 | 1.1× | 2,161 | **1.2×** |
+| hierarchical | 0.910 | 0.491 | **1.0×** | **1,489** | **1.0×** |
+| agent_managed | 0.990 | 0.524 | 1.5× | 7,739 | 2.7× |
+| cascade_router | 0.925 | 0.546 | 3.9× | 24,522 | 7.7× |
+| **ensemble** | **0.995** | 0.527 | 1.9× | 9,817 | 3.6× |
 
-**Oracle router** (pick cheapest max-quality per question): **1.000 quality at $0.138** — 3× cheaper than ensemble, 5× cheaper than full_context. Picks hierarchical 9/10, agent_managed 1/10.
+**Oracle router** (pick cheapest max-quality per question): **1.000 quality at 1.2× hier cost** — ~3× cheaper than ensemble, ~5× cheaper than full_context. Picks hierarchical 9/10, agent_managed 1/10.
 
 Charts: `output/chart_stage3.png`, `output/chart_stage3_heatmap.png`.
 
-### Per-category breakdown (the staleness axis)
-
-Aggregate quality hides where each strategy actually fails. Splitting by question category:
-
-| strategy | slack_contradicts (N=4) | slack_only (N=2) | needs_both (N=2) | portal_only (N=2) |
-|---|---|---|---|---|
-| full_context | 1.000 | 1.000 | 0.975 | 1.000 |
-| meta_harness_optimized | 1.000 | 1.000 | 1.000 | **0.450** |
-| rag_embedding | 1.000 | 1.000 | 0.975 | **0.650** |
-| hierarchical | 1.000 | 1.000 | 1.000 | **0.550** |
-| agent_managed | 1.000 | 1.000 | 0.950 | 1.000 |
-| cascade_router | 0.988 | 1.000 | 1.000 | **0.650** |
-| ensemble | 1.000 | 1.000 | 0.975 | 1.000 |
-
-**Three readings:**
-
-1. **Contradiction handling is saturated at Sonnet 4.6.** Every strategy hits 1.000 on `slack_contradicts`, including the cheapest (`hierarchical`, $0.013/Q). Recency-aware prompting is table stakes — the staleness axis is necessary corpus structure but no longer a discriminator at this model class. The discriminator has moved.
-2. **The real bottleneck is retrieval recall, not freshness.** Every below-1.000 cell is a `portal_only` or `needs_both` question where a selective strategy dropped a handbook doc it needed — meta-harness overfit and excluded `us-benefits-overview`; RAG/hier missed `parental-and-other-leave`. Full-context and agent-managed (which can *see* the catalog and pull docs lazily) are the only strategies that never drop below 0.95.
-3. **Ensemble ≈ agent_managed on category breakdown.** The 0.5pp aggregate gap (0.995 vs 0.990) is a single 0.95 on one `needs_both` question where the judge tied. Ensemble is variance-reduction insurance, not a quality lift.
-
 ### Headlines
-- **Ensemble matches full_context quality at 64% the cost** — best demonstrated strategy at this model class.
-- **Cascade routing is WORSE than its tier-2 alone** (0.925 at $0.90 vs agent_managed 0.990 at $0.32). LLM self-verification is over-confident on confidently-wrong tier-1 outputs.
-- **Oracle-vs-ensemble gap is $0.29 / 10q** — a learned router or cross-model verifier that beats self-verification is the highest-leverage improvement.
+- **Ensemble matches full_context quality at ~64% the cost** — best demonstrated strategy at this model class.
+- **Cascade routing is WORSE than its tier-2 alone** (0.925 at 7.7× hier vs agent_managed 0.990 at 2.7× hier). LLM self-verification is over-confident on confidently-wrong tier-1 outputs.
+- **Oracle-vs-ensemble cost gap is ~3×** — a learned router or cross-model verifier that beats self-verification is the highest-leverage improvement.
 
 ### Per-strategy failure modes
 
@@ -315,11 +274,11 @@ Aggregate quality hides where each strategy actually fails. Splitting by questio
 
 ### When to pick what
 
-- **Max demonstrated quality** → `ensemble` (0.995 at $0.428)
-- **Best single-strategy quality/cost** → `agent_managed` (0.990 at $0.320)
-- **Cheapest with 1 catastrophic failure tolerance** → `hierarchical` ($0.118, but fails q-v2-010)
+- **Max demonstrated quality** → `ensemble` (0.995 at 3.6× hier cost)
+- **Best single-strategy quality/cost** → `agent_managed` (0.990 at 2.7× hier cost)
+- **Cheapest with 1 catastrophic failure tolerance** → `hierarchical` (baseline cost, but fails q-v2-010)
 - **Avoid**: `cascade_router` as implemented — single-model self-verification defeats the purpose. Fix with a cross-model verifier.
-- **Theoretical ceiling**: oracle router ($0.138, 1.000) — implementable with a learned router or cross-model verifier
+- **Theoretical ceiling**: oracle router (1.000 quality at 1.2× hier cost) — implementable with a learned router or cross-model verifier
 
 Recency-handling: all strategies correctly prefer the recent Slack value on `slack_contradicts` questions. Recency is table stakes at Sonnet 4.6 and was dropped as a separate metric.
 
