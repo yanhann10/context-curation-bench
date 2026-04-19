@@ -7,7 +7,7 @@
 
 A **contradiction-aware**, YAML-driven benchmark for 7 LLM context-curation strategies — full-context, RAG, hierarchical, agent-managed, cascade-router, ensemble, and meta-harness-optimized. The corpus is intentionally split into a **stale portal** (GitLab Handbook, timestamped 2026-01-01) and a **fresh chat layer** (HR-validated Slack threads); 40% of eval questions require overriding the stale value with the newer Slack value. Results are a **Pareto frontier** over (quality, cost, tokens) — not a single winner.
 
-> **Headline** (N=10 HR-policy questions, Claude Sonnet 4.6) — an **oracle router** over the 7 strategies hits **1.000 quality at $0.138/10q**: ~**5× cheaper than stuffing the full context** ($0.670) at equal quality. Best deployed strategy is **ensemble** (0.995 quality at 64% of full-context cost). Full breakdown and failure modes: [Findings ↓](#findings-stage-3-7-strategies-claude-sonnet-46-throughout).
+> **Headline** — an **oracle router** over the 7 strategies hits **1.000 quality at $0.138 per 10 questions**: ~**5× cheaper than stuffing the full context** ($0.670) at equal quality. Best deployed strategy is **ensemble** (0.995 quality at 64% of full-context cost). Full breakdown and failure modes: [Findings ↓](#findings).
 
 ![Pareto frontier — Stage 3, 7 strategies on N=10 HR-policy questions](assets/frontier_stage3.png)
 
@@ -15,16 +15,24 @@ A **contradiction-aware**, YAML-driven benchmark for 7 LLM context-curation stra
 
 Cost is reported in multiples of the cheapest strategy (`hierarchical`). Model and N are [configurable ↓](#reproducing-these-numbers).
 
-| strategy | quality | cost / 10q | cost (× hier) | notes |
-|---|---:|---:|---:|---|
-| **oracle router** (theoretical) | **1.000** | **$0.138** | **1.2×** | pick cheapest max-quality per Q; `hierarchical` wins 9/10 |
-| **ensemble** (deployed) | **0.995** | **$0.428** | **3.6×** | parallel `hierarchical` + `agent_managed`, judge picks |
-| agent_managed | 0.990 | $0.320 | 2.7× | best single strategy for quality/cost |
-| hierarchical | 0.910 | **$0.118** | **1.0×** (baseline) | cheapest; 1 catastrophic miss on `needs_both` |
-| full_context | 0.995 | $0.670 | 5.7× | stuff everything; dominated by ensemble |
-| cascade_router | 0.925 | $0.904 | 7.7× | self-verifier fails — over-confident on wrong tier-1 |
+| strategy | quality | cost (× hier) |
+|---|---:|---:|
+| **oracle router** (theoretical) | **1.000** | **1.2×** |
+| **ensemble** (deployed) | **0.995** | **3.6×** |
+| agent_managed | 0.990 | 2.7× |
+| hierarchical | 0.910 | **1.0×** (baseline) |
+| full_context | 0.995 | 5.7× |
+| cascade_router | 0.925 | 7.7× |
 
-Full 7-strategy table + per-category failure forensics: [Findings ↓](#findings-stage-3-7-strategies-claude-sonnet-46-throughout). Chart regeneration: `python scripts/render_frontier.py output/summary_stage3.json assets/frontier_stage3.png`.
+**Best deployed strategy per axis** (oracle excluded — it's a theoretical upper bound, not a runnable strategy):
+
+- **Quality** → `ensemble` (0.995) — tied with `full_context` but at 64% the cost
+- **Cost** → `hierarchical` ($0.118 per 10 questions)
+- **Latency** → `hierarchical` (6.05s/question)
+
+**Pareto reading.** A strategy is **non-dominated** (on the frontier) if no other strategy is at least as good on every axis *and* strictly better on one — so nothing else makes it obsolete. A strategy is **dominated** if some other strategy matches or beats it on every axis and beats it on at least one — which means you should never pick the dominated one over its dominator. Here `ensemble`, `agent_managed`, and `hierarchical` are non-dominated; `full_context`, `cascade_router`, and `meta_harness_optimized` are dominated.
+
+Full 7-strategy table + per-category failure forensics: [Findings ↓](#findings). Chart regeneration: `python scripts/render_frontier.py output/summary_stage3.json assets/frontier_stage3.png`.
 
 _On latency:_ per-question wall clock ranges from **6.0s (hierarchical)** to **23.5s (cascade_router)**. The single-shot strategies cluster at 6–9s, which is dominated by Claude Sonnet 4.6 answer-generation (~4–6s for a ~300-token response); retrieval/ranking itself — FAISS lookup in RAG, catalog summarisation in hierarchical — is sub-second on this corpus. The 11.3s for ensemble is two concurrent Sonnet calls + a judge pick. Cascade's 23.5s is by construction (sequential tiers 1→2→3 with verifier calls between). In other words: _nothing here is RAG-slow; the LLM is._
 
@@ -242,7 +250,7 @@ Artifacts in `output/`:
 - `slack_only` — info only in Slack, not in handbook
 - `needs_both` — handbook gives policy, Slack gives a current detail
 
-## Findings (Stage 3, 7 strategies, Claude Sonnet 4.6 throughout)
+## Findings
 
 N=10 v2 HR onboarding questions (4 slack_contradicts, 2 slack_only, 2 needs_both, 2 portal_only). Corpus: 11 handbook docs (timestamped 2026-01-01) + 10 Slack-API-shape threads (HR-validated, recent). Full eval log in `eval/eval_runs.md`.
 
