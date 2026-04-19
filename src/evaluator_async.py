@@ -25,7 +25,6 @@ async def judge_async(
     """Return (quality, note, in_tok, out_tok)."""
     payload = {
         "question": question["question"],
-        "category": question["category"],
         "golden_answer": question["golden_answer"],
         "key_facts": question["key_facts"],
         "agent_answer": answer,

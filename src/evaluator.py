@@ -25,12 +25,14 @@ class RunResult:
 
 
 JUDGE_SYSTEM = (
-    "You are a strict evaluator grading a New Hire Onboarding Agent's answer "
+    "You are a strict evaluator grading an agent's answer "
     "against a golden answer. Output VALID JSON only with exact keys: "
     '{"quality": <float 0..1>, "note": "<short reason, <=120 chars>"}. '
-    "quality = correctness vs golden_answer (1 = fully correct, 0.5 = partially correct, 0 = wrong/missing). "
-    "For recency-sensitive questions (category == 'slack_contradicts' or key_facts mention a recent update), "
-    "an answer that uses the stale handbook value instead of the recent Slack value should score <= 0.5."
+    "quality = factual correctness of the agent's answer compared to the "
+    "golden_answer (1 = fully correct, 0.5 = partially correct, 0 = wrong/missing). "
+    "An answer that states outdated or superseded facts when the golden answer "
+    "contains a more recent value should be scored based on factual accuracy — "
+    "the golden answer is always the ground truth."
 )
 
 
