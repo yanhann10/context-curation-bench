@@ -16,6 +16,9 @@ strategies:
     params: {max_ids: 5}
   - name: agent_managed
     params: {max_iter: 6}
+  - name: cascade
+    params: {final_fallback: full}
+  - name: ensemble
   - name: meta_harness
 
 grader:

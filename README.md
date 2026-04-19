@@ -1,6 +1,8 @@
-# HR Living Docs — Context Curation Benchmark
+# Stale-Context Bench
 
-Stage 1 experiment comparing **Full Context stuffing** vs **Meta-Harness-inspired optimized curation** on a New Hire Onboarding Agent. Corpus = public GitLab Handbook sections + synthetic Slack threads.
+A **contradiction-aware** benchmark for context curation strategies. The corpus is intentionally split into a **stale portal** (GitLab Handbook, timestamped 2026-01-01) and a **fresh chat layer** (HR-validated Slack threads) where 40% of the eval questions have a stale handbook value that a correct answer must override with a newer Slack value. We score 7 strategies (full-context, RAG, hierarchical, agent-managed, cascade, ensemble, meta-harness-optimized) on quality × cost × tokens and report a Pareto frontier — not a single winner.
+
+**Why this is not Letta Context-Bench:** staleness/contradiction structure is first-class (40% of Qs are `slack_contradicts`), there's a meta-harness proposer as a strategy axis, and results are broken out per category so you can see *where* each strategy fails, not just an aggregate.
 
 ## `ccbench` — the barebones bench layer
 
@@ -148,6 +150,26 @@ N=10 v2 HR onboarding questions (4 slack_contradicts, 2 slack_only, 2 needs_both
 **Oracle router** (pick cheapest max-quality per question): **1.000 quality at $0.138** — 3× cheaper than ensemble, 5× cheaper than full_context. Picks hierarchical 9/10, agent_managed 1/10.
 
 Charts: `output/chart_stage3.png`, `output/chart_stage3_heatmap.png`.
+
+### Per-category breakdown (the staleness axis)
+
+Aggregate quality hides where each strategy actually fails. Splitting by question category:
+
+| strategy | slack_contradicts (N=4) | slack_only (N=2) | needs_both (N=2) | portal_only (N=2) |
+|---|---|---|---|---|
+| full_context | 1.000 | 1.000 | 0.975 | 1.000 |
+| meta_harness_optimized | 1.000 | 1.000 | 1.000 | **0.450** |
+| rag_embedding | 1.000 | 1.000 | 0.975 | **0.650** |
+| hierarchical | 1.000 | 1.000 | 1.000 | **0.550** |
+| agent_managed | 1.000 | 1.000 | 0.950 | 1.000 |
+| cascade_router | 0.988 | 1.000 | 1.000 | **0.650** |
+| ensemble | 1.000 | 1.000 | 0.975 | 1.000 |
+
+**Three readings:**
+
+1. **Contradiction handling is saturated at Sonnet 4.6.** Every strategy hits 1.000 on `slack_contradicts`, including the cheapest (`hierarchical`, $0.013/Q). Recency-aware prompting is table stakes — the staleness axis is necessary corpus structure but no longer a discriminator at this model class. The discriminator has moved.
+2. **The real bottleneck is retrieval recall, not freshness.** Every below-1.000 cell is a `portal_only` or `needs_both` question where a selective strategy dropped a handbook doc it needed — meta-harness overfit and excluded `us-benefits-overview`; RAG/hier missed `parental-and-other-leave`. Full-context and agent-managed (which can *see* the catalog and pull docs lazily) are the only strategies that never drop below 0.95.
+3. **Ensemble ≈ agent_managed on category breakdown.** The 0.5pp aggregate gap (0.995 vs 0.990) is a single 0.95 on one `needs_both` question where the judge tied. Ensemble is variance-reduction insurance, not a quality lift.
 
 ### Headlines
 - **Ensemble matches full_context quality at 64% the cost** — best demonstrated strategy at this model class.

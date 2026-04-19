@@ -7,4 +7,5 @@ output/*.csv
 output/*.json
 !output/.gitkeep
 # PNG charts are kept (small, useful for demo history)
+prior.md
 
