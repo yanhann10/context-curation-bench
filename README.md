@@ -1,6 +1,6 @@
 # ccbench — Context Curation Benchmark
 
-[![ci](https://github.com/yanhann10/context-curation-benchmark/actions/workflows/ci.yml/badge.svg)](https://github.com/yanhann10/context-curation-benchmark/actions/workflows/ci.yml)
+[![ci](https://github.com/yanhann10/context-curation-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/yanhann10/context-curation-bench/actions/workflows/ci.yml)
 [![python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![claude](https://img.shields.io/badge/LLM-Claude%20Sonnet%204.6-D97757)](https://www.anthropic.com/)
@@ -186,7 +186,7 @@ What we can legitimately claim: *"inspired by Meta-Harness; applies the propose/
 ## Setup
 
 ```bash
-cd /Users/hanyan/git_repo/context-curation-benchmark
+cd /Users/hanyan/git_repo/context-curation-bench
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 cp .env.example .env     # then edit ANTHROPIC_API_KEY
