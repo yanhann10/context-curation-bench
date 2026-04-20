@@ -1,0 +1,46 @@
+name: flask-codebase
+
+corpus:
+  loader: jsonl
+  path: data/flask/corpus.jsonl
+
+dataset:
+  path: data/flask/questions.jsonl
+
+strategies:
+  - name: full_context
+  - name: rag_embedding
+    params: {k: 6}
+  - name: hierarchical
+    params: {max_ids: 5}
+  - name: agent_managed
+    params: {max_iter: 6}
+  - name: cascade
+    params: {final_fallback: full}
+  - name: ensemble
+  - name: meta_harness
+  - name: thin_harness
+    params: {max_iter: 3}
+  - name: thick_harness
+    params: {max_iter: 5}
+
+grader:
+  kind: llm_judge
+  model: claude-opus-4-7
+
+frontier:
+  axes: [quality, cost_usd, total_tokens]
+  direction: [max, min, min]
+
+optimize:
+  strategy: meta_harness
+  train_size: 4
+  dev_size: 3
+  iterations: 3
+
+models:
+  agent: claude-sonnet-4-6
+  judge: claude-opus-4-7        # different from agent to avoid self-preference bias
+  proposer: claude-opus-4-7
+
+concurrency: 8

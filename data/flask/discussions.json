@@ -1,0 +1,202 @@
+[
+  {
+    "id": "flask-thread-001",
+    "type": "slack",
+    "content": "pallets/flask GitHub Discussion #5401\n\n@web_dev_maria (opened 2026-03-18)\nI upgraded to Flask 3.1 and `@app.before_first_request` is throwing `AttributeError`. The decorator doesn't exist anymore. What's the replacement?\n\n---\n\n@davidism (Flask maintainer, 2026-03-18)\n`before_first_request` was deprecated in Flask 2.3 and **fully removed in Flask 3.0**. The recommended pattern is a module-level flag or `app.before_serving` if you're on an ASGI server.\n\nFor WSGI (Gunicorn, Waitress), use a top-level flag:\n\n```python\n_initialized = False\n\n@app.before_request\ndef init_once():\n    global _initialized\n    if not _initialized:\n        db.create_all()\n        _initialized = True\n```\n\nOr better — do initialization in the factory function itself, not in a hook:\n\n```python\ndef create_app():\n    app = Flask(__name__)\n    with app.app_context():\n        db.create_all()  # runs at startup, not on first request\n    return app\n```\n\nThe reason for removal: `before_first_request` had race conditions under multi-worker deployments (Gunicorn with `-w 4` would run it once per worker, not once globally).",
+    "metadata": {
+      "title": "before_first_request removed in Flask 3.0 — replacement?",
+      "source": "github",
+      "channel_id": "pallets/flask-discussions",
+      "channel_name": "pallets/flask GitHub Discussions",
+      "thread_ts": "1774089600.000001",
+      "timestamp": "2026-03-18T10:00:00Z",
+      "user_id": "U-FLASK-MAINTAINER",
+      "user_name": "davidism",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 14}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "request-lifecycle.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "flask-thread-002",
+    "type": "slack",
+    "content": "pallets/flask GitHub Discussion #5423\n\n@json_api_dev (opened 2026-03-22)\nI'm getting `AttributeError: 'Flask' object has no attribute 'json_encoder'` after upgrading to Flask 3.0. My custom JSONEncoder class was set via `app.json_encoder = CustomEncoder`. How do I migrate?\n\n---\n\n@davidism (Flask maintainer, 2026-03-22)\nFlask 3.0 replaced `app.json_encoder` and `app.json_decoder` with a **provider-based system**. Instead of subclassing `JSONEncoder`, you now subclass `flask.json.provider.DefaultJSONProvider`:\n\n```python\nfrom flask.json.provider import DefaultJSONProvider\nimport datetime\n\nclass CustomJSONProvider(DefaultJSONProvider):\n    def default(self, o):\n        if isinstance(o, datetime.datetime):\n            return o.isoformat()\n        return super().default(o)\n\napp.json_provider_class = CustomJSONProvider\napp.json = CustomJSONProvider(app)\n```\n\nAlso: `JSON_SORT_KEYS` config is no longer used. Set `app.json.sort_keys = False` on the provider instead. And `flask.json.JSONEncoder` no longer exists — importing it raises `ImportError`.",
+    "metadata": {
+      "title": "app.json_encoder removed — new JSON provider API in Flask 3.0",
+      "source": "github",
+      "channel_id": "pallets/flask-discussions",
+      "channel_name": "pallets/flask GitHub Discussions",
+      "thread_ts": "1774435200.000002",
+      "timestamp": "2026-03-22T14:00:00Z",
+      "user_id": "U-FLASK-MAINTAINER",
+      "user_name": "davidism",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 11}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "json-api.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "flask-thread-003",
+    "type": "slack",
+    "content": "pallets/flask GitHub Discussion #5445\n\n@deploy_ops_sam (opened 2026-03-28)\n`app.config.from_json('config.json')` raises `AttributeError` in Flask 3.1. Is this method removed?\n\n---\n\n@davidism (Flask maintainer, 2026-03-28)\nYes. `from_json()` was removed in Flask 2.3 in favor of `from_file()`. Use:\n\n```python\nimport json\napp.config.from_file(\"config.json\", load=json.load)\n```\n\nFor TOML:\n```python\nimport tomllib\napp.config.from_file(\"config.toml\", load=tomllib.load, text=False)\n```\n\n`from_file()` is more general — it accepts any loader function. `from_json()` was a special case that `from_file()` subsumes.",
+    "metadata": {
+      "title": "config.from_json() removed — use from_file() instead",
+      "source": "github",
+      "channel_id": "pallets/flask-discussions",
+      "channel_name": "pallets/flask GitHub Discussions",
+      "thread_ts": "1774953600.000003",
+      "timestamp": "2026-03-28T09:00:00Z",
+      "user_id": "U-FLASK-MAINTAINER",
+      "user_name": "davidism",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 8}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "configuration.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "flask-thread-004",
+    "type": "slack",
+    "content": "pallets/flask GitHub Discussion #5460\n\n@testing_pro_lee (opened 2026-04-01)\nIn Flask 3.0, I can no longer access `request` inside `with client:` after making a request. What changed?\n\n---\n\n@davidism (Flask maintainer, 2026-04-01)\nFlask 3.0 changed the test client context behavior. The request context is now **popped immediately** after the response is returned, even inside `with client:`. You can no longer access `request` or `session` after `client.get()` inside the with block.\n\nNew pattern — use `response` attributes directly:\n```python\ndef test_dashboard(client):\n    response = client.get(\"/dashboard\")\n    assert response.status_code == 200\n    # Don't rely on request.path — use response.request.path instead\n    assert response.request.path == \"/dashboard\"\n```\n\nFor session inspection, use the session_transaction context manager:\n```python\ndef test_session(client):\n    with client.session_transaction() as sess:\n        sess[\"user_id\"] = 42\n    response = client.get(\"/dashboard\")\n    assert response.status_code == 200\n```\n\nThe reason: keeping the request context alive after the response was a source of subtle bugs (stale context data leaking between tests).",
+    "metadata": {
+      "title": "Test client context no longer keeps request alive in Flask 3.0",
+      "source": "github",
+      "channel_id": "pallets/flask-discussions",
+      "channel_name": "pallets/flask GitHub Discussions",
+      "thread_ts": "1775299200.000004",
+      "timestamp": "2026-04-01T11:00:00Z",
+      "user_id": "U-FLASK-MAINTAINER",
+      "user_name": "davidism",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 9}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "testing.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "flask-thread-005",
+    "type": "slack",
+    "content": "pallets/flask GitHub Discussion #5478\n\n@fastapi_migrator (opened 2026-04-05)\nFlask 3.1 docs mention a `--app` flag for the `flask run` CLI. But what happened to `FLASK_APP` env var? Also, is `app.run()` still the way to start in development?\n\n---\n\n@davidism (Flask maintainer, 2026-04-05)\nBoth still work, but the recommendation has changed:\n\n1. **`flask --app myapp run`** — preferred CLI method (Flask 2.3+). The `--app` flag is explicit and avoids env var confusion.\n2. **`FLASK_APP=myapp flask run`** — still works but deprecated in Flask 3.0. Will be removed in Flask 3.2.\n3. **`app.run()`** — still works for quick scripts but **never** in production. Flask 3.0 now prints a deprecation warning if you call `app.run()` with `debug=True` and no `--app` flag.\n\nNew in Flask 3.1: `flask --app myapp run --reload` replaces the old `--debug` for auto-reloading without the interactive debugger. `--debug` still enables both reloader + debugger.",
+    "metadata": {
+      "title": "FLASK_APP deprecated, --app is the new default, app.run() warnings",
+      "source": "github",
+      "channel_id": "pallets/flask-discussions",
+      "channel_name": "pallets/flask GitHub Discussions",
+      "thread_ts": "1775644800.000005",
+      "timestamp": "2026-04-05T16:00:00Z",
+      "user_id": "U-FLASK-MAINTAINER",
+      "user_name": "davidism",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 7}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "quickstart.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "flask-thread-006",
+    "type": "slack",
+    "content": "pallets/flask GitHub Discussion #5491\n\n@sec_audit_nina (opened 2026-04-08)\nOur security audit flagged that Flask-Talisman is no longer maintained. What's the current recommended way to set security headers (CSP, HSTS, etc.) in Flask 3.x?\n\n---\n\n@pgjones (Flask/Quart maintainer, 2026-04-08)\nFlask-Talisman has been archived as of January 2026. The recommended replacement is **`flask-security-headers`** (v1.0 released March 2026), which is maintained by the Pallets team:\n\n```python\nfrom flask_security_headers import SecurityHeaders\n\nSecurityHeaders(app, csp={\"default-src\": \"'self'\", \"script-src\": \"'self'\"}, hsts=True, hsts_max_age=31536000)\n```\n\nAlternatively, set headers manually in `after_request`:\n```python\n@app.after_request\ndef security_headers(response):\n    response.headers[\"Strict-Transport-Security\"] = \"max-age=31536000; includeSubDomains\"\n    response.headers[\"Content-Security-Policy\"] = \"default-src 'self'\"\n    response.headers[\"X-Content-Type-Options\"] = \"nosniff\"\n    return response\n```\n\nDo NOT use Flask-Talisman in new projects — it has unpatched CVEs related to nonce generation.",
+    "metadata": {
+      "title": "Flask-Talisman archived — use flask-security-headers or manual headers",
+      "source": "github",
+      "channel_id": "pallets/flask-discussions",
+      "channel_name": "pallets/flask GitHub Discussions",
+      "thread_ts": "1775904000.000006",
+      "timestamp": "2026-04-08T10:00:00Z",
+      "user_id": "U-FLASK-MAINTAINER",
+      "user_name": "pgjones",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 15}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "security.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "flask-thread-007",
+    "type": "slack",
+    "content": "pallets/flask GitHub Discussion #5503\n\n@async_curious (opened 2026-04-10)\nI read that Flask 3.0 improved async support. Do I still need `pip install 'flask[async]'`? And can I use async with Gunicorn now?\n\n---\n\n@pgjones (Flask/Quart maintainer, 2026-04-10)\nFlask 3.0 made async a **first-class citizen** — the `[async]` extra is no longer needed. `async def` views work out of the box.\n\nBigger change: Flask 3.0 uses **`contextvars` natively** instead of Werkzeug's `LocalStack` for all context locals (`request`, `g`, `session`, `current_app`). This means async views no longer need a thread executor — they run on the event loop directly.\n\nFor Gunicorn: use the new `uvicorn` worker class:\n```bash\ngunicorn -k uvicorn.workers.UvicornWorker -w 4 \"myapp:create_app()\"\n```\n\nThis gives you true ASGI-style async under Gunicorn. The old sync worker still works for sync views. You can mix sync and async views in the same app — Flask dispatches appropriately.\n\nOne caveat: Flask-SQLAlchemy is still sync. For async DB access, use `sqlalchemy[asyncio]` with `create_async_engine`.",
+    "metadata": {
+      "title": "Flask 3.0 async is first-class — no more [async] extra needed",
+      "source": "github",
+      "channel_id": "pallets/flask-discussions",
+      "channel_name": "pallets/flask GitHub Discussions",
+      "thread_ts": "1776076800.000007",
+      "timestamp": "2026-04-10T14:00:00Z",
+      "user_id": "U-FLASK-MAINTAINER",
+      "user_name": "pgjones",
+      "reply_count": 2,
+      "reactions": [{"name": "rocket", "count": 22}, {"name": "white_check_mark", "count": 10}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "async-views.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "flask-thread-008",
+    "type": "slack",
+    "content": "pallets/flask GitHub Discussion #5518\n\n@orm_migration (opened 2026-04-12)\nAfter upgrading Flask-SQLAlchemy to 3.1, `User.query.get(1)` gives a deprecation warning. What's the new way?\n\n---\n\n@davidism (Flask maintainer, 2026-04-12)\n`Model.query` and `Model.query.get()` are deprecated in Flask-SQLAlchemy 3.x. Use `db.session.get()` and `db.session.execute()` + `db.select()` instead:\n\n```python\n# Old (deprecated)\nuser = User.query.get(1)\nusers = User.query.filter_by(active=True).all()\n\n# New\nuser = db.session.get(User, 1)\nusers = db.session.execute(db.select(User).filter_by(active=True)).scalars().all()\n```\n\nFor pagination:\n```python\n# Old\npage = User.query.paginate(page=1, per_page=20)\n\n# New  \npage = db.paginate(db.select(User), page=1, per_page=20)\n```\n\nThe reason: `Model.query` was a Flask-SQLAlchemy-specific API that didn't exist in core SQLAlchemy 2.0. Aligning with upstream makes migration to async SQLAlchemy easier.",
+    "metadata": {
+      "title": "Model.query deprecated in Flask-SQLAlchemy 3.x — use db.session",
+      "source": "github",
+      "channel_id": "pallets/flask-discussions",
+      "channel_name": "pallets/flask GitHub Discussions",
+      "thread_ts": "1776249600.000008",
+      "timestamp": "2026-04-12T09:00:00Z",
+      "user_id": "U-FLASK-MAINTAINER",
+      "user_name": "davidism",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 18}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "database.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "flask-thread-009",
+    "type": "slack",
+    "content": "pallets/flask GitHub Discussion #5530\n\n@bp_nested_dev (opened 2026-04-14)\nI'm using nested blueprints in Flask 3.0 and `url_for('parent.child.view')` generates wrong URLs when I set `url_prefix` on both levels. Is this a bug?\n\n---\n\n@davidism (Flask maintainer, 2026-04-14)\nThis is a known behavior change in Flask 3.0. Blueprint nesting now uses **dot-separated names** for `url_for`, but the URL prefix concatenation logic was reworked.\n\nFlask 3.0 change: nested blueprints now require the `name` parameter to be explicitly set if the child blueprint is registered on multiple parents:\n\n```python\nchild = Blueprint(\"child\", __name__, url_prefix=\"/child\")\nparent_a = Blueprint(\"parent_a\", __name__, url_prefix=\"/a\")\nparent_b = Blueprint(\"parent_b\", __name__, url_prefix=\"/b\")\n\n# Must give each registration a unique name\nparent_a.register_blueprint(child, name=\"child_a\")\nparent_b.register_blueprint(child, name=\"child_b\")\n```\n\nWithout the `name` parameter, Flask 3.0 raises `ValueError: The name 'child' is already registered`. In Flask 2.x this silently overwrote the first registration.",
+    "metadata": {
+      "title": "Nested blueprint name collision in Flask 3.0 — explicit names required",
+      "source": "github",
+      "channel_id": "pallets/flask-discussions",
+      "channel_name": "pallets/flask GitHub Discussions",
+      "thread_ts": "1776422400.000009",
+      "timestamp": "2026-04-14T15:00:00Z",
+      "user_id": "U-FLASK-MAINTAINER",
+      "user_name": "davidism",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 6}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "blueprints.md",
+      "relationship": "contradict"
+    }
+  },
+  {
+    "id": "flask-thread-010",
+    "type": "slack",
+    "content": "pallets/flask GitHub Discussion #5542\n\n@prod_deployer (opened 2026-04-16)\nWe switched from Gunicorn to Waitress for our Flask 3.1 app on Windows. The docs mention `waitress-serve --call 'myapp:create_app'` but this gives an import error. What's the right invocation?\n\n---\n\n@davidism (Flask maintainer, 2026-04-16)\nWaitress changed its CLI in version 3.0 (released February 2026). The `--call` flag was removed. Use the direct import syntax:\n\n```bash\nwaitress-serve --port=8080 myapp:app\n```\n\nFor application factories:\n```bash\npython -c \"from myapp import create_app; app = create_app()\" && waitress-serve --port=8080 myapp:app\n```\n\nOr better, add a `wsgi.py` entry point:\n```python\n# wsgi.py\nfrom myapp import create_app\napp = create_app()\n```\nThen: `waitress-serve --port=8080 wsgi:app`\n\nAlternatively, for Flask 3.x the Pallets team now recommends **Granian** as a high-performance WSGI/ASGI server:\n```bash\npip install granian\ngranian --interface wsgi myapp:create_app()\n```\n\nGranian supports both WSGI and ASGI, runs on Rust, and benchmarks 2-3× faster than Gunicorn on I/O-bound Flask apps.",
+    "metadata": {
+      "title": "Waitress 3.0 dropped --call flag; Granian recommended for Flask 3.x",
+      "source": "github",
+      "channel_id": "pallets/flask-discussions",
+      "channel_name": "pallets/flask GitHub Discussions",
+      "thread_ts": "1776595200.000010",
+      "timestamp": "2026-04-16T12:00:00Z",
+      "user_id": "U-FLASK-MAINTAINER",
+      "user_name": "davidism",
+      "reply_count": 2,
+      "reactions": [{"name": "white_check_mark", "count": 9}, {"name": "rocket", "count": 5}],
+      "validated_by_hr": true,
+      "relates_to_handbook_file": "deployment.md",
+      "relationship": "contradict"
+    }
+  }
+]

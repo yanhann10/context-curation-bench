@@ -81,6 +81,11 @@ What this project ships instead: a **deliberate simplification** of the propose 
 
 **What this project is good for:** a reproducible context-curation eval harness with a trade-off summary, 9 pre-built strategies (full, RAG, hierarchical, agent-managed, thin/thick harness axis, cascade, ensemble, meta-harness-optimized), and forensic evidence that *no single strategy wins across domains*.
 
+**Domains:** 3 bundled suites with different corpus structures:
+- **HR Policy** (`suites/sample_data_hr_policy.yaml`) — GitLab handbook + Slack updates. Long policy docs, dollar-amount contradictions.
+- **Polars Docs** — Python library docs + GitHub discussions. Short API docs, lexically distinct deprecations.
+- **Flask Codebase** (`suites/flask_codebase.yaml`) — Flask 2.x docs (stale) + Flask 3.x GitHub discussions (fresh). Real breaking changes: removed APIs, replaced patterns, deprecated extensions. Tests curation under codebase-shaped corpora where cross-file references and API dependency graphs matter.
+
 **What it's not:** a production benchmark at N≥200 with multi-seed bootstrap CIs. The N=10 cells report a direction, not a significance claim. See `eval/eval_runs.md` → "From Stage 3 to a real benchmark" for what's missing.
 
 ## Architecture

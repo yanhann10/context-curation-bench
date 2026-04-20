@@ -1,0 +1,139 @@
+[
+  {
+    "id": "q-flask-001",
+    "question": "I need to run a one-time database initialization when my Flask app starts. How do I use `before_first_request` in the current version of Flask?",
+    "golden_answer": "You cannot use `before_first_request` — it was deprecated in Flask 2.3 and fully removed in Flask 3.0 due to race conditions under multi-worker deployments (each Gunicorn worker would run it separately). The recommended replacement is to perform initialization in the application factory function itself: call `db.create_all()` inside `create_app()` with `app.app_context()`. Alternatively, use a module-level flag with `@app.before_request` that checks and sets the flag on first invocation.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "before_first_request was removed in Flask 3.0",
+      "Deprecated in Flask 2.3",
+      "Race conditions under multi-worker deployments was the reason",
+      "Replace with initialization in create_app() using app.app_context()",
+      "Alternative: module-level flag with before_request"
+    ],
+    "relevant_source_ids": ["docs/request-lifecycle", "flask-thread-001"]
+  },
+  {
+    "id": "q-flask-002",
+    "question": "I want to customize how datetime objects are serialized in my Flask JSON API. I've been setting `app.json_encoder = CustomEncoder` but it's not working. What's the current approach?",
+    "golden_answer": "Flask 3.0 replaced `app.json_encoder` and `app.json_decoder` with a provider-based system. `flask.json.JSONEncoder` no longer exists. Instead, subclass `flask.json.provider.DefaultJSONProvider` and set it on `app.json_provider_class`. For example: create a `CustomJSONProvider` class that overrides `default()` for datetime serialization, then set `app.json_provider_class = CustomJSONProvider` and `app.json = CustomJSONProvider(app)`. Also note: the `JSON_SORT_KEYS` config key is no longer used — set `app.json.sort_keys = False` on the provider instead.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "app.json_encoder was removed in Flask 3.0",
+      "Replaced with provider-based system using DefaultJSONProvider",
+      "Subclass flask.json.provider.DefaultJSONProvider",
+      "Set app.json_provider_class and app.json",
+      "JSON_SORT_KEYS config no longer used — use app.json.sort_keys instead"
+    ],
+    "relevant_source_ids": ["docs/json-api", "flask-thread-002"]
+  },
+  {
+    "id": "q-flask-003",
+    "question": "How do I load configuration from a JSON file in the current version of Flask? I've been using `app.config.from_json()`.",
+    "golden_answer": "The `from_json()` method was removed in Flask 2.3 in favor of the more general `from_file()`. Use: `app.config.from_file('config.json', load=json.load)`. For TOML files, use `app.config.from_file('config.toml', load=tomllib.load, text=False)`. `from_file()` accepts any loader function, making `from_json()` a redundant special case.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "from_json() was removed in Flask 2.3",
+      "Replaced by from_file() which accepts any loader function",
+      "Usage: app.config.from_file('config.json', load=json.load)",
+      "TOML: app.config.from_file('config.toml', load=tomllib.load, text=False)"
+    ],
+    "relevant_source_ids": ["docs/configuration", "flask-thread-003"]
+  },
+  {
+    "id": "q-flask-004",
+    "question": "In my Flask tests, I access `request.path` and `session['user_id']` inside a `with client:` block after making a request. This worked in Flask 2.x but now raises errors in Flask 3.x. What changed?",
+    "golden_answer": "Flask 3.0 changed the test client context behavior. The request context is now popped immediately after the response is returned, even inside `with client:`. You can no longer access `request` or `session` after `client.get()` inside the with block. Instead, use `response.request.path` to inspect the request path from the response object. For session inspection, use the `client.session_transaction()` context manager to set or read session data. The reason for the change: keeping the request context alive after the response was a source of subtle bugs with stale context data leaking between tests.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "Request context is now popped immediately after response in Flask 3.0",
+      "Cannot access request or session in with client: after client.get()",
+      "Use response.request.path instead of request.path",
+      "Use client.session_transaction() for session inspection",
+      "Change prevents stale context data leaking between tests"
+    ],
+    "relevant_source_ids": ["docs/testing", "flask-thread-004"]
+  },
+  {
+    "id": "q-flask-005",
+    "question": "Our security audit says Flask-Talisman has unpatched CVEs. What's the current recommended way to set Content-Security-Policy and HSTS headers in a Flask application?",
+    "golden_answer": "Flask-Talisman has been archived as of January 2026 and has unpatched CVEs related to nonce generation. The recommended replacement is `flask-security-headers` (v1.0, March 2026), maintained by the Pallets team. Usage: `SecurityHeaders(app, csp={'default-src': \"'self'\"}, hsts=True, hsts_max_age=31536000)`. Alternatively, set headers manually in an `@app.after_request` handler: set `Strict-Transport-Security`, `Content-Security-Policy`, and `X-Content-Type-Options` headers on the response object.",
+    "category": "slack_only",
+    "key_facts": [
+      "Flask-Talisman archived January 2026 with unpatched CVEs",
+      "Replacement: flask-security-headers v1.0 (March 2026) by Pallets team",
+      "Alternative: manual headers in @app.after_request",
+      "Set Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options"
+    ],
+    "relevant_source_ids": ["flask-thread-006"]
+  },
+  {
+    "id": "q-flask-006",
+    "question": "Do I still need `pip install 'flask[async]'` to use async views in Flask 3.x? And can I mix sync and async views in the same app?",
+    "golden_answer": "No — Flask 3.0 made async a first-class citizen. The `[async]` extra is no longer needed; `async def` views work out of the box. Flask 3.0 uses `contextvars` natively instead of Werkzeug's `LocalStack` for all context locals (request, g, session, current_app), so async views run on the event loop directly without a thread executor. You can mix sync and async views in the same app — Flask dispatches appropriately. For Gunicorn, use the uvicorn worker class: `gunicorn -k uvicorn.workers.UvicornWorker`. Note that Flask-SQLAlchemy is still sync; for async DB access, use `sqlalchemy[asyncio]` with `create_async_engine`.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "flask[async] extra no longer needed in Flask 3.0",
+      "Async is first-class, async def views work out of the box",
+      "Flask 3.0 uses contextvars natively instead of LocalStack",
+      "Can mix sync and async views in the same app",
+      "For Gunicorn use uvicorn worker: gunicorn -k uvicorn.workers.UvicornWorker"
+    ],
+    "relevant_source_ids": ["docs/async-views", "flask-thread-007"]
+  },
+  {
+    "id": "q-flask-007",
+    "question": "What's the current way to query a user by primary key in Flask-SQLAlchemy? I've been using `User.query.get(1)` but it throws a deprecation warning.",
+    "golden_answer": "In Flask-SQLAlchemy 3.x, `Model.query` and `Model.query.get()` are deprecated. Use `db.session.get(User, 1)` for primary key lookups. For filtered queries, use `db.session.execute(db.select(User).filter_by(active=True)).scalars().all()`. For pagination, use `db.paginate(db.select(User), page=1, per_page=20)`. The reason: `Model.query` was a Flask-SQLAlchemy-specific API that didn't exist in core SQLAlchemy 2.0; aligning with upstream makes migration to async SQLAlchemy easier.",
+    "category": "slack_contradicts",
+    "key_facts": [
+      "Model.query and Model.query.get() deprecated in Flask-SQLAlchemy 3.x",
+      "Use db.session.get(Model, id) for primary key lookups",
+      "Use db.session.execute(db.select(Model).filter_by(...)) for filtered queries",
+      "Use db.paginate(db.select(Model), ...) for pagination",
+      "Aligned with SQLAlchemy 2.0 upstream API"
+    ],
+    "relevant_source_ids": ["docs/database", "flask-thread-008"]
+  },
+  {
+    "id": "q-flask-008",
+    "question": "I'm registering the same child blueprint under two parent blueprints. Flask is raising a ValueError about duplicate names. How do I fix this?",
+    "golden_answer": "Flask 3.0 requires explicit `name` parameters when registering the same child blueprint under multiple parents. In Flask 2.x, duplicate registrations silently overwrote the first one. In Flask 3.0, this raises `ValueError: The name 'child' is already registered`. Fix: pass a unique `name` to each registration: `parent_a.register_blueprint(child, name='child_a')` and `parent_b.register_blueprint(child, name='child_b')`. Use the dot-separated name in `url_for`: `url_for('parent_a.child_a.view_fn')`.",
+    "category": "needs_both",
+    "key_facts": [
+      "Flask 3.0 raises ValueError on duplicate blueprint names",
+      "Flask 2.x silently overwrote duplicate registrations",
+      "Fix: pass unique name parameter to each register_blueprint call",
+      "Use dot-separated names in url_for: parent.child_name.view"
+    ],
+    "relevant_source_ids": ["docs/blueprints", "flask-thread-009"]
+  },
+  {
+    "id": "q-flask-009",
+    "question": "What execution order do Flask request hooks follow? I need to set up logging in `before_request` and clean up a database connection in `teardown_request`.",
+    "golden_answer": "Flask request hooks execute in this order: (1) `before_request` — runs before each request; if it returns a response, the view function is skipped. (2) The view function. (3) `after_request` — runs after each request, receives the response object. (4) `teardown_request` — runs at the end of request handling, even if an exception occurred; use this for cleanup like `db.session.remove()`. Note: `before_first_request` was removed in Flask 3.0. If any `before_request` function returns a response, `after_request` and `teardown_request` still run.",
+    "category": "docs_only",
+    "key_facts": [
+      "Order: before_request → view → after_request → teardown_request",
+      "before_request can short-circuit by returning a response",
+      "teardown_request runs even on exceptions",
+      "after_request and teardown_request still run on short-circuit",
+      "before_first_request was removed in Flask 3.0"
+    ],
+    "relevant_source_ids": ["docs/request-lifecycle"]
+  },
+  {
+    "id": "q-flask-010",
+    "question": "We're deploying our Flask 3.1 app to production on Windows. The docs mention Waitress with `--call`, but that flag doesn't work. What's the correct way to deploy, and is there a faster alternative?",
+    "golden_answer": "Waitress 3.0 (released February 2026) removed the `--call` flag. Use the direct import syntax: `waitress-serve --port=8080 wsgi:app` with a `wsgi.py` entry point that calls `create_app()`. For Flask 3.x, the Pallets team now recommends Granian as a high-performance WSGI/ASGI server: `pip install granian` then `granian --interface wsgi myapp:create_app()`. Granian supports both WSGI and ASGI, runs on Rust, and benchmarks 2-3× faster than Gunicorn on I/O-bound Flask apps.",
+    "category": "needs_both",
+    "key_facts": [
+      "Waitress 3.0 removed the --call flag (February 2026)",
+      "Use direct import: waitress-serve --port=8080 wsgi:app",
+      "Pallets team recommends Granian for Flask 3.x",
+      "Granian supports WSGI and ASGI, runs on Rust",
+      "Granian benchmarks 2-3x faster than Gunicorn on I/O-bound apps"
+    ],
+    "relevant_source_ids": ["docs/deployment", "flask-thread-010"]
+  }
+]

@@ -11,3 +11,10 @@ prior.md
 critique.md
 outputs/context-curation-bench-sloppiness.md
 
+# local-only competitive analysis / rubric notes
+outputs/mle-bench-lessons.md
+outputs/*compare*.md
+outputs/*comparison*.md
+outputs/*grading*.md
+outputs/private/
+notes/private/
