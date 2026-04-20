@@ -1,0 +1,45 @@
+name: conflictqa
+
+# ConflictQA track: sources genuinely disagree on debatable questions.
+# No timestamp-based recency — all sources are static, same authority level.
+# Tests whether strategies can synthesize conflicting evidence rather than
+# just picking the newest source.
+#
+# Data attribution: kortukov/ConflictingQA (HuggingFace)
+# Paper: Kortukov et al., "Studying Large Language Model Behaviors Under
+#   Context-Memory Conflicts With Real-World Knowledge"
+# https://huggingface.co/datasets/kortukov/ConflictingQA
+
+corpus:
+  loader: jsonl
+  path: data/conflictqa/corpus.jsonl
+
+dataset:
+  path: data/conflictqa/questions.jsonl
+
+strategies:
+  - name: full_context
+  - name: rag_embedding
+    params: {k: 6}
+  - name: hierarchical
+    params: {max_ids: 5}
+  - name: agent_managed
+    params: {max_iter: 6}
+  - name: cascade
+    params: {final_fallback: full}
+  - name: ensemble
+
+grader:
+  kind: llm_judge
+  model: claude-opus-4-7
+
+frontier:
+  axes: [quality, cost_usd, total_tokens]
+  direction: [max, min, min]
+
+models:
+  agent: claude-sonnet-4-6
+  judge: claude-opus-4-7
+  proposer: claude-opus-4-7
+
+concurrency: 8

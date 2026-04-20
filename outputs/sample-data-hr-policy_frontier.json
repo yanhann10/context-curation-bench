@@ -1,0 +1,25 @@
+{
+  "frontier": [
+    "rag_embedding",
+    "hierarchical",
+    "agent_managed",
+    "cascade",
+    "ensemble"
+  ],
+  "dominated": {
+    "full_context": [
+      "rag_embedding"
+    ],
+    "meta_harness": [
+      "hierarchical",
+      "agent_managed",
+      "cascade",
+      "ensemble"
+    ]
+  },
+  "per_axis_best": {
+    "quality": "rag_embedding",
+    "cost_usd": "hierarchical",
+    "total_tokens": "hierarchical"
+  }
+}

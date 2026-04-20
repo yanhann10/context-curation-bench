@@ -1,0 +1,153 @@
+[
+  {
+    "iter": 0,
+    "train_score": 0.962,
+    "dev_score": 0.967,
+    "spec": {
+      "include_static_ids": [
+        "handbook/all-remote-work",
+        "handbook/corporate-card-policy",
+        "handbook/expenses-and-reimbursement",
+        "handbook/flexible-pto-and-time-off",
+        "handbook/general-onboarding",
+        "handbook/individual-software-purchases",
+        "handbook/parental-and-other-leave",
+        "handbook/procurement",
+        "handbook/total-rewards-compensation",
+        "handbook/travel-policy",
+        "handbook/us-benefits-overview"
+      ],
+      "include_slack_ids": [
+        "slack-api-001",
+        "slack-api-002",
+        "slack-api-003",
+        "slack-api-004",
+        "slack-api-005",
+        "slack-api-006",
+        "slack-api-007",
+        "slack-api-008",
+        "slack-api-009",
+        "slack-api-010"
+      ],
+      "ordering": "static_first",
+      "doc_format": "titled",
+      "prepend_instructions": "Answer using ONLY the provided sources. Prefer the most recent source when sources disagree. Cite source titles.",
+      "max_chars_per_doc": 3000
+    },
+    "rationale": "baseline"
+  },
+  {
+    "iter": 1,
+    "train_score": 0.925,
+    "dev_score": 0.967,
+    "spec": {
+      "include_static_ids": [
+        "handbook/all-remote-work",
+        "handbook/corporate-card-policy",
+        "handbook/expenses-and-reimbursement",
+        "handbook/flexible-pto-and-time-off",
+        "handbook/general-onboarding",
+        "handbook/individual-software-purchases",
+        "handbook/parental-and-other-leave",
+        "handbook/procurement",
+        "handbook/total-rewards-compensation",
+        "handbook/travel-policy",
+        "handbook/us-benefits-overview"
+      ],
+      "include_slack_ids": [
+        "slack-api-001",
+        "slack-api-002",
+        "slack-api-003",
+        "slack-api-004",
+        "slack-api-005",
+        "slack-api-006",
+        "slack-api-007",
+        "slack-api-008",
+        "slack-api-009",
+        "slack-api-010"
+      ],
+      "ordering": "slack_first",
+      "doc_format": "titled",
+      "prepend_instructions": "Answer using ONLY the provided sources. Prefer the most recent source when sources disagree. Cite source titles.",
+      "max_chars_per_doc": 3000
+    },
+    "rationale": "Placing Slack threads first ensures contradicting updates are seen before stale handbook content, reducing risk of citing outdated policy.",
+    "kept": false
+  },
+  {
+    "iter": 2,
+    "train_score": 0.925,
+    "dev_score": 0.967,
+    "spec": {
+      "include_static_ids": [
+        "handbook/all-remote-work",
+        "handbook/corporate-card-policy",
+        "handbook/expenses-and-reimbursement",
+        "handbook/flexible-pto-and-time-off",
+        "handbook/general-onboarding",
+        "handbook/individual-software-purchases",
+        "handbook/parental-and-other-leave",
+        "handbook/procurement",
+        "handbook/total-rewards-compensation",
+        "handbook/travel-policy",
+        "handbook/us-benefits-overview"
+      ],
+      "include_slack_ids": [
+        "slack-api-001",
+        "slack-api-002",
+        "slack-api-003",
+        "slack-api-004",
+        "slack-api-005",
+        "slack-api-006",
+        "slack-api-007",
+        "slack-api-008",
+        "slack-api-009",
+        "slack-api-010"
+      ],
+      "ordering": "slack_first",
+      "doc_format": "titled",
+      "prepend_instructions": "Answer using ONLY the provided sources. Prefer the most recent source when sources disagree. Cite source titles.",
+      "max_chars_per_doc": 3000
+    },
+    "rationale": "Placing Slack threads first ensures contradicting updates are seen before stale handbook content, improving accuracy on policy changes.",
+    "kept": false
+  },
+  {
+    "iter": 3,
+    "train_score": 0.912,
+    "dev_score": 0.933,
+    "spec": {
+      "include_static_ids": [
+        "handbook/all-remote-work",
+        "handbook/corporate-card-policy",
+        "handbook/expenses-and-reimbursement",
+        "handbook/flexible-pto-and-time-off",
+        "handbook/general-onboarding",
+        "handbook/individual-software-purchases",
+        "handbook/parental-and-other-leave",
+        "handbook/procurement",
+        "handbook/total-rewards-compensation",
+        "handbook/travel-policy",
+        "handbook/us-benefits-overview"
+      ],
+      "include_slack_ids": [
+        "slack-api-001",
+        "slack-api-002",
+        "slack-api-003",
+        "slack-api-004",
+        "slack-api-005",
+        "slack-api-006",
+        "slack-api-007",
+        "slack-api-008",
+        "slack-api-009",
+        "slack-api-010"
+      ],
+      "ordering": "slack_first",
+      "doc_format": "titled",
+      "prepend_instructions": "Answer using ONLY the provided sources. Prefer the most recent source when sources disagree. Cite source titles.",
+      "max_chars_per_doc": 3000
+    },
+    "rationale": "Placing Slack threads first ensures contradicting updates are encountered before stale handbook content, reducing risk of citing outdated policy.",
+    "kept": false
+  }
+]

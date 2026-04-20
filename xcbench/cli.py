@@ -68,6 +68,7 @@ async def _run(suite_path: str, output_path: str) -> int:
     loader = CORPUS_LOADERS[spec.corpus.loader]
     corpus = loader(spec.corpus.path)
     questions = load_questions(spec.dataset.path)
+    concurrency = int(os.getenv("XCBENCH_CONCURRENCY", str(spec.concurrency)))
     print(f"suite={spec.name}  backend={backend}  corpus={len(corpus.docs)} docs  "
           f"questions={len(questions)}  strategies={[s.name for s in spec.strategies]}")
 
@@ -85,10 +86,10 @@ async def _run(suite_path: str, output_path: str) -> int:
         "agent_model": agent_model,
         "judge_model": judge_model,
         "proposer_model": resolve_model(proposer_name, backend),
-        "concurrency": spec.concurrency,
+        "concurrency": concurrency,
         "grader_name": spec.grader.kind,
     }
-    print(f"  agent={ctx['agent_model']}  judge={ctx['judge_model']}")
+    print(f"  agent={ctx['agent_model']}  judge={ctx['judge_model']}  concurrency={concurrency}")
 
     history = None
     if spec.optimize:
@@ -111,7 +112,7 @@ async def _run(suite_path: str, output_path: str) -> int:
         print(f"[optimize] final spec: {fitted.describe()}")
 
     print(f"\n[matrix] running {len(spec.strategies)} × {len(questions)} cells")
-    results = await run_matrix(ctx, spec.strategies, questions, corpus, spec.concurrency)
+    results = await run_matrix(ctx, spec.strategies, questions, corpus, concurrency)
 
     out_dir = Path(output_path).parent if output_path else Path("output")
     out_dir.mkdir(parents=True, exist_ok=True)
