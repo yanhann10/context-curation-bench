@@ -120,6 +120,7 @@ def load_suite(path: str | Path) -> SuiteSpec:
 
 def validate(spec: SuiteSpec) -> list[str]:
     from .registry import STRATEGIES, CORPUS_LOADERS
+    from .dataset import load_questions, validate_questions
     errs: list[str] = []
     if not spec.strategies:
         errs.append("suite has no strategies")
@@ -132,6 +133,11 @@ def validate(spec: SuiteSpec) -> list[str]:
         errs.append(f"corpus path missing: {spec.corpus.path}")
     if not Path(spec.dataset.path).exists():
         errs.append(f"dataset path missing: {spec.dataset.path}")
+    elif not errs:
+        try:
+            errs.extend(validate_questions(load_questions(spec.dataset.path)))
+        except Exception as e:
+            errs.append(f"failed to validate dataset '{spec.dataset.path}': {e}")
     if spec.optimize and spec.optimize.strategy not in STRATEGIES:
         errs.append(f"optimize.strategy '{spec.optimize.strategy}' not registered")
     # Warnings (non-blocking, printed to stderr)

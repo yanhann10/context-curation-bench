@@ -1,7 +1,7 @@
-"""Render a Pareto-frontier scatterplot from a xcbench summary.json.
+"""Render a Pareto-frontier scatterplot from an xcbench summary.json.
 
 Usage:
-  python scripts/render_frontier.py output/summary_stage3.json assets/frontier_stage3.png
+  python scripts/render_frontier.py output/summary_hr.json assets/frontier_hr.png
   python scripts/render_frontier.py <summary> <out> --oracle 1.000 0.138
 
 Produces a cost-vs-quality scatter with the non-dominated set highlighted.
@@ -10,8 +10,7 @@ No LLM calls — just reads the committed summary numbers.
 NOTE — the oracle marker is NOT derivable from summary.json (which only
 holds per-strategy means). It is a meta-analysis over the per-question
 matrix (cheapest max-quality pick per Q). Pass `--oracle Q C` to plot
-one; omit to skip. Default matches the committed Stage-3 result
-(1.000, $0.138).
+one; omit to skip. Default matches the committed HR run (1.000, $0.138).
 """
 from __future__ import annotations
 import argparse
@@ -105,8 +104,8 @@ def render(summary_path: str, out_path: str,
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("summary", nargs="?", default="output/summary_stage3.json")
-    ap.add_argument("out", nargs="?", default="assets/frontier_stage3.png")
+    ap.add_argument("summary", nargs="?", default="output/summary_hr.json")
+    ap.add_argument("out", nargs="?", default="assets/frontier_hr.png")
     ap.add_argument("--oracle", nargs=2, type=float, metavar=("QUALITY", "COST"),
                     default=[1.000, 0.138],
                     help="oracle router point (quality, cost). Pass '--oracle 0 0' or "

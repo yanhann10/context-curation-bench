@@ -1,6 +1,6 @@
-# Stage 4 — Polars Domain, 9-strategy Matrix (N=10)
+# Polars — 9-strategy Matrix (N=10)
 
-**Goal:** test whether the Stage 3 HR findings (agent_managed best single, cascade broken, ensemble matches full_context at 64% cost) **generalize** to a second domain. Also land the thin/thick harness axis from Project 9.
+**Goal:** test whether the HR findings (agent_managed best single, cascade broken, ensemble matches full_context at 64% cost) **generalize** to a second domain. Also land the thin/thick harness axis from Project 9.
 
 **Config:** backend = AWS Bedrock `us.anthropic.claude-sonnet-4-6` (all roles); concurrency=1 fully sequential after Bedrock throttling at higher concurrency; summary cache at `output/hier_summaries_*.json`; 0 × 429 errors in final run.
 
@@ -42,7 +42,7 @@ q-polars-010   docs_only             1.00  1.00  1.00  1.00  1.00  0.90  1.00   
 
 2. **The harness axis is monotonic — *backwards*.** `thin (0.955) > medium (0.905) > thick (0.810)`. More scaffolding = worse quality on Polars. Planning + verify + refine introduces errors more often than it catches them.
 
-3. **Agent-managed LOST its Stage 3 lead — due to a benchmark-portability bug**, not a capability gap (see §Failure Mode 1 below). The bug inflates its Stage 4 loss; controlling for it, agent_managed ≈ medium-harness ≈ 0.95-0.97.
+3. **Agent-managed LOST its HR lead — due to a benchmark-portability bug**, not a capability gap (see §Failure Mode 1 below). The bug inflates its Polars loss; controlling for it, agent_managed ≈ medium-harness ≈ 0.95-0.97.
 
 4. **Cascade works now, ensemble keeps working.** Both hit 1.000 on Polars. Cascade's self-verifier didn't misfire here because Polars contradictions (`apply` → `map_elements`, `groupby` → `group_by`) are lexically distinct — hier gets them right, verifier correctly agrees, no escalation needed.
 
@@ -54,7 +54,7 @@ q-polars-010   docs_only             1.00  1.00  1.00  1.00  1.00  0.90  1.00   
 
 > *"This question is about data science / programming techniques (e.g., linear interpolation in pandas or numpy), not about GitLab HR onboarding topics. I don't need to consult the Handbook or Slack for this — it's outside my domain as a New Hire Onboarding assistant."*
 
-**Root cause:** `src/strategies_agent_managed.py:SYSTEM_PROMPT` hardcodes *"New Hire Onboarding assistant"*. The prompt was written for Stage 3 HR; when ported to Polars without editing, the agent takes the role-bounding literally and refuses anything off-topic.
+**Root cause:** `src/strategies_agent_managed.py:SYSTEM_PROMPT` hardcoded *"New Hire Onboarding assistant"* (fixed upstream in commits `3675ca0` + `50aac77`). The prompt was written for HR; when ported to Polars without editing, the agent takes the role-bounding literally and refuses anything off-topic.
 
 The same bug affects `thin_harness q-polars-006 = 0.70` and to a lesser extent every other call. Model DOES have general Polars knowledge and gives a partial answer from memory — but it doesn't CITE the provided sources because it doesn't believe the sources are in-domain.
 
@@ -62,7 +62,7 @@ The same bug affects `thin_harness q-polars-006 = 0.70` and to a lesser extent e
 - a `domain` parameter (explicit domain name + corpus description at runtime)
 - or a generic "use the provided tools / sources to answer the question" framing that doesn't tie the agent to a specific assistant persona
 
-This is the single most important architectural finding from Stage 4: **tool-use harnesses that embed domain assumptions in their system prompt are not benchmark-portable.**
+This is the single most important architectural finding from the Polars run: **tool-use harnesses that embed domain assumptions in their system prompt are not benchmark-portable.**
 
 ## Failure mode 2 — thick_harness confidently wrong
 
@@ -72,7 +72,7 @@ This is the single most important architectural finding from Stage 4: **tool-use
 
 Golden: default is `"group_to_rows"`, not `"join"`. Thick's 3-phase plan/execute/verify/refine didn't catch this — the planner set up retrieval tasks, the executor fetched docs, the verifier re-read the answer but *didn't re-check against the source text*, just eyeballed surface features (same class of bias we saw in cascade on HR q-v2-010).
 
-**Same architectural lesson as Stage 3 cascade:** single-model self-verification is miscalibrated on confidently-wrong answers. Thick's verify step is effectively the same signal as cascade's self-verifier — it inherits the same blind spot.
+**Same architectural lesson as HR cascade:** single-model self-verification is miscalibrated on confidently-wrong answers. Thick's verify step is effectively the same signal as cascade's self-verifier — it inherits the same blind spot.
 
 ## Failure mode 3 — thick_harness slack_only collapse
 
@@ -80,7 +80,7 @@ Golden: default is `"group_to_rows"`, not `"join"`. Thick's 3-phase plan/execute
 
 ## Pre-registered predictions — verdict
 
-From `eval/stage3_forensics.md`:
+From `eval/forensics_hr.md`:
 
 | Prediction | Verdict | Why |
 |---|---|---|
@@ -95,7 +95,7 @@ From `eval/stage3_forensics.md`:
 
 **Score: 1 confirmed, 1 partially falsified, 6 falsified.** The HR findings mostly did NOT generalize — which is itself a valuable benchmark result. Pre-registering the predictions before running meant we could detect the generalization gap instead of post-hoc rationalizing.
 
-## Comparison: Stage 3 HR vs Stage 4 Polars
+## Comparison: HR vs Polars
 
 | strategy | HR quality | HR cost | Polars quality | Polars cost | Δ quality |
 |---|---|---|---|---|---|
@@ -141,9 +141,9 @@ But thick's drop to 0.810 is **real** architectural cost of over-scaffolding:
 
 ## Artifacts
 
-- `output/results_stage4.csv` — 90 rows (9 × 10)
-- `output/summary_stage4.json` — per-strategy means
-- `output/final_spec_stage4.json`, `output/optimizer_history_stage4.json`
-- `output/chart_stage4.png` — quality bar + cost-vs-tokens scatter (log x)
-- `output/chart_stage4_heatmap.png` — 9×10 RdYlGn quality grid
+- `output/results_polars.csv` — 90 rows (9 × 10)
+- `output/summary_polars.json` — per-strategy means
+- `output/final_spec_polars.json`, `output/optimizer_history_polars.json`
+- `output/chart_polars.png` — quality bar + cost-vs-tokens scatter (log x)
+- `output/chart_polars_heatmap.png` — 9×10 RdYlGn quality grid
 - `output/hier_summaries_a0a03080e96e.json` — cached summary for re-runs

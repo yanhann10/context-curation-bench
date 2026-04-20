@@ -4,9 +4,8 @@
   python -m xcbench run SUITE # run a specific suite YAML
   python -m xcbench --help
 
-The original Stage-1 driver lives in git history (this file was the
-Stage-1 hard-coded pipeline before the xcbench CLI). Stage-2 and Stage-3
-drivers live under legacy/ and still work with --skip-optimize etc.
+Earlier versions of this file held an inline driver; that history is in
+git. All current runs go through the `xcbench` CLI + a suite YAML.
 """
 import sys
 

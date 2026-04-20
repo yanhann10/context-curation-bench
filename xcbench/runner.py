@@ -15,7 +15,11 @@ from dataclasses import dataclass, asdict
 
 from .registry import STRATEGIES, GRADERS
 from src.llm_client import complete_text, cost_usd
-from src.metrics import f1 as _f1, exact_match as _em, key_facts_recall as _kfr
+from src.metrics import (
+    f1_against_any as _f1_any,
+    em_against_any as _em_any,
+    key_facts_recall as _kfr,
+)
 
 
 @dataclass
@@ -79,8 +83,8 @@ async def _run_one(ctx, strategy_cfg, question, corpus) -> CellResult:
         answer=answer,
         golden=question.golden,
         quality=float(g.get("quality", 0.0)),
-        f1=round(_f1(answer, question.golden), 3),
-        exact_match=_em(answer, question.golden),
+        f1=round(_f1_any(answer, question.evaluation_golds()), 3),
+        exact_match=_em_any(answer, question.evaluation_golds()),
         key_fact_recall=round(_kfr(answer, question.key_facts), 3),
         latency_s=round(latency, 3),
         prompt_tokens=in_tok,

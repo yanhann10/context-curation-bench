@@ -1,6 +1,6 @@
 # Eval Runs — Master Log
 
-## Stage 3 — 7 strategies on N=10 v2 questions  (commit pending, 2026-04-18)
+## HR run — 7 strategies on N=10 v2 questions  (commit pending, 2026-04-18)
 
 **Host:** laptop (macOS, Python 3.13) · **Models:** all roles = `claude-sonnet-4-6` · **Concurrency:** 6 (phase 1), 2–3 (phases 2–3)
 **Corpus:** 11 GitLab Handbook docs uniformly timestamped `2026-01-01T00:00:00Z` + 10 Slack-API-shape threads (`validated_by_hr=true`, timestamps 2026-04-08 to 2026-04-17)
@@ -9,7 +9,7 @@
   - 2 `slack_only` (info only in Slack, not in handbook)
   - 2 `needs_both` (handbook policy + current Slack detail)
   - 2 `portal_only` (handbook correct, no Slack touches)
-**Optimizer:** n_iter=2, train_n=4 (first 4 questions; **train ⊂ eval** — no held-out split in Stage 3)
+**Optimizer:** n_iter=2, train_n=4 (first 4 questions; **train ⊂ eval** — no held-out split in this HR run)
 **SDK config:** `AsyncAnthropic(max_retries=6, timeout=120s)` — needed after a prior run caught 12 × 429s
 **Phase order:** 5 base strategies concurrent → cascade_router (concurrency=2) → ensemble (concurrency=2)
 
@@ -69,11 +69,11 @@ q-v2-010   portal_only                1.00       0.90       0.30       0.10     
 
 ### Artifacts
 
-- `output/results_stage3.csv` — all 70 rows (10 q × 7 strategies)
-- `output/summary_stage3.json` — per-strategy means
-- `output/final_spec_stage3.json`, `output/optimizer_history_stage3.json`
-- `output/chart_stage3.png` — quality bar + cost-vs-tokens scatter (log-x)
-- `output/chart_stage3_heatmap.png` — 7×10 quality grid
+- `output/results_hr.csv` — all 70 rows (10 q × 7 strategies)
+- `output/summary_hr.json` — per-strategy means
+- `output/final_spec_hr.json`, `output/optimizer_history_hr.json`
+- `output/chart_hr.png` — quality bar + cost-vs-tokens scatter (log-x)
+- `output/chart_hr_heatmap.png` — 7×10 quality grid
 
 ---
 
@@ -96,7 +96,7 @@ q-v2-010   portal_only                1.00       0.90       0.30       0.10     
 
 ---
 
-## From Stage 3 to a real benchmark
+## From the HR run to a real benchmark
 
 What would be needed to upgrade this demo into a paper- or leaderboard-citable artifact:
 
@@ -135,14 +135,14 @@ What would be needed to upgrade this demo into a paper- or leaderboard-citable a
 
 ### Anti-patterns to resist
 - Adding more metrics (BLEU, ROUGE, BERTScore) — adds columns, not insight. LLM-judge + F1 + EM is enough.
-- A Stage 5 / Stage 6 of more strategies before fixing #1–#6 just adds noise cells.
+- Another round of more strategies before fixing #1–#6 just adds noise cells.
 
 ---
 
 ## Template for future runs
 
 ```
-### <UTC timestamp>  —  <git sha>  —  <stage>
+### <UTC timestamp>  —  <git sha>  —  <domain>
 
 - host: <laptop|aws-micro>
 - models: agent=<model>, judge=<model>, proposer=<model>
@@ -153,6 +153,6 @@ What would be needed to upgrade this demo into a paper- or leaderboard-citable a
   | strategy | quality | f1 | latency_s | prompt_tok | cost_usd |
   |---|---|---|---|---|---|
   | ... | ... | ... | ... | ... | ... |
-- artifacts: output/results_stageX.csv, output/final_spec_stageX.json, ...
+- artifacts: output/results_<domain>.csv, output/final_spec_<domain>.json, ...
 - notes: <one-paragraph human-readable observation>
 ```

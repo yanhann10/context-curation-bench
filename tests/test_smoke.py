@@ -12,6 +12,7 @@ import pytest
 from xcbench import frontier
 from xcbench.spec import load_suite, validate
 from xcbench.registry import STRATEGIES, GRADERS, CORPUS_LOADERS
+from xcbench.dataset import Question, validate_questions
 
 
 def test_registries_populated_by_builtins():
@@ -51,6 +52,48 @@ def test_frontier_render_has_axes_and_winners():
     assert "a" in out
 
 
+def test_question_validation_accepts_resolved_and_ambiguous_shapes():
+    resolved = Question(
+        id="q-ok",
+        input="question",
+        golden="answer",
+        category="resolved_conflict",
+        relevant_doc_ids=["a", "b"],
+        canonical_source_ids=["b"],
+        gold_status="resolved",
+    )
+    ambiguous = Question(
+        id="q-amb",
+        input="question",
+        golden="The provided sources do not resolve this conflict.",
+        acceptable_answers=["I can't determine the answer from the provided sources."],
+        category="abstain_required",
+        relevant_doc_ids=["a", "b"],
+        gold_status="ambiguous",
+        abstain_expected=True,
+    )
+    assert validate_questions([resolved, ambiguous]) == []
+
+
+def test_question_validation_rejects_missing_canonical_or_bad_ambiguous_config():
+    bad_resolved = Question(
+        id="q-bad-1",
+        input="question",
+        golden="answer",
+        gold_status="resolved",
+    )
+    bad_ambiguous = Question(
+        id="q-bad-2",
+        input="question",
+        golden="answer",
+        gold_status="ambiguous",
+        abstain_expected=False,
+    )
+    errs = validate_questions([bad_resolved, bad_ambiguous])
+    assert any("canonical_source_ids" in e for e in errs)
+    assert any("abstain_expected=true" in e for e in errs)
+
+
 @pytest.mark.parametrize("suite_path", [
     "suites/sample_data_hr_policy.yaml",
     "examples/toy/suite.yaml",
@@ -64,8 +107,72 @@ def test_suite_parses_and_validates(suite_path):
     assert spec.frontier.axes and spec.frontier.direction
 
 
+def test_run_matrix_end_to_end_with_mock_strategy():
+    """Exercise the full matrix runner without hitting the network.
+
+    Registers a mock strategy + grader, builds a minimal Question and an
+    empty corpus, runs `run_matrix`, and asserts the shape of results and
+    summarize() output. This is the regression guard for the earlier
+    "CI only import-checks" gap: any bug in runner/summarize flow now fails
+    in CI before a live eval burns API budget.
+    """
+    import asyncio
+    from types import SimpleNamespace
+
+    from xcbench.dataset import Question
+    from xcbench.registry import strategy, grader
+    from xcbench.runner import run_matrix, summarize
+
+    @strategy("_test_echo")
+    async def _echo(ctx, question, corpus, **_):
+        return {
+            "answer": f"echo: {question.input}",
+            "prompt_tokens": 10,
+            "completion_tokens": 5,
+            "latency_s": 0.001,
+        }
+
+    @grader("_test_pass")
+    async def _pass(ctx, question, answer: str) -> dict:
+        return {
+            "quality": 1.0 if answer.startswith("echo:") else 0.0,
+            "note": "mock-grader",
+            "judge_prompt_tokens": 0,
+            "judge_completion_tokens": 0,
+        }
+
+    questions = [
+        Question(id="q1", input="hello", golden="echo: hello", category="t"),
+        Question(id="q2", input="world", golden="echo: world", category="t"),
+    ]
+    corpus = SimpleNamespace(docs=[], as_legacy_list=lambda: [])
+    strategies = [SimpleNamespace(name="_test_echo", params={})]
+    ctx = {
+        "client": None,
+        "agent_model": "mock",
+        "judge_model": "mock",
+        "grader_name": "_test_pass",
+    }
+
+    results = asyncio.run(run_matrix(ctx, strategies, questions, corpus, concurrency=1))
+    assert len(results) == 2, f"expected 2 cells, got {len(results)}"
+    assert all(r.quality == 1.0 for r in results), \
+        f"mock grader should pass; got {[r.quality for r in results]}"
+    assert all(r.strategy == "_test_echo" for r in results)
+    assert all(r.answer.startswith("echo:") for r in results)
+    assert all(r.total_tokens == 15 for r in results)
+
+    summary = summarize(results)
+    assert "_test_echo" in summary
+    row = summary["_test_echo"]
+    assert row["n"] == 2
+    assert row["quality_mean"] == 1.0
+    assert row["prompt_tokens_mean"] == 10
+    assert "quality_by_category" in row and row["quality_by_category"].get("t") == 1.0
+
+
 def test_no_hardcoded_domain_persona_in_prompts():
-    """Guard against the Stage-4 portability bug.
+    """Guard against the cross-domain portability bug.
 
     Strategy and question-gen prompts must not hardcode the HR/GitLab
     persona. Banned tokens are the ones that caused agent_managed to

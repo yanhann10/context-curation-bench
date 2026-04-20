@@ -1,6 +1,6 @@
-# Stage 3 Failure-Mode Forensics
+# HR — Failure-Mode Forensics
 
-Deep dive into the three cells where any strategy dropped below 0.95 on Stage 3 HR corpus. Quotes are excerpts from `output/results_stage3.csv`.
+Deep dive into the three cells where any strategy dropped below 0.95 on HR corpus. Quotes are excerpts from `output/results_hr.csv`.
 
 ---
 
@@ -13,7 +13,7 @@ Deep dive into the three cells where any strategy dropped below 0.95 on Stage 3 
 **meta_harness answer (quality 0.00):**
 > "The sources provided to me don't contain specific details about GitLab's short-term disability (STD) coverage — including the maximum duration or salary replacement percentage. **What I'd Recommend:** Check the GitLab Handbook directly at `/handbook/total-rewards/benefits/general-and-entity-benefits/`..."
 
-**Mechanism:** the optimizer's final `CurationSpec` excluded `handbook/us-benefits-overview` (verified in `output/final_spec_stage3.json` — `include_static_ids` list). The strategy literally cannot see the STD policy doc, so the agent honestly refuses. **This is correct behaviour under the spec; the spec is wrong.**
+**Mechanism:** the optimizer's final `CurationSpec` excluded `handbook/us-benefits-overview` (verified in `output/final_spec_hr.json` — `include_static_ids` list). The strategy literally cannot see the STD policy doc, so the agent honestly refuses. **This is correct behaviour under the spec; the spec is wrong.**
 
 **Architectural lesson:** proposer-based optimization trades breadth for train-set fit. Every doc-exclusion mutation creates a latent failure on any question that needs that doc. At small train sizes this is unavoidable — the proposer can't see the excluded topic's relevance until it gets graded on a question that needs it.
 
@@ -72,7 +72,7 @@ Note: RAG correctly identified the service category but its top-6 chunks truncat
 
 ---
 
-## Summary of failure modes (Stage 3 HR corpus)
+## Summary of failure modes (HR corpus)
 
 | mode | affected strategies | root cause | fix direction |
 |---|---|---|---|
@@ -84,9 +84,9 @@ Note: RAG correctly identified the service category but its top-6 chunks truncat
 
 ---
 
-## Pre-registered predictions for Stage 4 (Polars domain)
+## Pre-registered predictions for the Polars domain
 
-Before the Stage 4 run happens (blocked on credits), here are the predictions from the HR findings. When the run completes, we test these directly — pre-registration makes the comparison falsifiable.
+Before the Polars run happened (blocked on credits), here are the predictions from the HR findings. When that run completed, we tested these directly — pre-registration makes the comparison falsifiable.
 
 **Prediction A — Ranking generalizes (strong):** ensemble ≈ full_context > agent_managed ≫ meta_harness > hierarchical ≈ rag > cascade. If this holds on Polars too, the architectural ordering is robust across domains.
 
@@ -109,4 +109,4 @@ Before the Stage 4 run happens (blocked on credits), here are the predictions fr
 - If cascade ≥ agent_managed → self-verifier bias was a fluke on q-v2-010
 - If ensemble ≪ full_context in cost → judge-pick overhead scales non-linearly with technical content
 
-**What gets us to a real benchmark after this:** see `eval/eval_runs.md` "From Stage 3 to a real benchmark" checklist. Nothing in this forensic document is statistically significant at N=10 × 1 seed × 1 model × 2 domains. It's a set of falsifiable hypotheses, not a result.
+**What gets us to a real benchmark after this:** see `eval/eval_runs.md` "From the HR run to a real benchmark" checklist. Nothing in this forensic document is statistically significant at N=10 × 1 seed × 1 model × 2 domains. It's a set of falsifiable hypotheses, not a result.

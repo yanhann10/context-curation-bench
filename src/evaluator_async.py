@@ -7,7 +7,11 @@ from anthropic import AsyncAnthropic
 
 from .evaluator import JUDGE_SYSTEM, RunResult
 from .llm_client import complete_text, complete_json, cost_usd
-from .metrics import f1 as _f1, exact_match as _em, key_facts_recall as _kfr
+from .metrics import (
+    f1_against_any as _f1_any,
+    em_against_any as _em_any,
+    key_facts_recall as _kfr,
+)
 
 
 async def answer_question_async(
@@ -26,6 +30,8 @@ async def judge_async(
     payload = {
         "question": question["question"],
         "golden_answer": question["golden_answer"],
+        "acceptable_answers": question.get("acceptable_answers", []),
+        "abstain_expected": question.get("abstain_expected", False),
         "key_facts": question["key_facts"],
         "agent_answer": answer,
     }
@@ -61,6 +67,7 @@ async def evaluate_one(
         quality, note, fail = 0.0, "", f"error: {e}"
         j_in, j_out = 0, 0
 
+    golds = [question["golden_answer"], *question.get("acceptable_answers", [])]
     gold = question["golden_answer"]
     key_facts = question.get("key_facts", [])
     agent_cost = cost_usd(agent_model, in_tok, out_tok)
@@ -70,8 +77,8 @@ async def evaluate_one(
         question=question["question"], answer=ans,
         golden_answer=gold,
         quality=quality,
-        f1=round(_f1(ans, gold), 3),
-        exact_match=_em(ans, gold),
+        f1=round(_f1_any(ans, golds), 3),
+        exact_match=_em_any(ans, golds),
         key_fact_recall=round(_kfr(ans, key_facts), 3),
         latency_s=round(latency, 3),
         prompt_tokens=in_tok, completion_tokens=out_tok,
@@ -134,6 +141,7 @@ async def run_agent_strategy_async(
                 ans, latency, in_tok, out_tok = "", 0.0, 0, 0
                 quality, note, fail = 0.0, "", f"error: {e}"
                 j_in, j_out = 0, 0
+            golds = [q["golden_answer"], *q.get("acceptable_answers", [])]
             gold = q["golden_answer"]
             key_facts = q.get("key_facts", [])
             agent_cost = cost_usd(agent_model, in_tok, out_tok)
@@ -142,8 +150,8 @@ async def run_agent_strategy_async(
                 question_id=q["id"], strategy=strategy_name,
                 question=q["question"], answer=ans,
                 golden_answer=gold, quality=quality,
-                f1=round(_f1(ans, gold), 3),
-                exact_match=_em(ans, gold),
+                f1=round(_f1_any(ans, golds), 3),
+                exact_match=_em_any(ans, golds),
                 key_fact_recall=round(_kfr(ans, key_facts), 3),
                 latency_s=round(latency, 3),
                 prompt_tokens=in_tok, completion_tokens=out_tok,

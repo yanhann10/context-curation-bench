@@ -1,7 +1,7 @@
 """Quick demo-day charts — quality vs cost/tokens + per-question heatmap.
 
 No interactive output; saves PNGs. Run:
-    python -m src.viz output/results_stage2.csv output/chart_stage2.png
+    python -m src.viz output/results_polars.csv output/chart_polars.png
 """
 from __future__ import annotations
 import csv

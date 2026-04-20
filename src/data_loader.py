@@ -1,7 +1,7 @@
 """Load handbook markdown + Slack threads + test questions into a uniform schema.
 
-Stage 3 addition: handbook docs get a synthetic source_timestamp of 2026-01-01
-so strategies can compare recency against (newer) Slack threads uniformly.
+Handbook docs get a synthetic source_timestamp of 2026-01-01 so strategies
+can compare recency against (newer) Slack threads uniformly.
 """
 from __future__ import annotations
 import json
@@ -15,7 +15,7 @@ SLACK_API_FILE = ROOT / "data" / "slack_api.json"
 QUESTIONS_FILE = ROOT / "data" / "test_questions.json"
 QUESTIONS_V2_FILE = ROOT / "data" / "test_questions_v2.json"
 
-# Polars domain (Stage 4)
+# Polars domain
 POLARS_DIR = ROOT / "data" / "polars"
 POLARS_DOCS_DIR = POLARS_DIR / "docs"
 POLARS_SLACK_FILE = POLARS_DIR / "slack_api.json"
@@ -70,13 +70,13 @@ def load_questions_v2() -> list[dict]:
 
 
 def load_all_docs(slack_source: str = "simple") -> list[dict]:
-    """slack_source='simple' uses slack.json (Stage 1/2); 'api' uses slack_api.json (Stage 3)."""
+    """slack_source='simple' uses slack.json (v1); 'api' uses slack_api.json (v2)."""
     if slack_source == "api":
         return load_handbook() + load_slack_api()
     return load_handbook() + load_slack()
 
 
-# ---------- Polars domain (Stage 4) ----------
+# ---------- Polars domain ----------
 
 def load_polars_docs() -> list[dict]:
     """Load 12-13 Polars user-guide markdown pages. Uniform source_timestamp=2026-01-01."""
@@ -115,8 +115,8 @@ def load_polars_all() -> list[dict]:
 
 if __name__ == "__main__":
     for label, docs, qs in [
-        ("stage 1/2", load_all_docs("simple"), load_questions()),
-        ("stage 3  ", load_all_docs("api"), load_questions_v2()),
+        ("simple (v1)", load_all_docs("simple"), load_questions()),
+        ("api    (v2)", load_all_docs("api"), load_questions_v2()),
     ]:
         s = sum(1 for d in docs if d["type"] == "static")
         sl = sum(1 for d in docs if d["type"] == "slack")

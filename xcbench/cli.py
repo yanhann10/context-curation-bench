@@ -71,8 +71,11 @@ async def _run(suite_path: str, output_path: str) -> int:
     print(f"suite={spec.name}  backend={backend}  corpus={len(corpus.docs)} docs  "
           f"questions={len(questions)}  strategies={[s.name for s in spec.strategies]}")
 
-    agent_model = resolve_model(spec.models.agent, backend)
-    judge_model = resolve_model(spec.models.judge, backend)
+    agent_name = os.getenv("XCBENCH_AGENT_MODEL", spec.models.agent)
+    judge_name = os.getenv("XCBENCH_JUDGE_MODEL", spec.models.judge)
+    proposer_name = os.getenv("XCBENCH_PROPOSER_MODEL", spec.models.proposer)
+    agent_model = resolve_model(agent_name, backend)
+    judge_model = resolve_model(judge_name, backend)
     if agent_model == judge_model:
         print(f"  ⚠️  agent and judge use the same model ({agent_model})."
               "  Self-preference bias likely. Set models.judge to a different model.")
@@ -81,7 +84,7 @@ async def _run(suite_path: str, output_path: str) -> int:
         "client": client,
         "agent_model": agent_model,
         "judge_model": judge_model,
-        "proposer_model": resolve_model(spec.models.proposer, backend),
+        "proposer_model": resolve_model(proposer_name, backend),
         "concurrency": spec.concurrency,
         "grader_name": spec.grader.kind,
     }

@@ -1,4 +1,4 @@
-"""Stage 2/3 — Agent-managed context (tool-use loop).
+"""Agent-managed context (tool-use loop).
 
 The model requests what it needs by calling tools. Tools:
   - list_handbook()                 -> [{id, title, timestamp}]
@@ -136,7 +136,7 @@ async def agent_managed_runner(
     domain_description: optional one-line corpus description. If None, uses a
     neutral default ('static reference docs + recent chat threads'). Pass a
     specific description when the domain matters (e.g., 'GitLab HR policy docs
-    and People-Ops Slack threads'). Stage 4 finding: hardcoding 'HR assistant'
+    and People-Ops Slack threads'). Prior finding: hardcoding 'HR assistant'
     here caused agent_managed to refuse q-polars-009 as 'not GitLab HR' (0.20).
     """
     system_prompt = build_system_prompt(domain_description)

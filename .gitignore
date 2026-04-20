@@ -7,6 +7,9 @@ output/*.csv
 output/*.json
 !output/.gitkeep
 # PNG charts are kept (small, useful for demo history)
+# Legacy staged runners were removed; keep ignored so locally-reconstructed
+# copies don't accidentally get re-tracked.
+legacy/
 prior.md
 critique.md
 outputs/context-curation-bench-sloppiness.md

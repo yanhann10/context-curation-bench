@@ -1,4 +1,4 @@
-"""Stage 2 — Hierarchical strategy (Claude backend)."""
+"""Hierarchical strategy (Claude backend)."""
 from __future__ import annotations
 import asyncio
 import hashlib

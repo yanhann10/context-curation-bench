@@ -49,7 +49,7 @@ async def thin_harness_runner(
 
     domain_description: optional one-line corpus hint; appended to THIN_SYSTEM
     if provided. Leave None for domain-agnostic behaviour (recommended default
-    after Stage 4 found domain-locked prompts refuse off-topic questions).
+    after the Polars run found domain-locked prompts refuse off-topic questions).
     """
     system_text = THIN_SYSTEM
     if domain_description:
@@ -190,8 +190,8 @@ async def thick_harness_runner(
 
     verifier_model: if set (and different from `model`), the verify phase uses this
     second model instead of the same model that produced the answer. This
-    mitigates the self-confidence blind spot observed on Stage 3 HR q-v2-010 and
-    Stage 4 Polars q-polars-007 — a single-model verifier pattern-matches surface
+    mitigates the self-confidence blind spot observed on HR q-v2-010 and
+    Polars q-polars-007 — a single-model verifier pattern-matches surface
     features without re-checking sources.
     domain_description: optional corpus hint forwarded to plan/execute/verify prompts.
     """

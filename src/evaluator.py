@@ -29,10 +29,12 @@ JUDGE_SYSTEM = (
     "against a golden answer. Output VALID JSON only with exact keys: "
     '{"quality": <float 0..1>, "note": "<short reason, <=120 chars>"}. '
     "quality = factual correctness of the agent's answer compared to the "
-    "golden_answer (1 = fully correct, 0.5 = partially correct, 0 = wrong/missing). "
-    "An answer that states outdated or superseded facts when the golden answer "
-    "contains a more recent value should be scored based on factual accuracy — "
-    "the golden answer is always the ground truth."
+    "golden_answer or any acceptable_answers (1 = fully correct, 0.5 = partially correct, "
+    "0 = wrong/missing). If abstain_expected=true, score 1.0 only when the answer clearly "
+    "says the available evidence is insufficient, ambiguous, or requires follow-up instead "
+    "of inventing a concrete fact. If abstain_expected=false, do not reward abstention when "
+    "the golden answer provides a concrete resolution. Do not infer correctness from recency "
+    "alone — judge only against the supplied gold behavior."
 )
 
 

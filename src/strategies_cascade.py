@@ -1,12 +1,12 @@
 """Cascade routing: cheap-first with self-verification escalation.
 
-Tier 1: hierarchical (~$0.012/q, 91.5% quality on Stage 3)
+Tier 1: hierarchical (~$0.012/q, 91.5% quality on HR)
   → self-verify the answer ("confident? 0|1")
   → if confident=1: return it
 Tier 2: agent_managed (~$0.032/q, 99.5% quality)
   → self-verify again
   → if still confident=0: escalate
-Tier 3: full_context (~$0.067/q, 100% quality on Stage 3)
+Tier 3: full_context (~$0.067/q, 100% quality on HR)
 
 Tokens summed across all tiers + verifications. Returns same shape as
 answer_question_async so evaluator_async.run_agent_strategy_async can consume it.

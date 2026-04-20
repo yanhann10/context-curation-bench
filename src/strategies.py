@@ -1,4 +1,4 @@
-"""Context curation strategies for Stage 1.
+"""Context curation strategies.
 
 - full_context: stuff everything
 - meta_harness_optimized: apply a CurationSpec produced by harness_optimizer

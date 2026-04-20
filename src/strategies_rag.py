@@ -1,4 +1,4 @@
-"""Stage 2 — RAG strategy. Local embeddings (sentence-transformers) + FAISS."""
+"""RAG strategy. Local embeddings (sentence-transformers) + FAISS."""
 from __future__ import annotations
 import hashlib
 from dataclasses import dataclass

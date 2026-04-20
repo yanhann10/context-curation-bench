@@ -20,6 +20,14 @@ QUESTIONS_OUT = ROOT / "data" / "questions.jsonl"
 
 HANDBOOK_TS = "2026-01-01T00:00:00Z"
 
+CATEGORY_MAP = {
+    "portal_only": "single_source",
+    "docs_only": "single_source",
+    "slack_only": "source_only",
+    "needs_both": "multi_source",
+    "slack_contradicts": "resolved_conflict",
+}
+
 
 def main() -> int:
     corpus_rows: list[dict] = []
@@ -69,7 +77,7 @@ def main() -> int:
                 "id": row["id"],
                 "input": row["question"],
                 "golden": row["golden_answer"],
-                "category": row.get("category", ""),
+                "category": CATEGORY_MAP.get(row.get("category", ""), row.get("category", "")),
                 "key_facts": row.get("key_facts", []),
                 "relevant_doc_ids": row.get("relevant_source_ids", []),
                 "relevant_slices": (
@@ -77,6 +85,16 @@ def main() -> int:
                     else ["slack"] if row.get("category") == "slack_only"
                     else ["handbook", "slack"]
                 ),
+                "gold_status": row.get("gold_status", "resolved"),
+                "acceptable_answers": row.get("acceptable_answers", []),
+                "abstain_expected": row.get("abstain_expected", False),
+                "canonical_source_ids": row.get(
+                    "canonical_source_ids",
+                    row.get("relevant_source_ids", []),
+                ),
+                "authority_rule_used": row.get("authority_rule_used", ""),
+                "adjudication_rationale": row.get("adjudication_rationale", ""),
+                "scope_conditions": row.get("scope_conditions", []),
             })
     QUESTIONS_OUT.write_text(
         "\n".join(json.dumps(r, ensure_ascii=False) for r in q_rows) + "\n",
