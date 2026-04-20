@@ -12,6 +12,7 @@ import asyncio
 import csv
 import json
 import os
+import subprocess
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -27,6 +28,17 @@ from .dataset import load_questions
 from .runner import run_matrix, summarize, CellResult
 from .backend import make_client, resolve_model
 from . import frontier, optimizer
+
+
+def _git_sha() -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except Exception:
+        return ""
 
 
 def cmd_list(kind: str) -> int:
@@ -49,8 +61,24 @@ def cmd_validate(suite_path: str) -> int:
     return 0
 
 
-async def _run(suite_path: str, output_path: str) -> int:
+async def _run(
+    suite_path: str,
+    output_path: str,
+    *,
+    strategy_names: list[str] | None = None,
+    limit_questions: int = 0,
+    skip_optimize: bool = False,
+) -> int:
     spec = load_suite(suite_path)
+    if strategy_names:
+        keep = {name.strip() for name in strategy_names if name.strip()}
+        spec.strategies = [s for s in spec.strategies if s.name in keep]
+        missing = sorted(keep - {s.name for s in spec.strategies})
+        if missing:
+            print(f"ERROR: unknown or missing strategies in suite: {missing}", file=sys.stderr)
+            return 1
+    if skip_optimize:
+        spec.optimize = None
     errs = validate(spec)
     if errs:
         print("suite invalid:")
@@ -68,8 +96,10 @@ async def _run(suite_path: str, output_path: str) -> int:
     loader = CORPUS_LOADERS[spec.corpus.loader]
     corpus = loader(spec.corpus.path)
     questions = load_questions(spec.dataset.path)
+    if limit_questions > 0:
+        questions = questions[:limit_questions]
     concurrency = int(os.getenv("XCBENCH_CONCURRENCY", str(spec.concurrency)))
-    print(f"suite={spec.name}  backend={backend}  corpus={len(corpus.docs)} docs  "
+    print(f"suite={spec.name}  suite_path={spec.path}  backend={backend}  corpus={len(corpus.docs)} docs  "
           f"questions={len(questions)}  strategies={[s.name for s in spec.strategies]}")
 
     agent_name = os.getenv("XCBENCH_AGENT_MODEL", spec.models.agent)
@@ -141,6 +171,22 @@ async def _run(suite_path: str, output_path: str) -> int:
             json.dumps(history, indent=2, default=str), encoding="utf-8",
         )
 
+    runmeta = {
+        "suite_name": spec.name,
+        "suite_path": spec.path,
+        "backend": backend,
+        "git_sha": _git_sha(),
+        "agent_model": ctx["agent_model"],
+        "judge_model": ctx["judge_model"],
+        "proposer_model": ctx["proposer_model"],
+        "concurrency": concurrency,
+        "question_count": len(questions),
+        "strategy_names": [s.name for s in spec.strategies],
+        "optimize_enabled": history is not None,
+    }
+    runmeta_path = out_dir / f"{spec.name}_runmeta.json"
+    runmeta_path.write_text(json.dumps(runmeta, indent=2), encoding="utf-8")
+
     print("\n" + "=" * 72)
     print(f"SUITE SUMMARY — {spec.name}")
     print("=" * 72)
@@ -151,12 +197,28 @@ async def _run(suite_path: str, output_path: str) -> int:
               f"{s['total_tokens_mean']:>8d} {s['cost_usd_total']:>9.3f} "
               f"{s['latency_s_mean']:>8.2f}")
     print("\n" + frontier.render(front, spec.frontier.axes))
-    print(f"\nArtifacts:\n  {csv_path}\n  {summary_path}\n  {front_path}")
+    print(f"\nArtifacts:\n  {csv_path}\n  {summary_path}\n  {front_path}\n  {runmeta_path}")
     return 0
 
 
-def cmd_run(suite_path: str, output: str) -> int:
-    return asyncio.run(_run(suite_path, output))
+def cmd_run(
+    suite_path: str,
+    output: str,
+    *,
+    strategies: str = "",
+    limit_questions: int = 0,
+    skip_optimize: bool = False,
+) -> int:
+    strategy_names = [s.strip() for s in strategies.split(",")] if strategies else None
+    return asyncio.run(
+        _run(
+            suite_path,
+            output,
+            strategy_names=strategy_names,
+            limit_questions=limit_questions,
+            skip_optimize=skip_optimize,
+        )
+    )
 
 
 def main(argv=None) -> int:
@@ -166,6 +228,9 @@ def main(argv=None) -> int:
     r = sub.add_parser("run")
     r.add_argument("suite")
     r.add_argument("--output", default="")
+    r.add_argument("--strategies", default="", help="comma-separated subset of strategy names")
+    r.add_argument("--limit-questions", type=int, default=0, help="run only the first N questions")
+    r.add_argument("--skip-optimize", action="store_true", help="disable optimize phase for this run")
 
     v = sub.add_parser("validate")
     v.add_argument("suite")
@@ -173,6 +238,9 @@ def main(argv=None) -> int:
     d = sub.add_parser("demo", help="run the bundled sample HR-policy suite end-to-end")
     d.add_argument("--suite", default="suites/sample_data_hr_policy.yaml")
     d.add_argument("--output", default="")
+    d.add_argument("--strategies", default="", help="comma-separated subset of strategy names")
+    d.add_argument("--limit-questions", type=int, default=0, help="run only the first N questions")
+    d.add_argument("--skip-optimize", action="store_true", help="disable optimize phase for this run")
 
     sub.add_parser("list-strategies")
     sub.add_parser("list-graders")
@@ -180,11 +248,23 @@ def main(argv=None) -> int:
 
     args = ap.parse_args(argv)
     if args.cmd == "run":
-        return cmd_run(args.suite, args.output)
+        return cmd_run(
+            args.suite,
+            args.output,
+            strategies=args.strategies,
+            limit_questions=args.limit_questions,
+            skip_optimize=args.skip_optimize,
+        )
     if args.cmd == "demo":
         print(f"[demo] running bundled suite: {args.suite}")
         print("[demo] tip: set ANTHROPIC_API_KEY in .env; first run takes ~2–3 min\n")
-        return cmd_run(args.suite, args.output)
+        return cmd_run(
+            args.suite,
+            args.output,
+            strategies=args.strategies,
+            limit_questions=args.limit_questions,
+            skip_optimize=args.skip_optimize,
+        )
     if args.cmd == "validate":
         return cmd_validate(args.suite)
     if args.cmd == "list-strategies":
