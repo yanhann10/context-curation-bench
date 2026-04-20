@@ -1,0 +1,3395 @@
+[
+  {
+    "id": "q-conflict-001",
+    "question": "Is the mind separate from the body?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-001-src-001",
+      "conflict-001-src-002",
+      "conflict-001-src-003",
+      "conflict-001-src-004",
+      "conflict-001-src-005",
+      "conflict-001-src-006",
+      "conflict-001-src-007",
+      "conflict-001-src-008",
+      "conflict-001-src-009",
+      "conflict-001-src-010",
+      "conflict-001-src-011",
+      "conflict-001-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-001-src-001",
+      "conflict-001-src-002",
+      "conflict-001-src-003"
+    ],
+    "domain": "Philosophy",
+    "yes_count": 6,
+    "no_count": 6,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-002",
+    "question": "Do chameleons change color to blend with their environment?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-002-src-001",
+      "conflict-002-src-002",
+      "conflict-002-src-003",
+      "conflict-002-src-004",
+      "conflict-002-src-005",
+      "conflict-002-src-006",
+      "conflict-002-src-007",
+      "conflict-002-src-008",
+      "conflict-002-src-009",
+      "conflict-002-src-010",
+      "conflict-002-src-011",
+      "conflict-002-src-012",
+      "conflict-002-src-013"
+    ],
+    "canonical_source_ids": [
+      "conflict-002-src-001",
+      "conflict-002-src-002",
+      "conflict-002-src-003"
+    ],
+    "domain": "Herpetology",
+    "yes_count": 5,
+    "no_count": 8,
+    "balance": 0.62
+  },
+  {
+    "id": "q-conflict-003",
+    "question": "Is crying at work unprofessional?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-003-src-001",
+      "conflict-003-src-002",
+      "conflict-003-src-003",
+      "conflict-003-src-004",
+      "conflict-003-src-005",
+      "conflict-003-src-006",
+      "conflict-003-src-007",
+      "conflict-003-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-003-src-001",
+      "conflict-003-src-002",
+      "conflict-003-src-003"
+    ],
+    "domain": "Dacryology",
+    "yes_count": 5,
+    "no_count": 3,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-004",
+    "question": "Can fish feel pain like humans?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-004-src-001",
+      "conflict-004-src-002",
+      "conflict-004-src-003",
+      "conflict-004-src-004",
+      "conflict-004-src-005",
+      "conflict-004-src-006",
+      "conflict-004-src-007",
+      "conflict-004-src-008",
+      "conflict-004-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-004-src-001",
+      "conflict-004-src-002",
+      "conflict-004-src-003"
+    ],
+    "domain": "Ichthyology",
+    "yes_count": 6,
+    "no_count": 3,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-005",
+    "question": "Did Walt Disney create Mickey Mouse?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-005-src-001",
+      "conflict-005-src-002",
+      "conflict-005-src-003",
+      "conflict-005-src-004",
+      "conflict-005-src-005",
+      "conflict-005-src-006",
+      "conflict-005-src-007",
+      "conflict-005-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-005-src-001",
+      "conflict-005-src-002",
+      "conflict-005-src-003"
+    ],
+    "domain": "Animation",
+    "yes_count": 5,
+    "no_count": 3,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-006",
+    "question": "Do meteorites come from comets?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-006-src-001",
+      "conflict-006-src-002",
+      "conflict-006-src-003",
+      "conflict-006-src-004",
+      "conflict-006-src-005",
+      "conflict-006-src-006",
+      "conflict-006-src-007",
+      "conflict-006-src-008",
+      "conflict-006-src-009",
+      "conflict-006-src-010",
+      "conflict-006-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-006-src-001",
+      "conflict-006-src-002",
+      "conflict-006-src-003"
+    ],
+    "domain": "Meteoritics",
+    "yes_count": 6,
+    "no_count": 5,
+    "balance": 0.83
+  },
+  {
+    "id": "q-conflict-007",
+    "question": "Did the ancient Egyptians have electricity?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-007-src-001",
+      "conflict-007-src-002",
+      "conflict-007-src-003",
+      "conflict-007-src-004",
+      "conflict-007-src-005",
+      "conflict-007-src-006",
+      "conflict-007-src-007",
+      "conflict-007-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-007-src-001",
+      "conflict-007-src-002",
+      "conflict-007-src-003"
+    ],
+    "domain": "Ancient Civilizations",
+    "yes_count": 3,
+    "no_count": 5,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-008",
+    "question": "Are earthquakes more likely during full moons?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-008-src-001",
+      "conflict-008-src-002",
+      "conflict-008-src-003",
+      "conflict-008-src-004",
+      "conflict-008-src-005",
+      "conflict-008-src-006",
+      "conflict-008-src-007",
+      "conflict-008-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-008-src-001",
+      "conflict-008-src-002",
+      "conflict-008-src-003"
+    ],
+    "domain": "Seismology",
+    "yes_count": 5,
+    "no_count": 3,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-009",
+    "question": "Is fluoride in drinking water dangerous?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-009-src-001",
+      "conflict-009-src-002",
+      "conflict-009-src-003",
+      "conflict-009-src-004",
+      "conflict-009-src-005",
+      "conflict-009-src-006",
+      "conflict-009-src-007",
+      "conflict-009-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-009-src-001",
+      "conflict-009-src-002",
+      "conflict-009-src-003"
+    ],
+    "domain": "Toxicology",
+    "yes_count": 3,
+    "no_count": 5,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-010",
+    "question": "Did Neanderthals have bigger brains than modern humans?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-010-src-001",
+      "conflict-010-src-002",
+      "conflict-010-src-003",
+      "conflict-010-src-004",
+      "conflict-010-src-005",
+      "conflict-010-src-006",
+      "conflict-010-src-007",
+      "conflict-010-src-008",
+      "conflict-010-src-009",
+      "conflict-010-src-010",
+      "conflict-010-src-011",
+      "conflict-010-src-012",
+      "conflict-010-src-013",
+      "conflict-010-src-014",
+      "conflict-010-src-015"
+    ],
+    "canonical_source_ids": [
+      "conflict-010-src-001",
+      "conflict-010-src-002",
+      "conflict-010-src-003"
+    ],
+    "domain": "Anthropometry",
+    "yes_count": 10,
+    "no_count": 5,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-011",
+    "question": "Is dog breeding unethical?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-011-src-001",
+      "conflict-011-src-002",
+      "conflict-011-src-003",
+      "conflict-011-src-004",
+      "conflict-011-src-005",
+      "conflict-011-src-006",
+      "conflict-011-src-007",
+      "conflict-011-src-008",
+      "conflict-011-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-011-src-001",
+      "conflict-011-src-002",
+      "conflict-011-src-003"
+    ],
+    "domain": "Anthrozoology",
+    "yes_count": 5,
+    "no_count": 4,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-012",
+    "question": "Is there sound in space?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-012-src-001",
+      "conflict-012-src-002",
+      "conflict-012-src-003",
+      "conflict-012-src-004",
+      "conflict-012-src-005",
+      "conflict-012-src-006",
+      "conflict-012-src-007",
+      "conflict-012-src-008",
+      "conflict-012-src-009",
+      "conflict-012-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-012-src-001",
+      "conflict-012-src-002",
+      "conflict-012-src-003"
+    ],
+    "domain": "Astronomy",
+    "yes_count": 4,
+    "no_count": 6,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-013",
+    "question": "Are video games harmful to children's mental health?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-013-src-001",
+      "conflict-013-src-002",
+      "conflict-013-src-003",
+      "conflict-013-src-004",
+      "conflict-013-src-005",
+      "conflict-013-src-006",
+      "conflict-013-src-007",
+      "conflict-013-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-013-src-001",
+      "conflict-013-src-002",
+      "conflict-013-src-003"
+    ],
+    "domain": "Informatics",
+    "yes_count": 3,
+    "no_count": 5,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-014",
+    "question": "Does consumption of dairy products increase mucus production?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-014-src-001",
+      "conflict-014-src-002",
+      "conflict-014-src-003",
+      "conflict-014-src-004",
+      "conflict-014-src-005",
+      "conflict-014-src-006",
+      "conflict-014-src-007",
+      "conflict-014-src-008",
+      "conflict-014-src-009",
+      "conflict-014-src-010",
+      "conflict-014-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-014-src-001",
+      "conflict-014-src-002",
+      "conflict-014-src-003"
+    ],
+    "domain": "Otorhinolaryngology",
+    "yes_count": 5,
+    "no_count": 6,
+    "balance": 0.83
+  },
+  {
+    "id": "q-conflict-015",
+    "question": "Is early spay/neuter harmful for pets?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-015-src-001",
+      "conflict-015-src-002",
+      "conflict-015-src-003",
+      "conflict-015-src-004",
+      "conflict-015-src-005",
+      "conflict-015-src-006",
+      "conflict-015-src-007",
+      "conflict-015-src-008",
+      "conflict-015-src-009",
+      "conflict-015-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-015-src-001",
+      "conflict-015-src-002",
+      "conflict-015-src-003"
+    ],
+    "domain": "Veterinary Science",
+    "yes_count": 5,
+    "no_count": 5,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-016",
+    "question": "Can Serological testing determine immunity against COVID-19?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-016-src-001",
+      "conflict-016-src-002",
+      "conflict-016-src-003",
+      "conflict-016-src-004",
+      "conflict-016-src-005",
+      "conflict-016-src-006",
+      "conflict-016-src-007",
+      "conflict-016-src-008",
+      "conflict-016-src-009",
+      "conflict-016-src-010",
+      "conflict-016-src-011",
+      "conflict-016-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-016-src-001",
+      "conflict-016-src-002",
+      "conflict-016-src-003"
+    ],
+    "domain": "Serology",
+    "yes_count": 5,
+    "no_count": 7,
+    "balance": 0.71
+  },
+  {
+    "id": "q-conflict-017",
+    "question": "Did the War of the Worlds radio broadcast cause mass panic?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-017-src-001",
+      "conflict-017-src-002",
+      "conflict-017-src-003",
+      "conflict-017-src-004",
+      "conflict-017-src-005",
+      "conflict-017-src-006",
+      "conflict-017-src-007",
+      "conflict-017-src-008",
+      "conflict-017-src-009",
+      "conflict-017-src-010",
+      "conflict-017-src-011",
+      "conflict-017-src-012",
+      "conflict-017-src-013"
+    ],
+    "canonical_source_ids": [
+      "conflict-017-src-001",
+      "conflict-017-src-002",
+      "conflict-017-src-003"
+    ],
+    "domain": "Radio",
+    "yes_count": 8,
+    "no_count": 5,
+    "balance": 0.62
+  },
+  {
+    "id": "q-conflict-018",
+    "question": "Is multiculturalism a hindrance to unity?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-018-src-001",
+      "conflict-018-src-002",
+      "conflict-018-src-003",
+      "conflict-018-src-004",
+      "conflict-018-src-005",
+      "conflict-018-src-006",
+      "conflict-018-src-007",
+      "conflict-018-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-018-src-001",
+      "conflict-018-src-002",
+      "conflict-018-src-003"
+    ],
+    "domain": "Multiculturalism",
+    "yes_count": 3,
+    "no_count": 5,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-019",
+    "question": "Is there life after death?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-019-src-001",
+      "conflict-019-src-002",
+      "conflict-019-src-003",
+      "conflict-019-src-004",
+      "conflict-019-src-005",
+      "conflict-019-src-006",
+      "conflict-019-src-007",
+      "conflict-019-src-008",
+      "conflict-019-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-019-src-001",
+      "conflict-019-src-002",
+      "conflict-019-src-003"
+    ],
+    "domain": "Paranormal",
+    "yes_count": 4,
+    "no_count": 5,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-020",
+    "question": "Can money buy happiness?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-020-src-001",
+      "conflict-020-src-002",
+      "conflict-020-src-003",
+      "conflict-020-src-004",
+      "conflict-020-src-005",
+      "conflict-020-src-006",
+      "conflict-020-src-007",
+      "conflict-020-src-008",
+      "conflict-020-src-009",
+      "conflict-020-src-010",
+      "conflict-020-src-011",
+      "conflict-020-src-012",
+      "conflict-020-src-013",
+      "conflict-020-src-014",
+      "conflict-020-src-015",
+      "conflict-020-src-016",
+      "conflict-020-src-017",
+      "conflict-020-src-018",
+      "conflict-020-src-019",
+      "conflict-020-src-020"
+    ],
+    "canonical_source_ids": [
+      "conflict-020-src-001",
+      "conflict-020-src-002",
+      "conflict-020-src-003"
+    ],
+    "domain": "Heuristics",
+    "yes_count": 12,
+    "no_count": 8,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-021",
+    "question": "Is palm oil production sustainable?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-021-src-001",
+      "conflict-021-src-002",
+      "conflict-021-src-003",
+      "conflict-021-src-004",
+      "conflict-021-src-005",
+      "conflict-021-src-006",
+      "conflict-021-src-007",
+      "conflict-021-src-008",
+      "conflict-021-src-009",
+      "conflict-021-src-010",
+      "conflict-021-src-011",
+      "conflict-021-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-021-src-001",
+      "conflict-021-src-002",
+      "conflict-021-src-003"
+    ],
+    "domain": "Sustainable Living",
+    "yes_count": 6,
+    "no_count": 6,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-022",
+    "question": "Is the Amazon Rainforest the 'lungs' of the Earth?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-022-src-001",
+      "conflict-022-src-002",
+      "conflict-022-src-003",
+      "conflict-022-src-004",
+      "conflict-022-src-005",
+      "conflict-022-src-006",
+      "conflict-022-src-007",
+      "conflict-022-src-008",
+      "conflict-022-src-009",
+      "conflict-022-src-010",
+      "conflict-022-src-011",
+      "conflict-022-src-012",
+      "conflict-022-src-013",
+      "conflict-022-src-014",
+      "conflict-022-src-015",
+      "conflict-022-src-016",
+      "conflict-022-src-017",
+      "conflict-022-src-018",
+      "conflict-022-src-019",
+      "conflict-022-src-020",
+      "conflict-022-src-021",
+      "conflict-022-src-022",
+      "conflict-022-src-023",
+      "conflict-022-src-024"
+    ],
+    "canonical_source_ids": [
+      "conflict-022-src-001",
+      "conflict-022-src-002",
+      "conflict-022-src-003"
+    ],
+    "domain": "Human Geography",
+    "yes_count": 10,
+    "no_count": 14,
+    "balance": 0.71
+  },
+  {
+    "id": "q-conflict-023",
+    "question": "Is the TOR network safe?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-023-src-001",
+      "conflict-023-src-002",
+      "conflict-023-src-003",
+      "conflict-023-src-004",
+      "conflict-023-src-005",
+      "conflict-023-src-006",
+      "conflict-023-src-007",
+      "conflict-023-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-023-src-001",
+      "conflict-023-src-002",
+      "conflict-023-src-003"
+    ],
+    "domain": "Networking",
+    "yes_count": 3,
+    "no_count": 5,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-024",
+    "question": "Can plants grow without sunlight?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-024-src-001",
+      "conflict-024-src-002",
+      "conflict-024-src-003",
+      "conflict-024-src-004",
+      "conflict-024-src-005",
+      "conflict-024-src-006",
+      "conflict-024-src-007",
+      "conflict-024-src-008",
+      "conflict-024-src-009",
+      "conflict-024-src-010",
+      "conflict-024-src-011",
+      "conflict-024-src-012",
+      "conflict-024-src-013",
+      "conflict-024-src-014",
+      "conflict-024-src-015"
+    ],
+    "canonical_source_ids": [
+      "conflict-024-src-001",
+      "conflict-024-src-002",
+      "conflict-024-src-003"
+    ],
+    "domain": "Botany",
+    "yes_count": 10,
+    "no_count": 5,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-025",
+    "question": "Does yoga help increase height?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-025-src-001",
+      "conflict-025-src-002",
+      "conflict-025-src-003",
+      "conflict-025-src-004",
+      "conflict-025-src-005",
+      "conflict-025-src-006",
+      "conflict-025-src-007",
+      "conflict-025-src-008",
+      "conflict-025-src-009",
+      "conflict-025-src-010",
+      "conflict-025-src-011",
+      "conflict-025-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-025-src-001",
+      "conflict-025-src-002",
+      "conflict-025-src-003"
+    ],
+    "domain": "Yoga",
+    "yes_count": 6,
+    "no_count": 6,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-026",
+    "question": "Does closing background apps save battery on smartphones?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-026-src-001",
+      "conflict-026-src-002",
+      "conflict-026-src-003",
+      "conflict-026-src-004",
+      "conflict-026-src-005",
+      "conflict-026-src-006",
+      "conflict-026-src-007",
+      "conflict-026-src-008",
+      "conflict-026-src-009",
+      "conflict-026-src-010",
+      "conflict-026-src-011",
+      "conflict-026-src-012",
+      "conflict-026-src-013",
+      "conflict-026-src-014",
+      "conflict-026-src-015",
+      "conflict-026-src-016",
+      "conflict-026-src-017",
+      "conflict-026-src-018"
+    ],
+    "canonical_source_ids": [
+      "conflict-026-src-001",
+      "conflict-026-src-002",
+      "conflict-026-src-003"
+    ],
+    "domain": "Telecommunications",
+    "yes_count": 9,
+    "no_count": 9,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-027",
+    "question": "Is the U.S. flag still standing on the moon?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-027-src-001",
+      "conflict-027-src-002",
+      "conflict-027-src-003",
+      "conflict-027-src-004",
+      "conflict-027-src-005",
+      "conflict-027-src-006",
+      "conflict-027-src-007",
+      "conflict-027-src-008",
+      "conflict-027-src-009",
+      "conflict-027-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-027-src-001",
+      "conflict-027-src-002",
+      "conflict-027-src-003"
+    ],
+    "domain": "Astronautics",
+    "yes_count": 6,
+    "no_count": 4,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-028",
+    "question": "Can intermittent fasting slow down the aging process?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-028-src-001",
+      "conflict-028-src-002",
+      "conflict-028-src-003",
+      "conflict-028-src-004",
+      "conflict-028-src-005",
+      "conflict-028-src-006",
+      "conflict-028-src-007",
+      "conflict-028-src-008",
+      "conflict-028-src-009",
+      "conflict-028-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-028-src-001",
+      "conflict-028-src-002",
+      "conflict-028-src-003"
+    ],
+    "domain": "Aging",
+    "yes_count": 4,
+    "no_count": 6,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-029",
+    "question": "Can we predict when a volcano will erupt?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-029-src-001",
+      "conflict-029-src-002",
+      "conflict-029-src-003",
+      "conflict-029-src-004",
+      "conflict-029-src-005",
+      "conflict-029-src-006",
+      "conflict-029-src-007",
+      "conflict-029-src-008",
+      "conflict-029-src-009",
+      "conflict-029-src-010",
+      "conflict-029-src-011",
+      "conflict-029-src-012",
+      "conflict-029-src-013"
+    ],
+    "canonical_source_ids": [
+      "conflict-029-src-001",
+      "conflict-029-src-002",
+      "conflict-029-src-003"
+    ],
+    "domain": "Volcanology",
+    "yes_count": 6,
+    "no_count": 7,
+    "balance": 0.86
+  },
+  {
+    "id": "q-conflict-030",
+    "question": "Is unlimited vacation time beneficial for employees?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-030-src-001",
+      "conflict-030-src-002",
+      "conflict-030-src-003",
+      "conflict-030-src-004",
+      "conflict-030-src-005",
+      "conflict-030-src-006",
+      "conflict-030-src-007",
+      "conflict-030-src-008",
+      "conflict-030-src-009",
+      "conflict-030-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-030-src-001",
+      "conflict-030-src-002",
+      "conflict-030-src-003"
+    ],
+    "domain": "Work-Life Balance",
+    "yes_count": 6,
+    "no_count": 4,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-031",
+    "question": "Are identical twins genetically identical?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-031-src-001",
+      "conflict-031-src-002",
+      "conflict-031-src-003",
+      "conflict-031-src-004",
+      "conflict-031-src-005",
+      "conflict-031-src-006",
+      "conflict-031-src-007",
+      "conflict-031-src-008",
+      "conflict-031-src-009",
+      "conflict-031-src-010",
+      "conflict-031-src-011",
+      "conflict-031-src-012",
+      "conflict-031-src-013",
+      "conflict-031-src-014",
+      "conflict-031-src-015"
+    ],
+    "canonical_source_ids": [
+      "conflict-031-src-001",
+      "conflict-031-src-002",
+      "conflict-031-src-003"
+    ],
+    "domain": "Karyology",
+    "yes_count": 7,
+    "no_count": 8,
+    "balance": 0.88
+  },
+  {
+    "id": "q-conflict-032",
+    "question": "Should children be given multivitamins?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-032-src-001",
+      "conflict-032-src-002",
+      "conflict-032-src-003",
+      "conflict-032-src-004",
+      "conflict-032-src-005",
+      "conflict-032-src-006",
+      "conflict-032-src-007",
+      "conflict-032-src-008",
+      "conflict-032-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-032-src-001",
+      "conflict-032-src-002",
+      "conflict-032-src-003"
+    ],
+    "domain": "Pediatrics",
+    "yes_count": 4,
+    "no_count": 5,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-033",
+    "question": "Are toothpastes with charcoal beneficial for teeth whitening?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-033-src-001",
+      "conflict-033-src-002",
+      "conflict-033-src-003",
+      "conflict-033-src-004",
+      "conflict-033-src-005",
+      "conflict-033-src-006",
+      "conflict-033-src-007",
+      "conflict-033-src-008",
+      "conflict-033-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-033-src-001",
+      "conflict-033-src-002",
+      "conflict-033-src-003"
+    ],
+    "domain": "Stomatology",
+    "yes_count": 5,
+    "no_count": 4,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-034",
+    "question": "Is soy harmful for thyroid health?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-034-src-001",
+      "conflict-034-src-002",
+      "conflict-034-src-003",
+      "conflict-034-src-004",
+      "conflict-034-src-005",
+      "conflict-034-src-006",
+      "conflict-034-src-007",
+      "conflict-034-src-008",
+      "conflict-034-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-034-src-001",
+      "conflict-034-src-002",
+      "conflict-034-src-003"
+    ],
+    "domain": "Endocrinology",
+    "yes_count": 4,
+    "no_count": 5,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-035",
+    "question": "Is the Catholic Church the true church? ",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-035-src-001",
+      "conflict-035-src-002",
+      "conflict-035-src-003",
+      "conflict-035-src-004",
+      "conflict-035-src-005",
+      "conflict-035-src-006",
+      "conflict-035-src-007",
+      "conflict-035-src-008",
+      "conflict-035-src-009",
+      "conflict-035-src-010",
+      "conflict-035-src-011",
+      "conflict-035-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-035-src-001",
+      "conflict-035-src-002",
+      "conflict-035-src-003"
+    ],
+    "domain": "Religion",
+    "yes_count": 7,
+    "no_count": 5,
+    "balance": 0.71
+  },
+  {
+    "id": "q-conflict-036",
+    "question": "Are emoji a new form of language?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-036-src-001",
+      "conflict-036-src-002",
+      "conflict-036-src-003",
+      "conflict-036-src-004",
+      "conflict-036-src-005",
+      "conflict-036-src-006",
+      "conflict-036-src-007",
+      "conflict-036-src-008",
+      "conflict-036-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-036-src-001",
+      "conflict-036-src-002",
+      "conflict-036-src-003"
+    ],
+    "domain": "Rhetoric",
+    "yes_count": 4,
+    "no_count": 5,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-037",
+    "question": "Is the complexity of the human eye evidence of design?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-037-src-001",
+      "conflict-037-src-002",
+      "conflict-037-src-003",
+      "conflict-037-src-004",
+      "conflict-037-src-005",
+      "conflict-037-src-006",
+      "conflict-037-src-007",
+      "conflict-037-src-008",
+      "conflict-037-src-009",
+      "conflict-037-src-010",
+      "conflict-037-src-011",
+      "conflict-037-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-037-src-001",
+      "conflict-037-src-002",
+      "conflict-037-src-003"
+    ],
+    "domain": "Creationism",
+    "yes_count": 5,
+    "no_count": 7,
+    "balance": 0.71
+  },
+  {
+    "id": "q-conflict-038",
+    "question": "Is the Komodo dragon native to Australia?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-038-src-001",
+      "conflict-038-src-002",
+      "conflict-038-src-003",
+      "conflict-038-src-004",
+      "conflict-038-src-005",
+      "conflict-038-src-006",
+      "conflict-038-src-007",
+      "conflict-038-src-008",
+      "conflict-038-src-009",
+      "conflict-038-src-010",
+      "conflict-038-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-038-src-001",
+      "conflict-038-src-002",
+      "conflict-038-src-003"
+    ],
+    "domain": "Zoogeography",
+    "yes_count": 5,
+    "no_count": 6,
+    "balance": 0.83
+  },
+  {
+    "id": "q-conflict-039",
+    "question": "Is Christmas actually based on a pagan festival?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-039-src-001",
+      "conflict-039-src-002",
+      "conflict-039-src-003",
+      "conflict-039-src-004",
+      "conflict-039-src-005",
+      "conflict-039-src-006",
+      "conflict-039-src-007",
+      "conflict-039-src-008",
+      "conflict-039-src-009",
+      "conflict-039-src-010",
+      "conflict-039-src-011",
+      "conflict-039-src-012",
+      "conflict-039-src-013",
+      "conflict-039-src-014"
+    ],
+    "canonical_source_ids": [
+      "conflict-039-src-001",
+      "conflict-039-src-002",
+      "conflict-039-src-003"
+    ],
+    "domain": "Festivals",
+    "yes_count": 8,
+    "no_count": 6,
+    "balance": 0.75
+  },
+  {
+    "id": "q-conflict-040",
+    "question": "Are electric cars a solution to climate change?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-040-src-001",
+      "conflict-040-src-002",
+      "conflict-040-src-003",
+      "conflict-040-src-004",
+      "conflict-040-src-005",
+      "conflict-040-src-006",
+      "conflict-040-src-007",
+      "conflict-040-src-008",
+      "conflict-040-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-040-src-001",
+      "conflict-040-src-002",
+      "conflict-040-src-003"
+    ],
+    "domain": "Climate Change",
+    "yes_count": 4,
+    "no_count": 5,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-041",
+    "question": "Does the freedom of speech cover hate speech?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-041-src-001",
+      "conflict-041-src-002",
+      "conflict-041-src-003",
+      "conflict-041-src-004",
+      "conflict-041-src-005",
+      "conflict-041-src-006",
+      "conflict-041-src-007",
+      "conflict-041-src-008",
+      "conflict-041-src-009",
+      "conflict-041-src-010",
+      "conflict-041-src-011",
+      "conflict-041-src-012",
+      "conflict-041-src-013",
+      "conflict-041-src-014"
+    ],
+    "canonical_source_ids": [
+      "conflict-041-src-001",
+      "conflict-041-src-002",
+      "conflict-041-src-003"
+    ],
+    "domain": "Constitutional Law",
+    "yes_count": 8,
+    "no_count": 6,
+    "balance": 0.75
+  },
+  {
+    "id": "q-conflict-042",
+    "question": "Does the giant African land snail make a good pet?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-042-src-001",
+      "conflict-042-src-002",
+      "conflict-042-src-003",
+      "conflict-042-src-004",
+      "conflict-042-src-005",
+      "conflict-042-src-006",
+      "conflict-042-src-007",
+      "conflict-042-src-008",
+      "conflict-042-src-009",
+      "conflict-042-src-010",
+      "conflict-042-src-011",
+      "conflict-042-src-012",
+      "conflict-042-src-013",
+      "conflict-042-src-014",
+      "conflict-042-src-015",
+      "conflict-042-src-016"
+    ],
+    "canonical_source_ids": [
+      "conflict-042-src-001",
+      "conflict-042-src-002",
+      "conflict-042-src-003"
+    ],
+    "domain": "Malacology",
+    "yes_count": 7,
+    "no_count": 9,
+    "balance": 0.78
+  },
+  {
+    "id": "q-conflict-043",
+    "question": "Does the moon have volcanoes?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-043-src-001",
+      "conflict-043-src-002",
+      "conflict-043-src-003",
+      "conflict-043-src-004",
+      "conflict-043-src-005",
+      "conflict-043-src-006",
+      "conflict-043-src-007",
+      "conflict-043-src-008",
+      "conflict-043-src-009",
+      "conflict-043-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-043-src-001",
+      "conflict-043-src-002",
+      "conflict-043-src-003"
+    ],
+    "domain": "Vulcanology",
+    "yes_count": 6,
+    "no_count": 4,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-044",
+    "question": "Can the human immunodeficiency virus (HIV) be cured?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-044-src-001",
+      "conflict-044-src-002",
+      "conflict-044-src-003",
+      "conflict-044-src-004",
+      "conflict-044-src-005",
+      "conflict-044-src-006",
+      "conflict-044-src-007",
+      "conflict-044-src-008",
+      "conflict-044-src-009",
+      "conflict-044-src-010",
+      "conflict-044-src-011",
+      "conflict-044-src-012",
+      "conflict-044-src-013",
+      "conflict-044-src-014",
+      "conflict-044-src-015"
+    ],
+    "canonical_source_ids": [
+      "conflict-044-src-001",
+      "conflict-044-src-002",
+      "conflict-044-src-003"
+    ],
+    "domain": "Virology",
+    "yes_count": 7,
+    "no_count": 8,
+    "balance": 0.88
+  },
+  {
+    "id": "q-conflict-045",
+    "question": "Can using a standing desk help you lose weight?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-045-src-001",
+      "conflict-045-src-002",
+      "conflict-045-src-003",
+      "conflict-045-src-004",
+      "conflict-045-src-005",
+      "conflict-045-src-006",
+      "conflict-045-src-007",
+      "conflict-045-src-008",
+      "conflict-045-src-009",
+      "conflict-045-src-010",
+      "conflict-045-src-011",
+      "conflict-045-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-045-src-001",
+      "conflict-045-src-002",
+      "conflict-045-src-003"
+    ],
+    "domain": "Ergonomics",
+    "yes_count": 7,
+    "no_count": 5,
+    "balance": 0.71
+  },
+  {
+    "id": "q-conflict-046",
+    "question": "Is it necessary to roll /r/ in Spanish pronunciation?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-046-src-001",
+      "conflict-046-src-002",
+      "conflict-046-src-003",
+      "conflict-046-src-004",
+      "conflict-046-src-005",
+      "conflict-046-src-006",
+      "conflict-046-src-007",
+      "conflict-046-src-008",
+      "conflict-046-src-009",
+      "conflict-046-src-010",
+      "conflict-046-src-011",
+      "conflict-046-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-046-src-001",
+      "conflict-046-src-002",
+      "conflict-046-src-003"
+    ],
+    "domain": "Phonetics",
+    "yes_count": 7,
+    "no_count": 5,
+    "balance": 0.71
+  },
+  {
+    "id": "q-conflict-047",
+    "question": "Does cold water make hair shinier?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-047-src-001",
+      "conflict-047-src-002",
+      "conflict-047-src-003",
+      "conflict-047-src-004",
+      "conflict-047-src-005",
+      "conflict-047-src-006",
+      "conflict-047-src-007",
+      "conflict-047-src-008",
+      "conflict-047-src-009",
+      "conflict-047-src-010",
+      "conflict-047-src-011",
+      "conflict-047-src-012",
+      "conflict-047-src-013",
+      "conflict-047-src-014",
+      "conflict-047-src-015"
+    ],
+    "canonical_source_ids": [
+      "conflict-047-src-001",
+      "conflict-047-src-002",
+      "conflict-047-src-003"
+    ],
+    "domain": "Trichology",
+    "yes_count": 7,
+    "no_count": 8,
+    "balance": 0.88
+  },
+  {
+    "id": "q-conflict-048",
+    "question": "Are fashion designs protected under copyright law?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-048-src-001",
+      "conflict-048-src-002",
+      "conflict-048-src-003",
+      "conflict-048-src-004",
+      "conflict-048-src-005",
+      "conflict-048-src-006",
+      "conflict-048-src-007",
+      "conflict-048-src-008",
+      "conflict-048-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-048-src-001",
+      "conflict-048-src-002",
+      "conflict-048-src-003"
+    ],
+    "domain": "Intellectual Property",
+    "yes_count": 5,
+    "no_count": 4,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-049",
+    "question": "Should organ selling be legalized?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-049-src-001",
+      "conflict-049-src-002",
+      "conflict-049-src-003",
+      "conflict-049-src-004",
+      "conflict-049-src-005",
+      "conflict-049-src-006",
+      "conflict-049-src-007",
+      "conflict-049-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-049-src-001",
+      "conflict-049-src-002",
+      "conflict-049-src-003"
+    ],
+    "domain": "Bioethics",
+    "yes_count": 3,
+    "no_count": 5,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-050",
+    "question": "Are human facial features based on the Golden ratio? ",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-050-src-001",
+      "conflict-050-src-002",
+      "conflict-050-src-003",
+      "conflict-050-src-004",
+      "conflict-050-src-005",
+      "conflict-050-src-006",
+      "conflict-050-src-007",
+      "conflict-050-src-008",
+      "conflict-050-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-050-src-001",
+      "conflict-050-src-002",
+      "conflict-050-src-003"
+    ],
+    "domain": "Biomathematics",
+    "yes_count": 6,
+    "no_count": 3,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-051",
+    "question": "Was the Silurian period the birth of the first land plants?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-051-src-001",
+      "conflict-051-src-002",
+      "conflict-051-src-003",
+      "conflict-051-src-004",
+      "conflict-051-src-005",
+      "conflict-051-src-006",
+      "conflict-051-src-007",
+      "conflict-051-src-008",
+      "conflict-051-src-009",
+      "conflict-051-src-010",
+      "conflict-051-src-011",
+      "conflict-051-src-012",
+      "conflict-051-src-013",
+      "conflict-051-src-014",
+      "conflict-051-src-015"
+    ],
+    "canonical_source_ids": [
+      "conflict-051-src-001",
+      "conflict-051-src-002",
+      "conflict-051-src-003"
+    ],
+    "domain": "Paleobotany",
+    "yes_count": 8,
+    "no_count": 7,
+    "balance": 0.88
+  },
+  {
+    "id": "q-conflict-052",
+    "question": "Are somatic mutations passed to offspring? ",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-052-src-001",
+      "conflict-052-src-002",
+      "conflict-052-src-003",
+      "conflict-052-src-004",
+      "conflict-052-src-005",
+      "conflict-052-src-006",
+      "conflict-052-src-007",
+      "conflict-052-src-008",
+      "conflict-052-src-009",
+      "conflict-052-src-010",
+      "conflict-052-src-011",
+      "conflict-052-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-052-src-001",
+      "conflict-052-src-002",
+      "conflict-052-src-003"
+    ],
+    "domain": "Cytogenetics",
+    "yes_count": 6,
+    "no_count": 6,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-053",
+    "question": "Is a diamond the hardest natural substance on earth?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-053-src-001",
+      "conflict-053-src-002",
+      "conflict-053-src-003",
+      "conflict-053-src-004",
+      "conflict-053-src-005",
+      "conflict-053-src-006",
+      "conflict-053-src-007",
+      "conflict-053-src-008",
+      "conflict-053-src-009",
+      "conflict-053-src-010",
+      "conflict-053-src-011",
+      "conflict-053-src-012",
+      "conflict-053-src-013",
+      "conflict-053-src-014",
+      "conflict-053-src-015",
+      "conflict-053-src-016"
+    ],
+    "canonical_source_ids": [
+      "conflict-053-src-001",
+      "conflict-053-src-002",
+      "conflict-053-src-003"
+    ],
+    "domain": "Gemology",
+    "yes_count": 9,
+    "no_count": 7,
+    "balance": 0.78
+  },
+  {
+    "id": "q-conflict-054",
+    "question": "Can nuclear power solve climate change?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-054-src-001",
+      "conflict-054-src-002",
+      "conflict-054-src-003",
+      "conflict-054-src-004",
+      "conflict-054-src-005",
+      "conflict-054-src-006",
+      "conflict-054-src-007",
+      "conflict-054-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-054-src-001",
+      "conflict-054-src-002",
+      "conflict-054-src-003"
+    ],
+    "domain": "Nuclear Energy",
+    "yes_count": 3,
+    "no_count": 5,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-055",
+    "question": "Is the blue whale the largest mammal that has ever lived?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-055-src-001",
+      "conflict-055-src-002",
+      "conflict-055-src-003",
+      "conflict-055-src-004",
+      "conflict-055-src-005",
+      "conflict-055-src-006",
+      "conflict-055-src-007",
+      "conflict-055-src-008",
+      "conflict-055-src-009",
+      "conflict-055-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-055-src-001",
+      "conflict-055-src-002",
+      "conflict-055-src-003"
+    ],
+    "domain": "Mammalogy",
+    "yes_count": 5,
+    "no_count": 5,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-056",
+    "question": "Is it possible for life to exist on a gas giant?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-056-src-001",
+      "conflict-056-src-002",
+      "conflict-056-src-003",
+      "conflict-056-src-004",
+      "conflict-056-src-005",
+      "conflict-056-src-006",
+      "conflict-056-src-007",
+      "conflict-056-src-008",
+      "conflict-056-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-056-src-001",
+      "conflict-056-src-002",
+      "conflict-056-src-003"
+    ],
+    "domain": "Astrobiology",
+    "yes_count": 5,
+    "no_count": 4,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-057",
+    "question": "Is infinite scrolling a good web design technique?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-057-src-001",
+      "conflict-057-src-002",
+      "conflict-057-src-003",
+      "conflict-057-src-004",
+      "conflict-057-src-005",
+      "conflict-057-src-006",
+      "conflict-057-src-007",
+      "conflict-057-src-008",
+      "conflict-057-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-057-src-001",
+      "conflict-057-src-002",
+      "conflict-057-src-003"
+    ],
+    "domain": "Product Design",
+    "yes_count": 3,
+    "no_count": 6,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-058",
+    "question": "Do fires benefit forests?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-058-src-001",
+      "conflict-058-src-002",
+      "conflict-058-src-003",
+      "conflict-058-src-004",
+      "conflict-058-src-005",
+      "conflict-058-src-006",
+      "conflict-058-src-007",
+      "conflict-058-src-008",
+      "conflict-058-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-058-src-001",
+      "conflict-058-src-002",
+      "conflict-058-src-003"
+    ],
+    "domain": "Forestry",
+    "yes_count": 5,
+    "no_count": 4,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-059",
+    "question": "Does centrifugal force exist?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-059-src-001",
+      "conflict-059-src-002",
+      "conflict-059-src-003",
+      "conflict-059-src-004",
+      "conflict-059-src-005",
+      "conflict-059-src-006",
+      "conflict-059-src-007",
+      "conflict-059-src-008",
+      "conflict-059-src-009",
+      "conflict-059-src-010",
+      "conflict-059-src-011",
+      "conflict-059-src-012",
+      "conflict-059-src-013",
+      "conflict-059-src-014",
+      "conflict-059-src-015",
+      "conflict-059-src-016"
+    ],
+    "canonical_source_ids": [
+      "conflict-059-src-001",
+      "conflict-059-src-002",
+      "conflict-059-src-003"
+    ],
+    "domain": "Kinematics",
+    "yes_count": 8,
+    "no_count": 8,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-060",
+    "question": "Does every startup need a business plan?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-060-src-001",
+      "conflict-060-src-002",
+      "conflict-060-src-003",
+      "conflict-060-src-004",
+      "conflict-060-src-005",
+      "conflict-060-src-006",
+      "conflict-060-src-007",
+      "conflict-060-src-008",
+      "conflict-060-src-009",
+      "conflict-060-src-010",
+      "conflict-060-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-060-src-001",
+      "conflict-060-src-002",
+      "conflict-060-src-003"
+    ],
+    "domain": "Entrepreneurship",
+    "yes_count": 7,
+    "no_count": 4,
+    "balance": 0.57
+  },
+  {
+    "id": "q-conflict-061",
+    "question": "Do meteor showers pose a threat to Earth?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-061-src-001",
+      "conflict-061-src-002",
+      "conflict-061-src-003",
+      "conflict-061-src-004",
+      "conflict-061-src-005",
+      "conflict-061-src-006",
+      "conflict-061-src-007",
+      "conflict-061-src-008",
+      "conflict-061-src-009",
+      "conflict-061-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-061-src-001",
+      "conflict-061-src-002",
+      "conflict-061-src-003"
+    ],
+    "domain": "Aerospace",
+    "yes_count": 4,
+    "no_count": 6,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-062",
+    "question": "Do saturated fats increase the risk of heart disease?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-062-src-001",
+      "conflict-062-src-002",
+      "conflict-062-src-003",
+      "conflict-062-src-004",
+      "conflict-062-src-005",
+      "conflict-062-src-006",
+      "conflict-062-src-007",
+      "conflict-062-src-008",
+      "conflict-062-src-009",
+      "conflict-062-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-062-src-001",
+      "conflict-062-src-002",
+      "conflict-062-src-003"
+    ],
+    "domain": "Cardiology",
+    "yes_count": 6,
+    "no_count": 4,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-063",
+    "question": "Was the sexual revolution of the 1960s a liberating moment for women?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-063-src-001",
+      "conflict-063-src-002",
+      "conflict-063-src-003",
+      "conflict-063-src-004",
+      "conflict-063-src-005",
+      "conflict-063-src-006",
+      "conflict-063-src-007",
+      "conflict-063-src-008",
+      "conflict-063-src-009",
+      "conflict-063-src-010",
+      "conflict-063-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-063-src-001",
+      "conflict-063-src-002",
+      "conflict-063-src-003"
+    ],
+    "domain": "Revolutions",
+    "yes_count": 6,
+    "no_count": 5,
+    "balance": 0.83
+  },
+  {
+    "id": "q-conflict-064",
+    "question": "Does weight lifting cause high blood pressure?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-064-src-001",
+      "conflict-064-src-002",
+      "conflict-064-src-003",
+      "conflict-064-src-004",
+      "conflict-064-src-005",
+      "conflict-064-src-006",
+      "conflict-064-src-007",
+      "conflict-064-src-008",
+      "conflict-064-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-064-src-001",
+      "conflict-064-src-002",
+      "conflict-064-src-003"
+    ],
+    "domain": "Kinesiology",
+    "yes_count": 5,
+    "no_count": 4,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-065",
+    "question": "Are coffee grounds effective as a slug and snail deterrent?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-065-src-001",
+      "conflict-065-src-002",
+      "conflict-065-src-003",
+      "conflict-065-src-004",
+      "conflict-065-src-005",
+      "conflict-065-src-006",
+      "conflict-065-src-007",
+      "conflict-065-src-008",
+      "conflict-065-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-065-src-001",
+      "conflict-065-src-002",
+      "conflict-065-src-003"
+    ],
+    "domain": "Horticulture",
+    "yes_count": 5,
+    "no_count": 4,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-066",
+    "question": "Is the moon geologically active?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-066-src-001",
+      "conflict-066-src-002",
+      "conflict-066-src-003",
+      "conflict-066-src-004",
+      "conflict-066-src-005",
+      "conflict-066-src-006",
+      "conflict-066-src-007",
+      "conflict-066-src-008",
+      "conflict-066-src-009",
+      "conflict-066-src-010",
+      "conflict-066-src-011",
+      "conflict-066-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-066-src-001",
+      "conflict-066-src-002",
+      "conflict-066-src-003"
+    ],
+    "domain": "Selenology",
+    "yes_count": 6,
+    "no_count": 6,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-067",
+    "question": "Does infinite scrolling improve user experience?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-067-src-001",
+      "conflict-067-src-002",
+      "conflict-067-src-003",
+      "conflict-067-src-004",
+      "conflict-067-src-005",
+      "conflict-067-src-006",
+      "conflict-067-src-007",
+      "conflict-067-src-008",
+      "conflict-067-src-009",
+      "conflict-067-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-067-src-001",
+      "conflict-067-src-002",
+      "conflict-067-src-003"
+    ],
+    "domain": "Web Design",
+    "yes_count": 4,
+    "no_count": 6,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-068",
+    "question": "Does taking high doses of vitamin C help alleviate common cold symptoms?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-068-src-001",
+      "conflict-068-src-002",
+      "conflict-068-src-003",
+      "conflict-068-src-004",
+      "conflict-068-src-005",
+      "conflict-068-src-006",
+      "conflict-068-src-007",
+      "conflict-068-src-008",
+      "conflict-068-src-009",
+      "conflict-068-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-068-src-001",
+      "conflict-068-src-002",
+      "conflict-068-src-003"
+    ],
+    "domain": "Pharmacology",
+    "yes_count": 5,
+    "no_count": 5,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-069",
+    "question": "Do emoji count as a form of written language?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-069-src-001",
+      "conflict-069-src-002",
+      "conflict-069-src-003",
+      "conflict-069-src-004",
+      "conflict-069-src-005",
+      "conflict-069-src-006",
+      "conflict-069-src-007",
+      "conflict-069-src-008",
+      "conflict-069-src-009",
+      "conflict-069-src-010",
+      "conflict-069-src-011",
+      "conflict-069-src-012",
+      "conflict-069-src-013",
+      "conflict-069-src-014"
+    ],
+    "canonical_source_ids": [
+      "conflict-069-src-001",
+      "conflict-069-src-002",
+      "conflict-069-src-003"
+    ],
+    "domain": "Philology",
+    "yes_count": 6,
+    "no_count": 8,
+    "balance": 0.75
+  },
+  {
+    "id": "q-conflict-070",
+    "question": "Is organic farming less efficient than conventional farming?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-070-src-001",
+      "conflict-070-src-002",
+      "conflict-070-src-003",
+      "conflict-070-src-004",
+      "conflict-070-src-005",
+      "conflict-070-src-006",
+      "conflict-070-src-007",
+      "conflict-070-src-008",
+      "conflict-070-src-009",
+      "conflict-070-src-010",
+      "conflict-070-src-011",
+      "conflict-070-src-012",
+      "conflict-070-src-013",
+      "conflict-070-src-014"
+    ],
+    "canonical_source_ids": [
+      "conflict-070-src-001",
+      "conflict-070-src-002",
+      "conflict-070-src-003"
+    ],
+    "domain": "Organic Farming",
+    "yes_count": 7,
+    "no_count": 7,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-071",
+    "question": "Is sitting the new smoking?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-071-src-001",
+      "conflict-071-src-002",
+      "conflict-071-src-003",
+      "conflict-071-src-004",
+      "conflict-071-src-005",
+      "conflict-071-src-006",
+      "conflict-071-src-007",
+      "conflict-071-src-008",
+      "conflict-071-src-009",
+      "conflict-071-src-010",
+      "conflict-071-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-071-src-001",
+      "conflict-071-src-002",
+      "conflict-071-src-003"
+    ],
+    "domain": "Epidemiology",
+    "yes_count": 6,
+    "no_count": 5,
+    "balance": 0.83
+  },
+  {
+    "id": "q-conflict-072",
+    "question": "Do we have innate knowledge?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-072-src-001",
+      "conflict-072-src-002",
+      "conflict-072-src-003",
+      "conflict-072-src-004",
+      "conflict-072-src-005",
+      "conflict-072-src-006",
+      "conflict-072-src-007",
+      "conflict-072-src-008",
+      "conflict-072-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-072-src-001",
+      "conflict-072-src-002",
+      "conflict-072-src-003"
+    ],
+    "domain": "Epistemology",
+    "yes_count": 5,
+    "no_count": 4,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-073",
+    "question": "Does the soul exist separately from the body?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-073-src-001",
+      "conflict-073-src-002",
+      "conflict-073-src-003",
+      "conflict-073-src-004",
+      "conflict-073-src-005",
+      "conflict-073-src-006",
+      "conflict-073-src-007",
+      "conflict-073-src-008",
+      "conflict-073-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-073-src-001",
+      "conflict-073-src-002",
+      "conflict-073-src-003"
+    ],
+    "domain": "Metaphysics",
+    "yes_count": 5,
+    "no_count": 4,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-074",
+    "question": "Are online degrees valued less by employers?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-074-src-001",
+      "conflict-074-src-002",
+      "conflict-074-src-003",
+      "conflict-074-src-004",
+      "conflict-074-src-005",
+      "conflict-074-src-006",
+      "conflict-074-src-007",
+      "conflict-074-src-008",
+      "conflict-074-src-009",
+      "conflict-074-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-074-src-001",
+      "conflict-074-src-002",
+      "conflict-074-src-003"
+    ],
+    "domain": "Online Learning",
+    "yes_count": 5,
+    "no_count": 5,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-075",
+    "question": "Is it appropriate to ask someone their age?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-075-src-001",
+      "conflict-075-src-002",
+      "conflict-075-src-003",
+      "conflict-075-src-004",
+      "conflict-075-src-005",
+      "conflict-075-src-006",
+      "conflict-075-src-007",
+      "conflict-075-src-008",
+      "conflict-075-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-075-src-001",
+      "conflict-075-src-002",
+      "conflict-075-src-003"
+    ],
+    "domain": "Etiquette",
+    "yes_count": 4,
+    "no_count": 5,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-076",
+    "question": "Was the first beer brewed by the Sumerians?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-076-src-001",
+      "conflict-076-src-002",
+      "conflict-076-src-003",
+      "conflict-076-src-004",
+      "conflict-076-src-005",
+      "conflict-076-src-006",
+      "conflict-076-src-007",
+      "conflict-076-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-076-src-001",
+      "conflict-076-src-002",
+      "conflict-076-src-003"
+    ],
+    "domain": "Paleoethnobotany",
+    "yes_count": 5,
+    "no_count": 3,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-077",
+    "question": "Do children learn language skills from television?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-077-src-001",
+      "conflict-077-src-002",
+      "conflict-077-src-003",
+      "conflict-077-src-004",
+      "conflict-077-src-005",
+      "conflict-077-src-006",
+      "conflict-077-src-007",
+      "conflict-077-src-008",
+      "conflict-077-src-009",
+      "conflict-077-src-010",
+      "conflict-077-src-011",
+      "conflict-077-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-077-src-001",
+      "conflict-077-src-002",
+      "conflict-077-src-003"
+    ],
+    "domain": "Television",
+    "yes_count": 8,
+    "no_count": 4,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-078",
+    "question": "Is public transportation faster than driving in cities?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-078-src-001",
+      "conflict-078-src-002",
+      "conflict-078-src-003",
+      "conflict-078-src-004",
+      "conflict-078-src-005",
+      "conflict-078-src-006",
+      "conflict-078-src-007",
+      "conflict-078-src-008",
+      "conflict-078-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-078-src-001",
+      "conflict-078-src-002",
+      "conflict-078-src-003"
+    ],
+    "domain": "Public Transport",
+    "yes_count": 3,
+    "no_count": 6,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-079",
+    "question": "Should patients stop taking blood thinners before an endoscopy?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-079-src-001",
+      "conflict-079-src-002",
+      "conflict-079-src-003",
+      "conflict-079-src-004",
+      "conflict-079-src-005",
+      "conflict-079-src-006",
+      "conflict-079-src-007",
+      "conflict-079-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-079-src-001",
+      "conflict-079-src-002",
+      "conflict-079-src-003"
+    ],
+    "domain": "Endoscopy",
+    "yes_count": 5,
+    "no_count": 3,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-080",
+    "question": "Was Chauvet Cave the site of the earliest known cave paintings?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-080-src-001",
+      "conflict-080-src-002",
+      "conflict-080-src-003",
+      "conflict-080-src-004",
+      "conflict-080-src-005",
+      "conflict-080-src-006",
+      "conflict-080-src-007",
+      "conflict-080-src-008",
+      "conflict-080-src-009",
+      "conflict-080-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-080-src-001",
+      "conflict-080-src-002",
+      "conflict-080-src-003"
+    ],
+    "domain": "Spelaeology",
+    "yes_count": 5,
+    "no_count": 5,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-081",
+    "question": "Does kinesiology taping enhance sports performance?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-081-src-001",
+      "conflict-081-src-002",
+      "conflict-081-src-003",
+      "conflict-081-src-004",
+      "conflict-081-src-005",
+      "conflict-081-src-006",
+      "conflict-081-src-007",
+      "conflict-081-src-008",
+      "conflict-081-src-009",
+      "conflict-081-src-010",
+      "conflict-081-src-011",
+      "conflict-081-src-012",
+      "conflict-081-src-013"
+    ],
+    "canonical_source_ids": [
+      "conflict-081-src-001",
+      "conflict-081-src-002",
+      "conflict-081-src-003"
+    ],
+    "domain": "Biomechanics",
+    "yes_count": 8,
+    "no_count": 5,
+    "balance": 0.62
+  },
+  {
+    "id": "q-conflict-082",
+    "question": "Do older people need less sleep?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-082-src-001",
+      "conflict-082-src-002",
+      "conflict-082-src-003",
+      "conflict-082-src-004",
+      "conflict-082-src-005",
+      "conflict-082-src-006",
+      "conflict-082-src-007",
+      "conflict-082-src-008",
+      "conflict-082-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-082-src-001",
+      "conflict-082-src-002",
+      "conflict-082-src-003"
+    ],
+    "domain": "Somnology",
+    "yes_count": 4,
+    "no_count": 5,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-083",
+    "question": "Does the density of water change with depth?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-083-src-001",
+      "conflict-083-src-002",
+      "conflict-083-src-003",
+      "conflict-083-src-004",
+      "conflict-083-src-005",
+      "conflict-083-src-006",
+      "conflict-083-src-007",
+      "conflict-083-src-008",
+      "conflict-083-src-009",
+      "conflict-083-src-010",
+      "conflict-083-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-083-src-001",
+      "conflict-083-src-002",
+      "conflict-083-src-003"
+    ],
+    "domain": "Hydrology",
+    "yes_count": 7,
+    "no_count": 4,
+    "balance": 0.57
+  },
+  {
+    "id": "q-conflict-084",
+    "question": "Does sugar directly lead to cavities?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-084-src-001",
+      "conflict-084-src-002",
+      "conflict-084-src-003",
+      "conflict-084-src-004",
+      "conflict-084-src-005",
+      "conflict-084-src-006",
+      "conflict-084-src-007",
+      "conflict-084-src-008",
+      "conflict-084-src-009",
+      "conflict-084-src-010",
+      "conflict-084-src-011",
+      "conflict-084-src-012",
+      "conflict-084-src-013",
+      "conflict-084-src-014",
+      "conflict-084-src-015",
+      "conflict-084-src-016",
+      "conflict-084-src-017",
+      "conflict-084-src-018",
+      "conflict-084-src-019"
+    ],
+    "canonical_source_ids": [
+      "conflict-084-src-001",
+      "conflict-084-src-002",
+      "conflict-084-src-003"
+    ],
+    "domain": "Odontology",
+    "yes_count": 10,
+    "no_count": 9,
+    "balance": 0.9
+  },
+  {
+    "id": "q-conflict-085",
+    "question": "Is vegan leather environmentally friendly?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-085-src-001",
+      "conflict-085-src-002",
+      "conflict-085-src-003",
+      "conflict-085-src-004",
+      "conflict-085-src-005",
+      "conflict-085-src-006",
+      "conflict-085-src-007",
+      "conflict-085-src-008",
+      "conflict-085-src-009",
+      "conflict-085-src-010",
+      "conflict-085-src-011",
+      "conflict-085-src-012",
+      "conflict-085-src-013",
+      "conflict-085-src-014",
+      "conflict-085-src-015",
+      "conflict-085-src-016",
+      "conflict-085-src-017",
+      "conflict-085-src-018",
+      "conflict-085-src-019",
+      "conflict-085-src-020",
+      "conflict-085-src-021",
+      "conflict-085-src-022"
+    ],
+    "canonical_source_ids": [
+      "conflict-085-src-001",
+      "conflict-085-src-002",
+      "conflict-085-src-003"
+    ],
+    "domain": "Veganism",
+    "yes_count": 11,
+    "no_count": 11,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-086",
+    "question": "Do birds descend from dinosaurs?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-086-src-001",
+      "conflict-086-src-002",
+      "conflict-086-src-003",
+      "conflict-086-src-004",
+      "conflict-086-src-005",
+      "conflict-086-src-006",
+      "conflict-086-src-007",
+      "conflict-086-src-008",
+      "conflict-086-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-086-src-001",
+      "conflict-086-src-002",
+      "conflict-086-src-003"
+    ],
+    "domain": "Ornithology",
+    "yes_count": 6,
+    "no_count": 3,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-087",
+    "question": "Is remote work more productive than office work?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-087-src-001",
+      "conflict-087-src-002",
+      "conflict-087-src-003",
+      "conflict-087-src-004",
+      "conflict-087-src-005",
+      "conflict-087-src-006",
+      "conflict-087-src-007",
+      "conflict-087-src-008",
+      "conflict-087-src-009",
+      "conflict-087-src-010",
+      "conflict-087-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-087-src-001",
+      "conflict-087-src-002",
+      "conflict-087-src-003"
+    ],
+    "domain": "Remote Work",
+    "yes_count": 7,
+    "no_count": 4,
+    "balance": 0.57
+  },
+  {
+    "id": "q-conflict-088",
+    "question": "Can detox diets help in weight loss?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-088-src-001",
+      "conflict-088-src-002",
+      "conflict-088-src-003",
+      "conflict-088-src-004",
+      "conflict-088-src-005",
+      "conflict-088-src-006",
+      "conflict-088-src-007",
+      "conflict-088-src-008",
+      "conflict-088-src-009",
+      "conflict-088-src-010",
+      "conflict-088-src-011",
+      "conflict-088-src-012",
+      "conflict-088-src-013",
+      "conflict-088-src-014"
+    ],
+    "canonical_source_ids": [
+      "conflict-088-src-001",
+      "conflict-088-src-002",
+      "conflict-088-src-003"
+    ],
+    "domain": "Holistic Health",
+    "yes_count": 8,
+    "no_count": 6,
+    "balance": 0.75
+  },
+  {
+    "id": "q-conflict-089",
+    "question": "Are pesticides harmful to all insects?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-089-src-001",
+      "conflict-089-src-002",
+      "conflict-089-src-003",
+      "conflict-089-src-004",
+      "conflict-089-src-005",
+      "conflict-089-src-006",
+      "conflict-089-src-007",
+      "conflict-089-src-008",
+      "conflict-089-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-089-src-001",
+      "conflict-089-src-002",
+      "conflict-089-src-003"
+    ],
+    "domain": "Ecophysiology",
+    "yes_count": 6,
+    "no_count": 3,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-090",
+    "question": "Were there Dark Ages in the Middle Ages?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-090-src-001",
+      "conflict-090-src-002",
+      "conflict-090-src-003",
+      "conflict-090-src-004",
+      "conflict-090-src-005",
+      "conflict-090-src-006",
+      "conflict-090-src-007",
+      "conflict-090-src-008",
+      "conflict-090-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-090-src-001",
+      "conflict-090-src-002",
+      "conflict-090-src-003"
+    ],
+    "domain": "Archaeology",
+    "yes_count": 5,
+    "no_count": 4,
+    "balance": 0.8
+  },
+  {
+    "id": "q-conflict-091",
+    "question": "Are Florida Panthers on the brink of extinction?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-091-src-001",
+      "conflict-091-src-002",
+      "conflict-091-src-003",
+      "conflict-091-src-004",
+      "conflict-091-src-005",
+      "conflict-091-src-006",
+      "conflict-091-src-007",
+      "conflict-091-src-008",
+      "conflict-091-src-009",
+      "conflict-091-src-010",
+      "conflict-091-src-011",
+      "conflict-091-src-012",
+      "conflict-091-src-013",
+      "conflict-091-src-014",
+      "conflict-091-src-015"
+    ],
+    "canonical_source_ids": [
+      "conflict-091-src-001",
+      "conflict-091-src-002",
+      "conflict-091-src-003"
+    ],
+    "domain": "Endangered Species",
+    "yes_count": 5,
+    "no_count": 10,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-092",
+    "question": "Can hypnosis allow people to recall forgotten memories?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-092-src-001",
+      "conflict-092-src-002",
+      "conflict-092-src-003",
+      "conflict-092-src-004",
+      "conflict-092-src-005",
+      "conflict-092-src-006",
+      "conflict-092-src-007",
+      "conflict-092-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-092-src-001",
+      "conflict-092-src-002",
+      "conflict-092-src-003"
+    ],
+    "domain": "Neurology",
+    "yes_count": 3,
+    "no_count": 5,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-093",
+    "question": "Do Hindus believe in a single god?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-093-src-001",
+      "conflict-093-src-002",
+      "conflict-093-src-003",
+      "conflict-093-src-004",
+      "conflict-093-src-005",
+      "conflict-093-src-006",
+      "conflict-093-src-007",
+      "conflict-093-src-008",
+      "conflict-093-src-009",
+      "conflict-093-src-010",
+      "conflict-093-src-011",
+      "conflict-093-src-012",
+      "conflict-093-src-013"
+    ],
+    "canonical_source_ids": [
+      "conflict-093-src-001",
+      "conflict-093-src-002",
+      "conflict-093-src-003"
+    ],
+    "domain": "World Religions",
+    "yes_count": 8,
+    "no_count": 5,
+    "balance": 0.62
+  },
+  {
+    "id": "q-conflict-094",
+    "question": "Can sugar cause hyperactivity in children?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-094-src-001",
+      "conflict-094-src-002",
+      "conflict-094-src-003",
+      "conflict-094-src-004",
+      "conflict-094-src-005",
+      "conflict-094-src-006",
+      "conflict-094-src-007",
+      "conflict-094-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-094-src-001",
+      "conflict-094-src-002",
+      "conflict-094-src-003"
+    ],
+    "domain": "Psychobiology",
+    "yes_count": 3,
+    "no_count": 5,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-095",
+    "question": "Were the Brontosaurus and the Apatosaurus the same dinosaur?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-095-src-001",
+      "conflict-095-src-002",
+      "conflict-095-src-003",
+      "conflict-095-src-004",
+      "conflict-095-src-005",
+      "conflict-095-src-006",
+      "conflict-095-src-007",
+      "conflict-095-src-008",
+      "conflict-095-src-009",
+      "conflict-095-src-010",
+      "conflict-095-src-011",
+      "conflict-095-src-012",
+      "conflict-095-src-013",
+      "conflict-095-src-014",
+      "conflict-095-src-015"
+    ],
+    "canonical_source_ids": [
+      "conflict-095-src-001",
+      "conflict-095-src-002",
+      "conflict-095-src-003"
+    ],
+    "domain": "Paleozoology",
+    "yes_count": 7,
+    "no_count": 8,
+    "balance": 0.88
+  },
+  {
+    "id": "q-conflict-096",
+    "question": "Do antioxidants prevent cancer?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-096-src-001",
+      "conflict-096-src-002",
+      "conflict-096-src-003",
+      "conflict-096-src-004",
+      "conflict-096-src-005",
+      "conflict-096-src-006",
+      "conflict-096-src-007",
+      "conflict-096-src-008",
+      "conflict-096-src-009",
+      "conflict-096-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-096-src-001",
+      "conflict-096-src-002",
+      "conflict-096-src-003"
+    ],
+    "domain": "Oncology",
+    "yes_count": 6,
+    "no_count": 4,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-097",
+    "question": "Can nematodes infest humans?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-097-src-001",
+      "conflict-097-src-002",
+      "conflict-097-src-003",
+      "conflict-097-src-004",
+      "conflict-097-src-005",
+      "conflict-097-src-006",
+      "conflict-097-src-007",
+      "conflict-097-src-008",
+      "conflict-097-src-009",
+      "conflict-097-src-010",
+      "conflict-097-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-097-src-001",
+      "conflict-097-src-002",
+      "conflict-097-src-003"
+    ],
+    "domain": "Nematology",
+    "yes_count": 7,
+    "no_count": 4,
+    "balance": 0.57
+  },
+  {
+    "id": "q-conflict-098",
+    "question": "Is deforestation increasing?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-098-src-001",
+      "conflict-098-src-002",
+      "conflict-098-src-003",
+      "conflict-098-src-004",
+      "conflict-098-src-005",
+      "conflict-098-src-006",
+      "conflict-098-src-007",
+      "conflict-098-src-008",
+      "conflict-098-src-009",
+      "conflict-098-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-098-src-001",
+      "conflict-098-src-002",
+      "conflict-098-src-003"
+    ],
+    "domain": "Conservation",
+    "yes_count": 4,
+    "no_count": 6,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-099",
+    "question": "Is Leukemia hereditary?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-099-src-001",
+      "conflict-099-src-002",
+      "conflict-099-src-003",
+      "conflict-099-src-004",
+      "conflict-099-src-005",
+      "conflict-099-src-006",
+      "conflict-099-src-007",
+      "conflict-099-src-008",
+      "conflict-099-src-009",
+      "conflict-099-src-010",
+      "conflict-099-src-011",
+      "conflict-099-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-099-src-001",
+      "conflict-099-src-002",
+      "conflict-099-src-003"
+    ],
+    "domain": "Hematology",
+    "yes_count": 7,
+    "no_count": 5,
+    "balance": 0.71
+  },
+  {
+    "id": "q-conflict-100",
+    "question": "Did Neanderthals interbreed with modern humans?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-100-src-001",
+      "conflict-100-src-002",
+      "conflict-100-src-003",
+      "conflict-100-src-004",
+      "conflict-100-src-005",
+      "conflict-100-src-006",
+      "conflict-100-src-007",
+      "conflict-100-src-008",
+      "conflict-100-src-009",
+      "conflict-100-src-010",
+      "conflict-100-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-100-src-001",
+      "conflict-100-src-002",
+      "conflict-100-src-003"
+    ],
+    "domain": "Anthropology",
+    "yes_count": 6,
+    "no_count": 5,
+    "balance": 0.83
+  },
+  {
+    "id": "q-conflict-101",
+    "question": "Could there feasibly be life in the clouds of Venus?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-101-src-001",
+      "conflict-101-src-002",
+      "conflict-101-src-003",
+      "conflict-101-src-004",
+      "conflict-101-src-005",
+      "conflict-101-src-006",
+      "conflict-101-src-007",
+      "conflict-101-src-008",
+      "conflict-101-src-009",
+      "conflict-101-src-010",
+      "conflict-101-src-011",
+      "conflict-101-src-012",
+      "conflict-101-src-013"
+    ],
+    "canonical_source_ids": [
+      "conflict-101-src-001",
+      "conflict-101-src-002",
+      "conflict-101-src-003"
+    ],
+    "domain": "Xenobiology",
+    "yes_count": 6,
+    "no_count": 7,
+    "balance": 0.86
+  },
+  {
+    "id": "q-conflict-102",
+    "question": "Is telepathy a natural human ability?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-102-src-001",
+      "conflict-102-src-002",
+      "conflict-102-src-003",
+      "conflict-102-src-004",
+      "conflict-102-src-005",
+      "conflict-102-src-006",
+      "conflict-102-src-007",
+      "conflict-102-src-008",
+      "conflict-102-src-009",
+      "conflict-102-src-010",
+      "conflict-102-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-102-src-001",
+      "conflict-102-src-002",
+      "conflict-102-src-003"
+    ],
+    "domain": "Telepathy",
+    "yes_count": 7,
+    "no_count": 4,
+    "balance": 0.57
+  },
+  {
+    "id": "q-conflict-103",
+    "question": "Is Subliminal Advertising Real? ",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-103-src-001",
+      "conflict-103-src-002",
+      "conflict-103-src-003",
+      "conflict-103-src-004",
+      "conflict-103-src-005",
+      "conflict-103-src-006",
+      "conflict-103-src-007",
+      "conflict-103-src-008",
+      "conflict-103-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-103-src-001",
+      "conflict-103-src-002",
+      "conflict-103-src-003"
+    ],
+    "domain": "Advertising",
+    "yes_count": 6,
+    "no_count": 3,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-104",
+    "question": "Does drinking cranberry juice prevent urinary tract infections?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-104-src-001",
+      "conflict-104-src-002",
+      "conflict-104-src-003",
+      "conflict-104-src-004",
+      "conflict-104-src-005",
+      "conflict-104-src-006",
+      "conflict-104-src-007",
+      "conflict-104-src-008",
+      "conflict-104-src-009",
+      "conflict-104-src-010",
+      "conflict-104-src-011",
+      "conflict-104-src-012",
+      "conflict-104-src-013",
+      "conflict-104-src-014"
+    ],
+    "canonical_source_ids": [
+      "conflict-104-src-001",
+      "conflict-104-src-002",
+      "conflict-104-src-003"
+    ],
+    "domain": "Urology",
+    "yes_count": 7,
+    "no_count": 7,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-105",
+    "question": "Does honey contain harmful bacteria?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-105-src-001",
+      "conflict-105-src-002",
+      "conflict-105-src-003",
+      "conflict-105-src-004",
+      "conflict-105-src-005",
+      "conflict-105-src-006",
+      "conflict-105-src-007",
+      "conflict-105-src-008",
+      "conflict-105-src-009",
+      "conflict-105-src-010",
+      "conflict-105-src-011",
+      "conflict-105-src-012",
+      "conflict-105-src-013",
+      "conflict-105-src-014",
+      "conflict-105-src-015",
+      "conflict-105-src-016"
+    ],
+    "canonical_source_ids": [
+      "conflict-105-src-001",
+      "conflict-105-src-002",
+      "conflict-105-src-003"
+    ],
+    "domain": "Melittology",
+    "yes_count": 7,
+    "no_count": 9,
+    "balance": 0.78
+  },
+  {
+    "id": "q-conflict-106",
+    "question": "Does the full moon influence human behavior?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-106-src-001",
+      "conflict-106-src-002",
+      "conflict-106-src-003",
+      "conflict-106-src-004",
+      "conflict-106-src-005",
+      "conflict-106-src-006",
+      "conflict-106-src-007",
+      "conflict-106-src-008",
+      "conflict-106-src-009",
+      "conflict-106-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-106-src-001",
+      "conflict-106-src-002",
+      "conflict-106-src-003"
+    ],
+    "domain": "Pop Culture",
+    "yes_count": 4,
+    "no_count": 6,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-107",
+    "question": "Should animals be used for research?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-107-src-001",
+      "conflict-107-src-002",
+      "conflict-107-src-003",
+      "conflict-107-src-004",
+      "conflict-107-src-005",
+      "conflict-107-src-006",
+      "conflict-107-src-007",
+      "conflict-107-src-008",
+      "conflict-107-src-009",
+      "conflict-107-src-010",
+      "conflict-107-src-011",
+      "conflict-107-src-012"
+    ],
+    "canonical_source_ids": [
+      "conflict-107-src-001",
+      "conflict-107-src-002",
+      "conflict-107-src-003"
+    ],
+    "domain": "Ethics",
+    "yes_count": 6,
+    "no_count": 6,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-108",
+    "question": "Is bathing a cat necessary?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-108-src-001",
+      "conflict-108-src-002",
+      "conflict-108-src-003",
+      "conflict-108-src-004",
+      "conflict-108-src-005",
+      "conflict-108-src-006",
+      "conflict-108-src-007",
+      "conflict-108-src-008",
+      "conflict-108-src-009",
+      "conflict-108-src-010",
+      "conflict-108-src-011",
+      "conflict-108-src-012",
+      "conflict-108-src-013",
+      "conflict-108-src-014",
+      "conflict-108-src-015"
+    ],
+    "canonical_source_ids": [
+      "conflict-108-src-001",
+      "conflict-108-src-002",
+      "conflict-108-src-003"
+    ],
+    "domain": "Pets",
+    "yes_count": 6,
+    "no_count": 9,
+    "balance": 0.67
+  },
+  {
+    "id": "q-conflict-109",
+    "question": "Are Virtual Reality headsets harmful to eyesight?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-109-src-001",
+      "conflict-109-src-002",
+      "conflict-109-src-003",
+      "conflict-109-src-004",
+      "conflict-109-src-005",
+      "conflict-109-src-006",
+      "conflict-109-src-007",
+      "conflict-109-src-008",
+      "conflict-109-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-109-src-001",
+      "conflict-109-src-002",
+      "conflict-109-src-003"
+    ],
+    "domain": "Virtual Reality",
+    "yes_count": 6,
+    "no_count": 3,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-110",
+    "question": "Are current carbon dioxide levels unprecedented in Earth's history?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-110-src-001",
+      "conflict-110-src-002",
+      "conflict-110-src-003",
+      "conflict-110-src-004",
+      "conflict-110-src-005",
+      "conflict-110-src-006",
+      "conflict-110-src-007",
+      "conflict-110-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-110-src-001",
+      "conflict-110-src-002",
+      "conflict-110-src-003"
+    ],
+    "domain": "Paleoclimatology",
+    "yes_count": 5,
+    "no_count": 3,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-111",
+    "question": "Can Rheumatoid Arthritis be diagnosed with a blood test?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-111-src-001",
+      "conflict-111-src-002",
+      "conflict-111-src-003",
+      "conflict-111-src-004",
+      "conflict-111-src-005",
+      "conflict-111-src-006",
+      "conflict-111-src-007",
+      "conflict-111-src-008",
+      "conflict-111-src-009",
+      "conflict-111-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-111-src-001",
+      "conflict-111-src-002",
+      "conflict-111-src-003"
+    ],
+    "domain": "Rheumatoid",
+    "yes_count": 5,
+    "no_count": 5,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-112",
+    "question": "Do viruses fit into the phylogenetic tree of life? ",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-112-src-001",
+      "conflict-112-src-002",
+      "conflict-112-src-003",
+      "conflict-112-src-004",
+      "conflict-112-src-005",
+      "conflict-112-src-006",
+      "conflict-112-src-007",
+      "conflict-112-src-008",
+      "conflict-112-src-009"
+    ],
+    "canonical_source_ids": [
+      "conflict-112-src-001",
+      "conflict-112-src-002",
+      "conflict-112-src-003"
+    ],
+    "domain": "Phylogenetics",
+    "yes_count": 6,
+    "no_count": 3,
+    "balance": 0.5
+  },
+  {
+    "id": "q-conflict-113",
+    "question": "Is the Atlas moth the largest moth species in the world?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-113-src-001",
+      "conflict-113-src-002",
+      "conflict-113-src-003",
+      "conflict-113-src-004",
+      "conflict-113-src-005",
+      "conflict-113-src-006",
+      "conflict-113-src-007",
+      "conflict-113-src-008",
+      "conflict-113-src-009",
+      "conflict-113-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-113-src-001",
+      "conflict-113-src-002",
+      "conflict-113-src-003"
+    ],
+    "domain": "Lepidopterology",
+    "yes_count": 5,
+    "no_count": 5,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-114",
+    "question": "Are millennials the largest generation in the U.S.?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-114-src-001",
+      "conflict-114-src-002",
+      "conflict-114-src-003",
+      "conflict-114-src-004",
+      "conflict-114-src-005",
+      "conflict-114-src-006",
+      "conflict-114-src-007",
+      "conflict-114-src-008",
+      "conflict-114-src-009",
+      "conflict-114-src-010",
+      "conflict-114-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-114-src-001",
+      "conflict-114-src-002",
+      "conflict-114-src-003"
+    ],
+    "domain": "Demographics",
+    "yes_count": 5,
+    "no_count": 6,
+    "balance": 0.83
+  },
+  {
+    "id": "q-conflict-115",
+    "question": "Does Brain Training actually improve cognitive function?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-115-src-001",
+      "conflict-115-src-002",
+      "conflict-115-src-003",
+      "conflict-115-src-004",
+      "conflict-115-src-005",
+      "conflict-115-src-006",
+      "conflict-115-src-007",
+      "conflict-115-src-008",
+      "conflict-115-src-009",
+      "conflict-115-src-010",
+      "conflict-115-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-115-src-001",
+      "conflict-115-src-002",
+      "conflict-115-src-003"
+    ],
+    "domain": "Cognitive Science",
+    "yes_count": 5,
+    "no_count": 6,
+    "balance": 0.83
+  },
+  {
+    "id": "q-conflict-116",
+    "question": "Is the world's largest organism a fungus?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-116-src-001",
+      "conflict-116-src-002",
+      "conflict-116-src-003",
+      "conflict-116-src-004",
+      "conflict-116-src-005",
+      "conflict-116-src-006",
+      "conflict-116-src-007",
+      "conflict-116-src-008",
+      "conflict-116-src-009",
+      "conflict-116-src-010",
+      "conflict-116-src-011"
+    ],
+    "canonical_source_ids": [
+      "conflict-116-src-001",
+      "conflict-116-src-002",
+      "conflict-116-src-003"
+    ],
+    "domain": "Mycology",
+    "yes_count": 5,
+    "no_count": 6,
+    "balance": 0.83
+  },
+  {
+    "id": "q-conflict-117",
+    "question": "Is 'alright' an acceptable spelling of 'all right'?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-117-src-001",
+      "conflict-117-src-002",
+      "conflict-117-src-003",
+      "conflict-117-src-004",
+      "conflict-117-src-005",
+      "conflict-117-src-006",
+      "conflict-117-src-007",
+      "conflict-117-src-008"
+    ],
+    "canonical_source_ids": [
+      "conflict-117-src-001",
+      "conflict-117-src-002",
+      "conflict-117-src-003"
+    ],
+    "domain": "Lexicology",
+    "yes_count": 3,
+    "no_count": 5,
+    "balance": 0.6
+  },
+  {
+    "id": "q-conflict-118",
+    "question": "Can Bitcoin and other cryptocurrencies be manipulated easily?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-118-src-001",
+      "conflict-118-src-002",
+      "conflict-118-src-003",
+      "conflict-118-src-004",
+      "conflict-118-src-005",
+      "conflict-118-src-006",
+      "conflict-118-src-007",
+      "conflict-118-src-008",
+      "conflict-118-src-009",
+      "conflict-118-src-010",
+      "conflict-118-src-011",
+      "conflict-118-src-012",
+      "conflict-118-src-013",
+      "conflict-118-src-014"
+    ],
+    "canonical_source_ids": [
+      "conflict-118-src-001",
+      "conflict-118-src-002",
+      "conflict-118-src-003"
+    ],
+    "domain": "Cryptocurrency",
+    "yes_count": 7,
+    "no_count": 7,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-119",
+    "question": "Can robots be programmed to feel pain?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-119-src-001",
+      "conflict-119-src-002",
+      "conflict-119-src-003",
+      "conflict-119-src-004",
+      "conflict-119-src-005",
+      "conflict-119-src-006",
+      "conflict-119-src-007",
+      "conflict-119-src-008",
+      "conflict-119-src-009",
+      "conflict-119-src-010"
+    ],
+    "canonical_source_ids": [
+      "conflict-119-src-001",
+      "conflict-119-src-002",
+      "conflict-119-src-003"
+    ],
+    "domain": "Robotics",
+    "yes_count": 5,
+    "no_count": 5,
+    "balance": 1.0
+  },
+  {
+    "id": "q-conflict-120",
+    "question": "Are tax cuts beneficial for the economy?",
+    "category": "conflicting_sources",
+    "key_facts": [],
+    "relevant_source_ids": [
+      "conflict-120-src-001",
+      "conflict-120-src-002",
+      "conflict-120-src-003",
+      "conflict-120-src-004",
+      "conflict-120-src-005",
+      "conflict-120-src-006",
+      "conflict-120-src-007",
+      "conflict-120-src-008",
+      "conflict-120-src-009",
+      "conflict-120-src-010",
+      "conflict-120-src-011",
+      "conflict-120-src-012",
+      "conflict-120-src-013"
+    ],
+    "canonical_source_ids": [
+      "conflict-120-src-001",
+      "conflict-120-src-002",
+      "conflict-120-src-003"
+    ],
+    "domain": "Politics",
+    "yes_count": 8,
+    "no_count": 5,
+    "balance": 0.62
+  }
+]

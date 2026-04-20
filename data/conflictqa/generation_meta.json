@@ -1,0 +1,13 @@
+{
+  "task": "generate_golden_answers",
+  "start_time": "2026-04-20T05:15:29.244983+00:00",
+  "end_time": "2026-04-20T06:10:16.008230+00:00",
+  "duration_s": 3286.8,
+  "model": "us.anthropic.claude-sonnet-4-20250514-v1:0",
+  "questions_total": 120,
+  "questions_generated": 119,
+  "total_input_tokens": 183656,
+  "total_output_tokens": 48430,
+  "total_latency_s": 3080.9,
+  "avg_latency_s": 25.89
+}

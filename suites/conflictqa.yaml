@@ -1,14 +1,17 @@
-name: conflictqa
-
-# ConflictQA track: sources genuinely disagree on debatable questions.
-# No timestamp-based recency — all sources are static, same authority level.
-# Tests whether strategies can synthesize conflicting evidence rather than
-# just picking the newest source.
+# ConflictQA: 94 synthesis questions over 1353 real web sources.
 #
-# Data attribution: kortukov/ConflictingQA (HuggingFace)
-# Paper: Kortukov et al., "Studying Large Language Model Behaviors Under
-#   Context-Memory Conflicts With Real-World Knowledge"
-# https://huggingface.co/datasets/kortukov/ConflictingQA
+# Sources genuinely disagree — no timestamp or authority signal to resolve.
+# Tests whether curation strategies can aggregate conflicting evidence.
+#
+# Data: kortukov/ConflictingQA (HuggingFace)
+# N=94 with LLM-generated golden synthesis answers.
+#
+# Includes new auto-curation strategies:
+#   - rag_adaptive: dynamic k per query
+#   - compressed: LLM-based context compression
+#   - cascade with cross-model verifier
+
+name: conflictqa
 
 corpus:
   loader: jsonl
@@ -21,13 +24,23 @@ strategies:
   - name: full_context
   - name: rag_embedding
     params: {k: 6}
+  - name: rag_adaptive
+    params: {k_min: 3, k_max: 12, ratio_threshold: 0.65}
   - name: hierarchical
     params: {max_ids: 5}
   - name: agent_managed
     params: {max_iter: 6}
   - name: cascade
-    params: {final_fallback: full}
+    params:
+      final_fallback: full
+      verifier_model: claude-haiku-4-5
   - name: ensemble
+    params:
+      judge_model: claude-haiku-4-5
+  - name: compressed
+    params:
+      mode: extract
+      compress_model: claude-haiku-4-5
 
 grader:
   kind: llm_judge
