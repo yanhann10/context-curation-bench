@@ -52,7 +52,7 @@ def test_frontier_render_has_axes_and_winners():
     assert "a" in out
 
 
-def test_question_validation_accepts_resolved_and_ambiguous_shapes():
+def test_question_validation_accepts_resolved_synthesized_and_ambiguous_shapes():
     resolved = Question(
         id="q-ok",
         input="question",
@@ -61,6 +61,15 @@ def test_question_validation_accepts_resolved_and_ambiguous_shapes():
         relevant_doc_ids=["a", "b"],
         canonical_source_ids=["b"],
         gold_status="resolved",
+    )
+    synthesized = Question(
+        id="q-synth",
+        input="question",
+        golden="The evidence supports a nuanced answer.",
+        category="multi_source",
+        relevant_doc_ids=["a", "b", "c"],
+        canonical_source_ids=["a", "c"],
+        gold_status="synthesized",
     )
     ambiguous = Question(
         id="q-amb",
@@ -72,7 +81,7 @@ def test_question_validation_accepts_resolved_and_ambiguous_shapes():
         gold_status="ambiguous",
         abstain_expected=True,
     )
-    assert validate_questions([resolved, ambiguous]) == []
+    assert validate_questions([resolved, synthesized, ambiguous]) == []
 
 
 def test_question_validation_rejects_missing_canonical_or_bad_ambiguous_config():
@@ -105,6 +114,11 @@ def test_suite_parses_and_validates(suite_path):
     assert errs == [], f"{suite_path} did not validate: {errs}"
     assert spec.strategies, "suite should declare at least one strategy"
     assert spec.frontier.axes and spec.frontier.direction
+
+
+def test_load_suite_records_resolved_path():
+    spec = load_suite("suites/sample_data_hr_policy.yaml")
+    assert spec.path.endswith("suites/sample_data_hr_policy.yaml")
 
 
 def test_run_matrix_end_to_end_with_mock_strategy():

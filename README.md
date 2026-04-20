@@ -5,11 +5,11 @@
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![claude](https://img.shields.io/badge/LLM-Claude%20Sonnet%204.5-D97757)](https://www.anthropic.com/)
 
-**Status: work in progress.** Historical single-seed N=108 runs are kept for context, but the active suites and schema now treat source arbitration as broader than “newer wins”: answers may come from a single source, a source-specific update, multi-source synthesis, or a resolved conflict with explicit adjudication metadata. No confidence intervals or multi-seed bootstrap are reported yet, so all aggregate numbers remain directional rather than significance claims.
+**Status: work in progress.** Historical single-seed N=108 runs are kept as a legacy track, but the current schema treats context arbitration as broader than freshness. Answers may come from a single authoritative source, a source-specific operational update, multi-source synthesis, a scoped conditional resolution, or an explicit abstain/ambiguity label when the corpus does not support a single factual answer. No confidence intervals or multi-seed bootstrap are reported yet, so all aggregate numbers remain directional rather than significance claims.
 
-A YAML-driven benchmark for LLM context-curation strategies: full-context, RAG, hierarchical, agent-managed, cascade-router, ensemble, and meta-harness-optimized. Each strategy answers the same question set over the same corpus, but the bundled suites vary the source structure: older reference docs, maintainer discussions, owner-validated policy updates, and multi-source synthesis cases. Results are reported as a trade-off table over quality, cost, latency, and tokens rather than a single headline metric.
+A YAML-driven benchmark for LLM context-curation strategies: full-context, RAG, hierarchical, agent-managed, cascade-router, ensemble, and meta-harness-optimized. Each strategy answers the same question set over the same corpus, but the bundled suites vary the arbitration problem: direct lookup, source-specific updates, multi-source synthesis, resolved conflicts, and abstention-capable items with adjudicated gold behavior. Results are reported as a trade-off table over quality, cost, latency, and tokens rather than a single headline metric.
 
-### N=108 results (Claude Sonnet 4.5, AWS Bedrock)
+### Historical N=108 results (Claude Sonnet 4.5, AWS Bedrock)
 
 Latency and token cost are both reported relative to the cheapest and fastest strategy (`rag_embedding` = 1×), computed from per-question means.
 
@@ -20,7 +20,7 @@ Latency and token cost are both reported relative to the cheapest and fastest st
 | meta_harness   | 0.866     | 1.1×            | 5.4× |
 | agent_managed  | 0.823     | 2.5×            | 3.5× |
 
-`rag_embedding` reaches 96 percent of `full_context` accuracy at roughly 11 percent of the token cost. The 4 pp accuracy gap concentrates in the `slack_contradicts` category (full 0.974, rag 0.886). Per-strategy failure analysis is in [Findings ↓](#findings).
+`rag_embedding` reaches 96 percent of `full_context` accuracy at roughly 11 percent of the token cost. This table comes from the older HR handbook-vs-update framing; treat it as historical context, not as the definition of the benchmark going forward. Per-strategy failure analysis is in [Findings ↓](#findings).
 
 ## Quick start
 
@@ -79,14 +79,15 @@ Both images are the real `chart_polars.png` and `chart_polars_heatmap.png` from 
 
 What this project ships instead: a **deliberate simplification** of the propose → evaluate → keep-best loop, applied to a **typed `CurationSpec` dataclass** (which docs to include, ordering, format, max-chars, instructions) rather than free-form code. Same loop shape, safer to execute, fully interpretable. See [`notes/meta_harness_analysis.md`](notes/meta_harness_analysis.md) for the integration-difficulty breakdown.
 
-**What this project is good for:** a reproducible context-curation eval harness with a trade-off summary, 9 pre-built strategies (full, RAG, hierarchical, agent-managed, thin/thick harness axis, cascade, ensemble, meta-harness-optimized), and a way to compare how they handle single-source lookup, source-specific updates, multi-source synthesis, and resolved conflicts.
+**What this project is good for:** a reproducible context-curation eval harness with a trade-off summary, 9 pre-built strategies (full, RAG, hierarchical, agent-managed, thin/thick harness axis, cascade, ensemble, meta-harness-optimized), and a way to compare how they handle direct lookup, source-specific updates, multi-source synthesis, resolved conflicts, and abstention-capable items where gold is explicitly adjudicated.
 
-**Domains:** 3 bundled suites with different corpus structures:
-- **HR Policy** (`suites/sample_data_hr_policy.yaml`) — handbook pages plus owner-validated operational updates. Long policy docs, mixed “single source”, “source-specific update”, “multi-source”, and “resolved conflict” questions.
+**Domains:** current bundled suites plus one experimental sidecar track:
+- **HR Policy** (`suites/sample_data_hr_policy.yaml`) — handbook pages plus owner-validated operational updates. Long policy docs with `single_source`, `source_only`, `multi_source`, and `resolved_conflict` questions.
 - **Polars Docs** (`suites/polars_docs.yaml`) — reference docs plus maintainer GitHub discussions. Short API docs, migration questions, and maintainer arbitration over current names and patterns.
-- **Flask Codebase** (`suites/flask_codebase.yaml`) — Flask 2.x docs plus Flask 3.x maintainer discussions. Real breaking changes: removed APIs, replaced patterns, deprecated extensions. Tests curation under codebase-shaped corpora where cross-file references and API dependency graphs matter.
+- **Flask Codebase** (`suites/flask_codebase.yaml`) — Flask 2.x docs plus Flask 3.x maintainer discussions. Real breaking changes: removed APIs, replaced patterns, deprecated extensions.
+- **ConflictQA** (`suites/conflictqa.yaml`) — experimental synthesis-heavy sidecar track based on real conflicting public sources. Useful for stress-testing synthesis behavior, but not the benchmark definition on its own.
 
-**What it's not:** a production benchmark at N≥200 with multi-seed bootstrap CIs. The N=10 cells report a direction, not a significance claim. See `eval/eval_runs.md` → "From the HR run to a real benchmark" for what's missing.
+**What it's not:** a production benchmark at N≥200 with multi-seed bootstrap CIs. The N=10 cells report a direction, not a significance claim. "Cell resolution is 0.10" refers to the per-question × per-strategy granularity imposed by N=10 — a single question flipping between 1.00 and 0.00 moves the per-strategy mean by 0.10, so any between-strategy delta under ±0.05 is inside noise. It is not a judge-side discretization or a reporting round. See `eval/eval_runs.md` → "From the HR run to a real benchmark" for what's missing.
 
 ## Architecture
 
@@ -109,7 +110,7 @@ flowchart LR
 Four things xcbench does differently from a typical evals harness (shape borrowed from [letta-evals](https://github.com/letta-ai/letta-evals), novelties are ours):
 
 1. **`strategies:` is a list** — a suite IS a matrix, not a single `target:`.
-2. **`CorpusSpec` is first-class**, separate from dataset. Docs carry `kind` (static|fresh), `timestamp`, `freshness_priority`, and extra source metadata. Questions can now carry adjudication metadata (`gold_status`, `canonical_source_ids`, `authority_rule_used`) without leaking that rationale into the judge prompt.
+2. **`CorpusSpec` is first-class**, separate from dataset. Docs can carry source metadata such as `kind`, `timestamp`, `issuer`, `scope`, or other loader-specific hints. Questions can now carry adjudication metadata (`gold_status`, `canonical_source_ids`, `authority_rule_used`, optional abstain behavior) without leaking that rationale into the judge prompt.
 3. **`frontier:` replaces `gate:`** — output is per-axis winners over `(quality, cost, tokens)` plus a trade-off summary, instead of a boolean pass/fail threshold.
 4. **`optimize:` is a built-in phase** — propose → evaluate → keep-best on a typed `CurationSpec` runs before final scoring.
 
@@ -136,7 +137,7 @@ xcbench/
 ├── cli.py              # python -m xcbench demo|run|validate|list-strategies
 ├── registry.py         # @strategy / @grader / @corpus_loader decorators
 ├── spec.py             # YAML → SuiteSpec
-├── corpus.py           # CorpusSpec, Doc (kind/timestamp/freshness_priority)
+├── corpus.py           # CorpusSpec, Doc + source metadata
 ├── dataset.py          # Question
 ├── runner.py           # async matrix + per-category summary
 ├── judge.py            # llm_judge grader
@@ -148,7 +149,7 @@ examples/toy/{corpus.jsonl,questions.jsonl,suite.yaml}
 data/corpus.jsonl, questions.jsonl
 ```
 
-Artifacts from any run: `output/{suite}_matrix.csv`, `{suite}_summary.json`, `{suite}_frontier.json`, `{suite}_optimizer_history.json`.
+Artifacts from any run: `output/{suite}_matrix.csv`, `{suite}_summary.json`, `{suite}_frontier.json`, `{suite}_optimizer_history.json`, `{suite}_runmeta.json`.
 
 `main.py` is a shim that points at `python -m xcbench demo`; `xcbench` makes the pipeline a declarative suite, and the existing `src/` code is reused as strategy adapters — no rewrite.
 
@@ -203,13 +204,19 @@ cp .env.example .env     # then edit ANTHROPIC_API_KEY
 ## Run
 
 ```bash
-# bundled HR-policy suite end-to-end (9 strategies × 10 questions + optimize loop)
+# bundled HR-policy suite end-to-end
 .venv/bin/python -m xcbench demo
 
-# run an arbitrary suite YAML
+# run any suite YAML
 .venv/bin/python -m xcbench run suites/sample_data_hr_policy.yaml
 .venv/bin/python -m xcbench run suites/polars_docs.yaml
-.venv/bin/python -m xcbench run suites/flask_codebase.yaml
+.venv/bin/python -m xcbench run suites/conflictqa.yaml --strategies full_context,rag_embedding,hierarchical --skip-optimize
+
+# smaller rerun when Bedrock is rate-limited
+.venv/bin/python -m xcbench run suites/sample_data_hr_policy.yaml \
+  --strategies full_context,rag_embedding,hierarchical,agent_managed \
+  --skip-optimize \
+  --limit-questions 10
 
 # minimal 3-doc / 2-question example
 .venv/bin/python -m xcbench run examples/toy/suite.yaml
@@ -233,18 +240,20 @@ Artifacts in `output/` (per-suite prefixed):
 | prompt_tokens / completion_tokens | int | From Anthropic usage |
 | cost_usd | float | Per-model priced, sum of agent + judge calls |
 
-**Note:** an earlier `recency` metric was dropped once all strategies hit `recency=1.0` at Sonnet 4.6 level — recency handling is now rolled into `quality` via adjudication metadata per question (`gold_status`, `canonical_source_ids`, `authority_rule_used`, optional abstain behavior), so conflict handling can be expressed as "resolved conflict" or "multi-source" rather than only "fresh beats stale".
+**Note:** an earlier `recency` metric was dropped once it stopped separating strategies. Recency is now treated as one possible signal inside `quality`, alongside authority, scope, synthesis quality, and optional abstain behavior expressed through question-level adjudication metadata (`gold_status`, `canonical_source_ids`, `authority_rule_used`).
 
 ## Question categories
 
 - `single_source` — one linked source is sufficient
 - `source_only` — only a source-specific update thread answers the question
 - `multi_source` — the answer requires synthesis across linked sources
+- `scoped` — the correct answer is conditional on an explicit scope or version boundary
 - `resolved_conflict` — linked sources disagree and the dataset carries explicit adjudication metadata for the winning resolution
+- `abstain_required` — linked sources are insufficient or genuinely underdetermined, so the gold behavior is to say so
 
 ## Findings
 
-N=10 v2 HR onboarding questions (4 slack_contradicts, 2 slack_only, 2 needs_both, 2 portal_only). Corpus: 11 handbook docs (timestamped 2026-01-01) + 10 Slack-API-shape threads (HR-validated, recent). Full eval log in `eval/eval_runs.md`.
+The table below is from the historical HR track, not the full benchmark definition. It is still useful for failure analysis, but its categories (`slack_contradicts`, `slack_only`, `needs_both`, `portal_only`) are legacy names from the earlier freshness-heavy framing. Full eval log in `eval/eval_runs.md`.
 
 | strategy | quality | f1 | latency (× hier) | prompt_tok | cost (× hier) |
 |---|---|---|---|---|---|
@@ -282,7 +291,7 @@ Charts: `output/chart_hr.png`, `output/chart_hr_heatmap.png`.
 - **Avoid**: `cascade_router` as implemented — single-model self-verification defeats the purpose. Fix with a cross-model verifier.
 - **Theoretical ceiling**: oracle router (1.000 quality at 1.2× hier cost) — implementable with a learned router or cross-model verifier
 
-Recency-handling: all strategies correctly prefer the recent Slack value on `slack_contradicts` questions. Recency is table stakes at Sonnet 4.6 and was dropped as a separate metric.
+Recency-handling in the historical HR track became table stakes at Sonnet 4.6 and is no longer treated as a standalone benchmark objective.
 
 ## Reproducing these numbers
 

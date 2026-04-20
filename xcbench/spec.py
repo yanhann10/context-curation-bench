@@ -99,13 +99,26 @@ class SuiteSpec:
     models: ModelsCfg
     optimize: OptimizeCfg | None = None
     concurrency: int = 8
+    path: str = ""
     raw: dict = field(default_factory=dict)
 
 
+def _resolve_suite_path(path: str | Path) -> Path:
+    p = Path(path)
+    if p.exists():
+        return p
+    if p.parent == Path("suites"):
+        legacy = p.parent / "legacy" / p.name
+        if legacy.exists():
+            return legacy
+    return p
+
+
 def load_suite(path: str | Path) -> SuiteSpec:
-    data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    suite_path = _resolve_suite_path(path)
+    data = yaml.safe_load(suite_path.read_text(encoding="utf-8"))
     return SuiteSpec(
-        name=data.get("name", Path(path).stem),
+        name=data.get("name", suite_path.stem),
         corpus=CorpusCfg(**(data.get("corpus") or {})),
         dataset=DatasetCfg(**(data.get("dataset") or {})),
         strategies=[StrategyCfg(**s) for s in (data.get("strategies") or [])],
@@ -114,6 +127,7 @@ def load_suite(path: str | Path) -> SuiteSpec:
         optimize=OptimizeCfg(**data["optimize"]) if data.get("optimize") else None,
         models=ModelsCfg(**(data.get("models") or {})),
         concurrency=int(data.get("concurrency", 8)),
+        path=str(suite_path),
         raw=data,
     )
 
@@ -122,6 +136,7 @@ def validate(spec: SuiteSpec) -> list[str]:
     from .registry import STRATEGIES, CORPUS_LOADERS
     from .dataset import load_questions, validate_questions
     errs: list[str] = []
+    questions = []
     if not spec.strategies:
         errs.append("suite has no strategies")
     for s in spec.strategies:
@@ -135,11 +150,18 @@ def validate(spec: SuiteSpec) -> list[str]:
         errs.append(f"dataset path missing: {spec.dataset.path}")
     elif not errs:
         try:
-            errs.extend(validate_questions(load_questions(spec.dataset.path)))
+            questions = load_questions(spec.dataset.path)
+            errs.extend(validate_questions(questions))
         except Exception as e:
             errs.append(f"failed to validate dataset '{spec.dataset.path}': {e}")
     if spec.optimize and spec.optimize.strategy not in STRATEGIES:
         errs.append(f"optimize.strategy '{spec.optimize.strategy}' not registered")
+    if spec.optimize and questions:
+        split_total = spec.optimize.train_size + spec.optimize.dev_size
+        if split_total > len(questions):
+            errs.append(
+                f"optimize split train+dev={split_total} exceeds dataset size={len(questions)}"
+            )
     # Warnings (non-blocking, printed to stderr)
     import sys
     if spec.models.agent == spec.models.judge:

@@ -19,7 +19,7 @@ import time
 
 from anthropic import AsyncAnthropic
 
-from .llm_client import complete_text, complete_json
+from .llm_client import complete_text, complete_json, create_message
 from .strategies_agent_managed import (
     TOOLS as AGENT_TOOLS,
     _execute_tool,
@@ -60,7 +60,8 @@ async def thin_harness_runner(
     final_text = ""
 
     for _ in range(max_iter):
-        resp = await client.messages.create(
+        resp = await create_message(
+            client,
             model=model, max_tokens=max_tokens, temperature=0.0,
             system=[{"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}],
             tools=AGENT_TOOLS,
@@ -148,7 +149,8 @@ async def _execute_loop(
     }]
     final_text = ""
     for _ in range(max_iter):
-        resp = await client.messages.create(
+        resp = await create_message(
+            client,
             model=model, max_tokens=max_tokens, temperature=0.0,
             system=[{"type": "text", "text": EXECUTE_SYSTEM, "cache_control": {"type": "ephemeral"}}],
             tools=AGENT_TOOLS,

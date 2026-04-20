@@ -11,7 +11,10 @@ System prompts can be passed as a list of Anthropic content blocks to use
 prompt caching, or as a plain string (we wrap with cache_control automatically).
 """
 from __future__ import annotations
+import asyncio
 import json
+import os
+import random
 import re
 import time
 from typing import Union
@@ -47,6 +50,42 @@ def _system_blocks(system: Union[str, list, None]):
     return system
 
 
+def _is_retryable_error(exc: Exception) -> bool:
+    status_code = getattr(exc, "status_code", None)
+    if status_code in {408, 409, 429, 500, 502, 503, 504}:
+        return True
+    text = str(exc).lower()
+    return any(
+        token in text
+        for token in (
+            "429",
+            "too many requests",
+            "rate limit",
+            "throttl",
+            "overloaded",
+            "service unavailable",
+            "timed out",
+            "timeout",
+            "connection reset",
+        )
+    )
+
+
+async def create_message(client: AsyncAnthropic, **kwargs):
+    attempts = max(1, int(os.getenv("XCBENCH_API_RETRY_ATTEMPTS", os.getenv("XCBENCH_MAX_RETRIES", "10"))))
+    backoff_base = float(os.getenv("XCBENCH_BACKOFF_BASE", "1.5"))
+    backoff_max = float(os.getenv("XCBENCH_BACKOFF_MAX", "30"))
+    for attempt in range(1, attempts + 1):
+        try:
+            return await client.messages.create(**kwargs)
+        except Exception as e:
+            if attempt >= attempts or not _is_retryable_error(e):
+                raise
+            sleep_s = min(backoff_max, backoff_base * (2 ** (attempt - 1)))
+            sleep_s *= 0.8 + random.random() * 0.4
+            await asyncio.sleep(sleep_s)
+
+
 async def complete_text(
     client: AsyncAnthropic,
     user: str,
@@ -65,7 +104,7 @@ async def complete_text(
     if blocks is not None:
         kwargs["system"] = blocks
     t0 = time.time()
-    resp = await client.messages.create(**kwargs)
+    resp = await create_message(client, **kwargs)
     latency = time.time() - t0
     text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
     u = resp.usage

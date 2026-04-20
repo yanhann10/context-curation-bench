@@ -12,11 +12,17 @@ async def run(ctx, question, corpus, *, max_ids: int = 5, **_):
     client = ctx["client"]
     summary_model = ctx.get("summary_model") or ctx["agent_model"]
     router_model = ctx.get("router_model") or ctx["agent_model"]
+    concurrency = max(1, int(ctx.get("concurrency", 1)))
 
     docs_legacy = corpus.as_legacy_list()
     cache_key = ("summaries", id(corpus), summary_model)
     if cache_key not in ctx:
-        ctx[cache_key] = await summarize_all(client, docs_legacy, summary_model)
+        ctx[cache_key] = await summarize_all(
+            client,
+            docs_legacy,
+            summary_model,
+            concurrency=concurrency,
+        )
     summaries = ctx[cache_key]
 
     ids = await route_docs(

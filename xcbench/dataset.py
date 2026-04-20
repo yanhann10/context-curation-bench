@@ -4,7 +4,7 @@ Each row may include adjudication metadata in addition to the original fields:
   {"id": "...", "input": "...", "golden": "...", "category": "...",
    "key_facts": ["..."], "relevant_slices": ["handbook", "slack"],
    "relevant_doc_ids": ["..."],
-   "gold_status": "resolved|scoped|ambiguous",
+   "gold_status": "resolved|scoped|synthesized|ambiguous",
    "acceptable_answers": ["..."],
    "abstain_expected": false,
    "canonical_source_ids": ["..."],
@@ -17,7 +17,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-ALLOWED_GOLD_STATUS = {"resolved", "scoped", "ambiguous"}
+ALLOWED_GOLD_STATUS = {"resolved", "scoped", "synthesized", "ambiguous"}
 
 
 @dataclass
@@ -99,8 +99,10 @@ def validate_questions(questions: list[Question]) -> list[str]:
             errs.append(f"{q.id}: abstain_expected=true requires gold_status='ambiguous'")
         if q.gold_status == "ambiguous" and not q.abstain_expected:
             errs.append(f"{q.id}: gold_status='ambiguous' requires abstain_expected=true")
-        if q.gold_status in {"resolved", "scoped"} and not q.canonical_source_ids:
+        if q.gold_status in {"resolved", "scoped", "synthesized"} and not q.canonical_source_ids:
             errs.append(f"{q.id}: gold_status='{q.gold_status}' requires canonical_source_ids")
+        if q.gold_status == "synthesized" and len(q.canonical_source_ids) < 2:
+            errs.append(f"{q.id}: gold_status='synthesized' requires at least 2 canonical_source_ids")
         if q.gold_status == "scoped" and not q.scope_conditions:
             errs.append(f"{q.id}: gold_status='scoped' requires scope_conditions")
         if q.relevant_doc_ids:

@@ -20,6 +20,8 @@ import time
 
 from anthropic import AsyncAnthropic
 
+from .llm_client import create_message
+
 
 DEFAULT_DOMAIN_DESCRIPTION = (
     "static reference documents (potentially older) and more-recent chat/discussion "
@@ -147,7 +149,8 @@ async def agent_managed_runner(
     final_text = ""
 
     for _ in range(max_iter):
-        resp = await client.messages.create(
+        resp = await create_message(
+            client,
             model=model,
             max_tokens=max_tokens,
             temperature=0.0,

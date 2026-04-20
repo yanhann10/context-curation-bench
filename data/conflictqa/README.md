@@ -2,13 +2,13 @@
 
 ## What this tests
 
-Unlike the HR and Polars domains (where the correct answer is always "prefer the newer source"), ConflictQA tests context curation when **sources genuinely disagree** and there is no timestamp signal to resolve the conflict.
+ConflictQA is an **experimental synthesis-heavy sidecar track**. It stress-tests what happens when sources genuinely disagree and there is no simple authority or timestamp signal to resolve the question.
 
 Each question has 7–15 real web sources that take opposing stances (yes/no) on a debatable topic. The curation challenge: aggregate conflicting evidence, weigh source quality, and produce a **nuanced synthesis** — not just pick a side.
 
-This tests a fundamentally different curation mechanism:
-- **HR/Polars:** recency-based resolution (stale docs vs. fresh updates)
-- **ConflictQA:** evidence-quality-based synthesis (multiple sources disagree, no recency signal)
+This stresses a narrower mechanism than the main benchmark mix:
+- main benchmark: direct lookup, source-specific updates, multi-source synthesis, resolved conflicts, and abstention-capable items
+- ConflictQA: evidence-quality-based synthesis when sources disagree and no simple resolution signal exists
 
 ## Data attribution
 
@@ -27,7 +27,7 @@ The corpus documents are real web page excerpts from the ConflictingQA dataset, 
 
 ## Question categories
 
-All 10 questions have category `conflicting_sources` — a new category type that doesn't exist in the HR/Polars domains. The golden answer for each question synthesizes both sides and identifies where the evidence converges.
+All 10 questions are synthesis-heavy. This track should be treated as one task family, not as the benchmark's whole purpose.
 
 ## Topics
 

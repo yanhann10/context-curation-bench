@@ -11,9 +11,11 @@ async def _get_hier_fn(ctx, corpus):
     if key not in ctx:
         client = ctx["client"]
         model = ctx.get("summary_model") or ctx["agent_model"]
+        concurrency = max(1, int(ctx.get("concurrency", 1)))
         ctx[key] = await hierarchical_build_prompt_fn(
             client, corpus.as_legacy_list(),
             router_model=model, summary_model=model, max_ids=5,
+            concurrency=concurrency,
         )
     return ctx[key]
 
