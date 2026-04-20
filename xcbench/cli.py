@@ -41,6 +41,33 @@ def _git_sha() -> str:
         return ""
 
 
+def _system_spec() -> dict:
+    import platform
+    import socket
+    import datetime
+
+    def _pkg_version(name: str) -> str:
+        try:
+            from importlib.metadata import version, PackageNotFoundError
+            try:
+                return version(name)
+            except PackageNotFoundError:
+                return ""
+        except Exception:
+            return ""
+
+    return {
+        "hostname": socket.gethostname(),
+        "platform": platform.platform(),
+        "python_version": platform.python_version(),
+        "started_at_utc": datetime.datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "anthropic_sdk_version": _pkg_version("anthropic"),
+        "boto3_version": _pkg_version("boto3"),
+        "sentence_transformers_version": _pkg_version("sentence-transformers"),
+        "faiss_version": _pkg_version("faiss-cpu") or _pkg_version("faiss"),
+    }
+
+
 def cmd_list(kind: str) -> int:
     table = {"strategies": STRATEGIES, "graders": GRADERS, "corpus-loaders": CORPUS_LOADERS}
     reg = table[kind]
@@ -183,6 +210,7 @@ async def _run(
         "question_count": len(questions),
         "strategy_names": [s.name for s in spec.strategies],
         "optimize_enabled": history is not None,
+        "system": _system_spec(),
     }
     runmeta_path = out_dir / f"{spec.name}_runmeta.json"
     runmeta_path.write_text(json.dumps(runmeta, indent=2), encoding="utf-8")
