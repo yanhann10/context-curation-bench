@@ -39,6 +39,8 @@ class CellResult:
     completion_tokens: int
     total_tokens: int
     cost_usd: float
+    agent_cost_usd: float
+    judge_cost_usd: float
     note: str
 
 
@@ -91,6 +93,8 @@ async def _run_one(ctx, strategy_cfg, question, corpus) -> CellResult:
         completion_tokens=out_tok,
         total_tokens=in_tok + out_tok,
         cost_usd=round(agent_cost + judge_cost, 5),
+        agent_cost_usd=round(agent_cost, 5),
+        judge_cost_usd=round(judge_cost, 5),
         note=(fail or g.get("note", ""))[:200],
     )
 
@@ -131,8 +135,24 @@ def summarize(results: list[CellResult]) -> dict:
             "prompt_tokens_mean": round(sum(r.prompt_tokens for r in rs) / n),
             "total_tokens_mean": round(sum(r.total_tokens for r in rs) / n),
             "cost_usd_total": round(sum(r.cost_usd for r in rs), 5),
+            "agent_cost_usd_total": round(sum(r.agent_cost_usd for r in rs), 5),
+            "judge_cost_usd_total": round(sum(r.judge_cost_usd for r in rs), 5),
             "quality_by_category": {
                 c: round(sum(v) / len(v), 3) for c, v in by_cat.items()
             },
         }
     return summary
+
+
+def curation_difficulty_report(results: list[CellResult]) -> str:
+    """Generate a curation difficulty report from matrix results.
+
+    Classifies each question by how much curation strategy matters for it.
+    """
+    from .strategies.curation_difficulty import classify_all, render_difficulty_report
+    as_dicts = [
+        {"question_id": r.question_id, "strategy": r.strategy, "quality": r.quality}
+        for r in results
+    ]
+    difficulties = classify_all(as_dicts)
+    return render_difficulty_report(difficulties)
