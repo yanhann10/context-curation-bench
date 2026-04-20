@@ -21,3 +21,6 @@ outputs/*comparison*.md
 outputs/*grading*.md
 outputs/private/
 notes/private/
+
+# Paper review artifacts — publish/ is local-only, never commit.
+publish/
