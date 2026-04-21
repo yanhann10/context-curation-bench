@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xcbench"
+version = "0.1.0"
+description = "Context curation benchmark for LLMs: strategies x questions over one corpus, reported as a quality/cost/latency trade-off."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "hannah yan han"}]
+keywords = ["llm", "benchmark", "context-curation", "rag", "retrieval", "evaluation", "anthropic"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "anthropic>=0.96.0",
+  "python-dotenv>=1.0.0",
+  "numpy>=1.26.0",
+  "faiss-cpu>=1.8.0",
+  "sentence-transformers>=3.0.0",
+  "matplotlib>=3.8.0",
+  "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.urls]
+Homepage = "https://github.com/yanhann10/context-curation-bench"
+Repository = "https://github.com/yanhann10/context-curation-bench"
+Issues = "https://github.com/yanhann10/context-curation-bench/issues"
+
+[project.scripts]
+xcbench = "xcbench.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["xcbench*", "src*"]
+exclude = ["tests*", "scripts*", "mle_harness*", "notes*", "docs*", "eval*", "data*", "output*", "outputs*", "suites*", "examples*", "roadmap*", "lit*", "assets*", "sources*", "fixtures*", "results*"]

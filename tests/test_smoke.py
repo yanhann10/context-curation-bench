@@ -185,6 +185,59 @@ def test_run_matrix_end_to_end_with_mock_strategy():
     assert "quality_by_category" in row and row["quality_by_category"].get("t") == 1.0
 
 
+def test_every_strategy_module_registers_at_least_one_strategy():
+    """Test-claim parity: every module in xcbench.strategies/ that the
+    package imports must register at least one @strategy(...) entry.
+
+    Catches the silent-decorator-omission bug (strategy file is imported
+    but never calls @strategy, so the CLI's list-strategies lies about
+    what's available). Does NOT require the registered name to match the
+    module basename — analysis utilities may register under names like
+    `_foo_noop` while still satisfying the import chain.
+    """
+    import importlib
+    import pkgutil
+    import xcbench.cli  # noqa: F401  triggers registration
+    import xcbench.strategies as strategies_pkg
+    from xcbench.registry import STRATEGIES
+
+    offenders = []
+    for modinfo in pkgutil.iter_modules(strategies_pkg.__path__):
+        qualname = f"xcbench.strategies.{modinfo.name}"
+        importlib.import_module(qualname)
+        registered = [
+            name for name, fn in STRATEGIES.items()
+            if getattr(fn, "__module__", None) == qualname
+        ]
+        if not registered:
+            offenders.append(modinfo.name)
+    assert not offenders, (
+        f"strategy modules imported but register nothing: {sorted(offenders)}. "
+        f"Each needs at least one @strategy(...) decorator."
+    )
+
+
+def test_packaging_metadata_declares_cli_entry_point():
+    """Test-claim parity: pyproject.toml must keep the xcbench console script
+    wired to xcbench.cli:main, otherwise `pip install -e .` produces a package
+    that can't run the CLI the README promises.
+    """
+    import pathlib
+    try:
+        import tomllib  # py311+
+    except ModuleNotFoundError:
+        import tomli as tomllib  # type: ignore[no-redef]
+
+    root = pathlib.Path(__file__).parent.parent
+    pyproject = root / "pyproject.toml"
+    assert pyproject.exists(), "pyproject.toml is required for packaging"
+    data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    scripts = data.get("project", {}).get("scripts", {})
+    assert scripts.get("xcbench") == "xcbench.cli:main", (
+        f"console_script xcbench must point at xcbench.cli:main, got {scripts!r}"
+    )
+
+
 def test_no_hardcoded_domain_persona_in_prompts():
     """Guard against the cross-domain portability bug.
 
