@@ -1,0 +1,34 @@
+{
+  "full_context": {
+    "n": 120,
+    "quality_mean": 0.876,
+    "f1_mean": 0.379,
+    "em_mean": 0.0,
+    "key_fact_recall_mean": 0.0,
+    "latency_s_mean": 15.433,
+    "prompt_tokens_mean": 5619,
+    "total_tokens_mean": 6026,
+    "cost_usd_total": 3.22463,
+    "agent_cost_usd_total": 2.75451,
+    "judge_cost_usd_total": 0.47005,
+    "quality_by_category": {
+      "conflicting_sources": 0.876
+    }
+  },
+  "hierarchical": {
+    "n": 120,
+    "quality_mean": 0.83,
+    "f1_mean": 0.373,
+    "em_mean": 0.0,
+    "key_fact_recall_mean": 0.0,
+    "latency_s_mean": 19.495,
+    "prompt_tokens_mean": 2500,
+    "total_tokens_mean": 2852,
+    "cost_usd_total": 1.98504,
+    "agent_cost_usd_total": 1.53503,
+    "judge_cost_usd_total": 0.44995,
+    "quality_by_category": {
+      "conflicting_sources": 0.83
+    }
+  }
+}

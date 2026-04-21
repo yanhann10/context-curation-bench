@@ -21,6 +21,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent.parent / ".env")
 
+# Bridge legacy USE_BEDROCK=1 to XCBENCH_BACKEND=bedrock
+import os
+if os.getenv("USE_BEDROCK") == "1" and not os.getenv("XCBENCH_BACKEND"):
+    os.environ["XCBENCH_BACKEND"] = "bedrock"
+
 
 async def main(args):
     start_time = datetime.now(timezone.utc)

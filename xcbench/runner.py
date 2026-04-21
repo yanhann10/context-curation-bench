@@ -46,6 +46,14 @@ class CellResult:
 
 async def _run_one(ctx, strategy_cfg, question, corpus) -> CellResult:
     fn = STRATEGIES[strategy_cfg.name]
+    # For multi-topic corpora (e.g. ConflictQA with 1353 docs across 120
+    # independent topics), scope the corpus to the question's relevant docs.
+    # This prevents full_context from stuffing 660k tokens and keeps
+    # per-question retrieval focused. Strategies that need the full corpus
+    # for global routing (hierarchical) use their own caching — the scoped
+    # corpus still gives them the right docs to route over.
+    if question.relevant_doc_ids and len(corpus.docs) > 50:
+        corpus = corpus.scoped(question.relevant_doc_ids)
     try:
         out = await fn(ctx, question, corpus, **(strategy_cfg.params or {}))
         if isinstance(out, str):

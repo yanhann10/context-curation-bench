@@ -59,6 +59,14 @@ class CorpusSpec:
         ids = set(self.slices.get(name, []))
         return [d for d in self.docs if d.id in ids]
 
+    def scoped(self, doc_ids: list[str]) -> "CorpusSpec":
+        """Return a new CorpusSpec containing only the listed doc IDs."""
+        id_set = set(doc_ids)
+        return CorpusSpec(
+            docs=[d for d in self.docs if d.id in id_set],
+            slices={k: [i for i in v if i in id_set] for k, v in self.slices.items()},
+        )
+
     def as_legacy_list(self) -> list[dict]:
         return [d.as_legacy_dict() for d in self.docs]
 

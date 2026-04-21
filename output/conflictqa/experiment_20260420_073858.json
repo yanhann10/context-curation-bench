@@ -1,0 +1,69 @@
+{
+  "experiment": "conflictqa_bench",
+  "start_time": "2026-04-20T07:38:58.679681+00:00",
+  "end_time": "2026-04-20T09:18:21.640159+00:00",
+  "duration_s": 5963.0,
+  "duration_human": "99.4min",
+  "matrix_duration_s": 5962.7,
+  "backend": "bedrock",
+  "agent_model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+  "judge_model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+  "strategies": [
+    "full_context",
+    "hierarchical"
+  ],
+  "n_questions": 120,
+  "n_strategies": 2,
+  "n_cells": 240,
+  "concurrency": 2,
+  "summary": {
+    "full_context": {
+      "n": 120,
+      "quality_mean": 0.876,
+      "f1_mean": 0.379,
+      "em_mean": 0.0,
+      "key_fact_recall_mean": 0.0,
+      "latency_s_mean": 15.433,
+      "prompt_tokens_mean": 5619,
+      "total_tokens_mean": 6026,
+      "cost_usd_total": 3.22463,
+      "agent_cost_usd_total": 2.75451,
+      "judge_cost_usd_total": 0.47005,
+      "quality_by_category": {
+        "conflicting_sources": 0.876
+      }
+    },
+    "hierarchical": {
+      "n": 120,
+      "quality_mean": 0.83,
+      "f1_mean": 0.373,
+      "em_mean": 0.0,
+      "key_fact_recall_mean": 0.0,
+      "latency_s_mean": 19.495,
+      "prompt_tokens_mean": 2500,
+      "total_tokens_mean": 2852,
+      "cost_usd_total": 1.98504,
+      "agent_cost_usd_total": 1.53503,
+      "judge_cost_usd_total": 0.44995,
+      "quality_by_category": {
+        "conflicting_sources": 0.83
+      }
+    }
+  },
+  "frontier": {
+    "frontier": [
+      "full_context",
+      "hierarchical"
+    ],
+    "dominated": {},
+    "per_axis_best": {
+      "quality": "full_context",
+      "cost_usd": "hierarchical",
+      "total_tokens": "hierarchical"
+    }
+  },
+  "artifacts": {
+    "results_csv": "output/conflictqa/results_20260420_073858.csv",
+    "summary_json": "output/conflictqa/summary_20260420_073858.json"
+  }
+}
