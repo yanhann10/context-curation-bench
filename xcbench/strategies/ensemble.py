@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 from ..registry import strategy
-from src.strategies_hierarchical import hierarchical_build_prompt_fn
-from src.strategies_ensemble import make_ensemble_runner
+from xcbench._internal.strategies_hierarchical import hierarchical_build_prompt_fn
+from xcbench._internal.strategies_ensemble import make_ensemble_runner
 
 
 async def _get_hier_fn(ctx, corpus):

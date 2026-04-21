@@ -7,7 +7,7 @@ strategies is a matter of wiring a new (baseline, propose, score) trio.
 from __future__ import annotations
 import asyncio
 
-from src.harness_optimizer_async import optimize_async
+from xcbench._internal.harness_optimizer_async import optimize_async
 
 
 async def fit(ctx, strategy_name: str, train_questions, corpus, *,

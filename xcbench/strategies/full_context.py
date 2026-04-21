@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from ..registry import strategy
-from src.strategies import full_context as _full_context  # reuse existing
+from xcbench._internal.strategies import full_context as _full_context  # reuse existing
 
 
 @strategy("full_context")

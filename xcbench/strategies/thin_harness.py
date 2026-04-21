@@ -5,7 +5,7 @@ Same 4 tools as agent_managed; tests the thin end of the harness axis.
 from __future__ import annotations
 
 from ..registry import strategy
-from src.strategies_harness import thin_harness_runner
+from xcbench._internal.strategies_harness import thin_harness_runner
 
 
 @strategy("thin_harness")

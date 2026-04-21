@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from ..registry import strategy
-from src.strategies_hierarchical import (
+from xcbench._internal.strategies_hierarchical import (
     summarize_all, route_docs, hierarchical_prompt,
 )
 

@@ -7,7 +7,7 @@ Verify emits {unverified_claims, needs_more_fetch}; if true, one refine pass.
 from __future__ import annotations
 
 from ..registry import strategy
-from src.strategies_harness import thick_harness_runner
+from xcbench._internal.strategies_harness import thick_harness_runner
 
 
 @strategy("thick_harness")

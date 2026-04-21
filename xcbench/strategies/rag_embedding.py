@@ -5,7 +5,7 @@ The FAISS index is built once per (corpus, params) pair and cached on ctx.
 from __future__ import annotations
 
 from ..registry import strategy
-from src.strategies_rag import build_index, rag_prompt
+from xcbench._internal.strategies_rag import build_index, rag_prompt
 
 
 @strategy("rag_embedding")

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from .registry import grader
-from src.evaluator_async import judge_async
+from xcbench._internal.evaluator_async import judge_async
 
 
 @grader("llm_judge")

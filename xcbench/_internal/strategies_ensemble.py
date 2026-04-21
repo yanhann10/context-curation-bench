@@ -26,12 +26,18 @@ PICK_SYSTEM = (
 )
 
 
-def make_ensemble_runner(hier_prompt_fn):
-    """Factory returning a runner that runs hier + agent_managed in parallel."""
+def make_ensemble_runner(hier_prompt_fn, judge_model: str | None = None):
+    """Factory returning a runner that runs hier + agent_managed in parallel.
+
+    judge_model: if set, use this model for the A-vs-B picker instead of the
+    answerer model. Use a cheaper model (e.g. claude-haiku-4-5) to reduce
+    ensemble cost by ~20% with minimal quality risk.
+    """
     async def ensemble_runner(
         client: AsyncAnthropic, question: str, docs: list[dict], model: str,
     ) -> tuple[str, float, int, int]:
         t0 = time.time()
+        j_model = judge_model or model
 
         async def run_hier():
             prompt = await hier_prompt_fn(question, docs)
@@ -49,7 +55,7 @@ def make_ensemble_runner(hier_prompt_fn):
             "Return JSON."
         )
         data, j_in, j_out, _ = await complete_json(
-            client, user=payload, system=PICK_SYSTEM, model=model, max_tokens=128,
+            client, user=payload, system=PICK_SYSTEM, model=j_model, max_tokens=128,
         )
         pick = str(data.get("pick", "B")).upper()
         final = ans_a if pick == "A" else ans_b

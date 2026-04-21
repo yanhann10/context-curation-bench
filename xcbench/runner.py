@@ -14,8 +14,8 @@ import inspect
 from dataclasses import dataclass, asdict
 
 from .registry import STRATEGIES, GRADERS
-from src.llm_client import complete_text, cost_usd
-from src.metrics import (
+from xcbench._internal.llm_client import complete_text, cost_usd
+from xcbench._internal.metrics import (
     f1_against_any as _f1_any,
     em_against_any as _em_any,
     key_facts_recall as _kfr,

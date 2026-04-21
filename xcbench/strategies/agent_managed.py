@@ -6,7 +6,7 @@ when a strategy returns a dict rather than a string.
 from __future__ import annotations
 
 from ..registry import strategy
-from src.strategies_agent_managed import agent_managed_runner
+from xcbench._internal.strategies_agent_managed import agent_managed_runner
 
 
 @strategy("agent_managed")

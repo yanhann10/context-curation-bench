@@ -46,5 +46,5 @@ xcbench = "xcbench.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["xcbench*", "src*"]
+include = ["xcbench*"]
 exclude = ["tests*", "scripts*", "mle_harness*", "notes*", "docs*", "eval*", "data*", "output*", "outputs*", "suites*", "examples*", "roadmap*", "lit*", "assets*", "sources*", "fixtures*", "results*"]

@@ -7,8 +7,8 @@ train subset and the runner passes it in via ctx['fitted_spec'].
 from __future__ import annotations
 
 from ..registry import strategy
-from src.strategies import meta_harness_optimized
-from src.harness_optimizer import baseline_spec
+from xcbench._internal.strategies import meta_harness_optimized
+from xcbench._internal.harness_optimizer import baseline_spec
 
 
 @strategy("meta_harness")
