@@ -1,0 +1,66 @@
+{
+  "rag_embedding": {
+    "n": 120,
+    "quality_mean": 0.281,
+    "f1_mean": 0.177,
+    "em_mean": 0.0,
+    "key_fact_recall_mean": 0.0,
+    "latency_s_mean": 12.513,
+    "prompt_tokens_mean": 1765,
+    "total_tokens_mean": 1904,
+    "cost_usd_total": 1.24532,
+    "agent_cost_usd_total": 0.88539,
+    "judge_cost_usd_total": 0.35998,
+    "quality_by_category": {
+      "conflicting_sources": 0.281
+    }
+  },
+  "agent_managed": {
+    "n": 120,
+    "quality_mean": 0.811,
+    "f1_mean": 0.349,
+    "em_mean": 0.0,
+    "key_fact_recall_mean": 0.0,
+    "latency_s_mean": 626.896,
+    "prompt_tokens_mean": 5594,
+    "total_tokens_mean": 5994,
+    "cost_usd_total": 3.10896,
+    "agent_cost_usd_total": 2.73425,
+    "judge_cost_usd_total": 0.37478,
+    "quality_by_category": {
+      "conflicting_sources": 0.811
+    }
+  },
+  "cascade": {
+    "n": 120,
+    "quality_mean": 0.61,
+    "f1_mean": 0.277,
+    "em_mean": 0.0,
+    "key_fact_recall_mean": 0.0,
+    "latency_s_mean": 54.896,
+    "prompt_tokens_mean": 4786,
+    "total_tokens_mean": 5123,
+    "cost_usd_total": 2.71989,
+    "agent_cost_usd_total": 2.32984,
+    "judge_cost_usd_total": 0.39006,
+    "quality_by_category": {
+      "conflicting_sources": 0.61
+    }
+  },
+  "ensemble": {
+    "n": 120,
+    "quality_mean": 0.641,
+    "f1_mean": 0.273,
+    "em_mean": 0.0,
+    "key_fact_recall_mean": 0.0,
+    "latency_s_mean": 147.978,
+    "prompt_tokens_mean": 8514,
+    "total_tokens_mean": 9031,
+    "cost_usd_total": 4.3636,
+    "agent_cost_usd_total": 3.99583,
+    "judge_cost_usd_total": 0.36773,
+    "quality_by_category": {
+      "conflicting_sources": 0.641
+    }
+  }
+}
