@@ -4,7 +4,9 @@
 [![python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-**xcbench** benchmarks LLM context-curation strategies — how to select, order, and format documents before handing them to an answering model. Strategies compared: `full_context`, `rag_embedding`, `hierarchical`, `agent_managed`, `cascade_router`, `ensemble`, `meta_harness_optimized`, `thin_harness`, `thick_harness`. Results are reported as a trade-off over quality, cost, and latency (single-seed, directional).
+**xcbench** benchmarks LLM **context curation** — the set of choices made before the answering model runs: which documents to include, how to rank them, how to compress them, and what surrounding scaffolding to wrap around them. A suite is a *matrix* of strategies rather than a single target, and the output is a Pareto trade-off over `(quality, cost, latency)` rather than a pass/fail gate.
+
+Strategies currently compared: `full_context`, `rag_embedding`, `hierarchical`, `agent_managed`, `cascade`, `ensemble`, `meta_harness`, and — in the mle-bench probe — `rerank_rag`, `compressed`, `thin_harness`.
 
 ## Quick start
 
@@ -15,89 +17,102 @@ cp .env.example .env          # edit ANTHROPIC_API_KEY
 python -m xcbench demo
 ```
 
-`demo` runs the bundled HR-policy suite end-to-end. ~2–3 min, artifacts in `output/`.
+`demo` runs the bundled HR-policy suite end-to-end. ~2–3 min, artifacts in `output/`. After it finishes, open `output/sample-data-hr-policy_summary.json` for per-strategy aggregates and `output/sample-data-hr-policy_frontier.json` for the Pareto set.
 
-## Tasks
+## Results
 
-Three domains plus one experimental sidecar. Each table normalizes latency and token cost to the cheapest strategy on that task (`× base`), so the "× base" column reads "how many times the base strategy's cost/latency." Base strategy varies by task.
+Two suites are reported below at a size we're willing to stand behind (HR N=108, ConflictQA N=120). Polars and Flask suites exist in `suites/` but are not reported here — their N=10 question sets are too small to distinguish strategies, and every retrieval-tolerant strategy saturates at 1.000 on Polars. We treat sub-N=50 runs as developer-loop sanity checks, not results.
+
+Each table normalizes cost and latency to the cheapest strategy on that suite (`× base`). "Base" is whichever strategy ran cheapest; it is not necessarily the best-quality one. A single seed is used across all runs (seed = question order + model temperature 0 + retrieval tie-break; re-running is deterministic up to backend sampling noise).
 
 ### HR Policy
 
 **Source:** [GitLab Handbook](https://handbook.gitlab.com/handbook/) pages (`data/handbook/`) plus owner-validated operational updates (synthetic Slack threads, `data/slack.json`). Tests single-source lookup, source-specific updates, multi-source synthesis, and resolved conflicts.
 
-| strategy       | quality   | latency (× base) | token cost (× base) |
-|----------------|----------:|-----------------:|--------------------:|
-| full_context   | **0.927** | 1.2×             | 9.3×                |
-| rag_embedding  | 0.888     | **1.0×** (base)  | **1.0×** (base)     |
-| meta_harness   | 0.866     | 1.1×             | 5.4×                |
-| agent_managed  | 0.823     | 2.5×             | 3.5×                |
+| strategy       | quality   | cost (× base) | latency (× base) |
+|----------------|----------:|--------------:|-----------------:|
+| full_context   | **0.927** | 6.1×          | 1.2×             |
+| rag_embedding  | 0.888     | 1.0× (base)   | 1.0× (base)      |
+| meta_harness   | 0.866     | 3.8×          | 1.1×             |
+| agent_managed  | 0.823     | 2.6×          | 2.5×             |
 
-**Runs:** N=108 questions, single seed. Failure-mode taxonomy: [`eval/forensics_hr.md`](eval/forensics_hr.md) — >50% of failures cluster on multi-doc synthesis where retrieval missed the second doc.
+**Runs:** N=108 questions, single seed. Base strategy `rag_embedding` costs $1.15 and averages 13.5s per question. Bold = highest quality.
 
-### Polars Docs
+Three other strategies (`hierarchical`, `cascade`, `ensemble`) crashed mid-run on this matrix due to an instrumentation bug and are excluded rather than reported as zeros; they appear on the ConflictQA suite below. Failure-mode taxonomy: [`eval/forensics_hr.md`](eval/forensics_hr.md) — >50% of failures cluster on multi-doc synthesis where retrieval missed the second doc.
 
-**Source:** [polars user guide](https://docs.pola.rs/) reference docs plus maintainer GitHub discussions. Tests migration questions (`groupby` → `group_by`), API renames, and maintainer arbitration over current names and patterns.
+### ConflictQA
 
-| strategy               | quality   | latency (× base) | token cost (× base) |
-|------------------------|----------:|-----------------:|--------------------:|
-| rag_embedding          | **1.000** | 0.88×            | 1.2×                |
-| meta_harness_optimized | **1.000** | 0.76×            | 3.9×                |
-| cascade_router         | **1.000** | 2.0×             | 2.1×                |
-| ensemble               | **1.000** | 3.1×             | 3.1×                |
-| full_context           | 0.995     | 0.61×            | 4.1×                |
-| hierarchical           | 0.995     | **1.0×** (base)  | **1.0×** (base)     |
-| thin_harness           | 0.955     | 1.8×             | 2.2×                |
-| agent_managed          | 0.905     | 1.6×             | 2.1×                |
-| thick_harness          | 0.810     | 4.0×             | 5.6×                |
+**Source:** [kortukov/ConflictingQA](https://huggingface.co/datasets/kortukov/ConflictingQA) on Hugging Face — synthesis over genuinely conflicting real web sources. No timestamp or authority signal is available to resolve disagreements, which is what makes it hard.
 
-**Runs:** N=10 questions, 9 strategies, single seed. Failure-mode taxonomy: [`eval/forensics_polars.md`](eval/forensics_polars.md).
+| strategy       | quality   | cost (× base) | latency (× base) |
+|----------------|----------:|--------------:|-----------------:|
+| full_context   | **0.876** | 2.6×          | 1.2×             |
+| hierarchical   | 0.830     | 1.6×          | 1.6×             |
+| agent_managed  | 0.811     | 2.5×          | 50.1×            |
+| ensemble       | 0.641     | 3.5×          | 11.8×            |
+| cascade        | 0.610     | 2.2×          | 4.4×             |
+| rag_embedding  | 0.281     | 1.0× (base)   | 1.0× (base)      |
 
-### Flask Codebase
+**Runs:** N=120 questions, 6 strategies, single seed. Base strategy `rag_embedding` costs $1.25 and averages 12.5s per question. Bold = highest quality.
 
-**Source:** [Flask 2.3 docs](https://flask.palletsprojects.com/en/2.3.x/) plus Flask 3.x maintainer discussions. Tests real breaking changes: removed APIs (`before_first_request`), replaced patterns, deprecated extensions.
+Two observations: `rag_embedding` collapses because conflicting sources undermine the single-chunk-per-answer retrieval assumption; and `agent_managed` burns 50× the base latency on a task where the ceiling isn't obviously worth it. The former motivates the mle-bench `rerank_rag` probe below; the latter sharpens the cost-axis story in the frontier.
 
-**Runs:** suite defined at `suites/flask_codebase.yaml`; full matrix pending — not yet run at comparable scale. Run locally via `python -m xcbench run suites/flask_codebase.yaml`.
+### Not reported
 
-### ConflictQA (experimental sidecar)
+- **Polars** (`suites/polars_docs.yaml`) — N=10, saturated. Four strategies tie at 1.000 quality on the current question set. Not a discrimination test.
+- **Flask** (`suites/flask_codebase.yaml`) — N=10, not yet run at scale. Held pending question-set expansion.
 
-**Source:** [kortukov/ConflictingQA](https://huggingface.co/datasets/kortukov/ConflictingQA) on Hugging Face — synthesis over genuinely conflicting real web sources. Useful for stress-testing synthesis behavior; no timestamp or authority signal available to resolve disagreements.
-
-| strategy      | quality   | latency (× base) | token cost (× base) |
-|---------------|----------:|-----------------:|--------------------:|
-| full_context  | **0.876** | 0.79×            | 1.6×                |
-| hierarchical  | 0.830     | **1.0×** (base)  | **1.0×** (base)     |
-
-**Runs:** N=120 questions, 2 strategies — remaining 7 strategies pending. Experimental; synthesis-heavy behavior is still being characterized.
+Both suites run via `python -m xcbench run suites/<file>.yaml` if you want them locally.
 
 ## Cross-domain probe: mle-bench harness ablation
 
-Separate probe to test whether the xcbench harness ranking generalizes to code-generation tasks. Each harness produces a Python script that runs in the `mlebench-env` Docker container; a single revise-on-error round is allowed; the final `submission.csv` is graded via `mlebench grade-sample`.
+Separate probe to test whether the harness ranking generalizes to code-generation tasks. Each harness produces a Python script that runs in the `mlebench-env` Docker container; a single revise-on-error round is allowed; the final `submission.csv` is graded via `mlebench grade-sample`. Agent model: `claude-sonnet-4-5` via Bedrock, temp 0.
 
-| competition (metric, direction)             | full_context | rag_embedding | hierarchical | agent_managed |
-|---------------------------------------------|-------------:|--------------:|-------------:|--------------:|
-| spooky-author-identification (log loss ↓)   | 0.576        | 0.487         | **0.458**    | 0.486         |
-| jigsaw-toxic-comment-classification (AUC ↑) | **0.971**    | 0.964         | 0.964        | 0.948         |
+| harness         | spooky (log loss ↓) | jigsaw (AUC ↑) | cost 2-comp |
+|-----------------|--------------------:|---------------:|------------:|
+| `full_context`  | 0.576               | 0.964          | $0.059      |
+| `rag_embedding` | 0.487               | 0.964          | $0.031      |
+| `hierarchical`  | **0.486**           | 0.964          | $0.046      |
+| `agent_managed` | **0.486**           | 0.948          | $0.075      |
+| `rerank_rag`    | 0.576               | 0.964          | $0.048      |
+| `compressed`    | 0.490               | 0.948          | $0.064      |
+| `thin_harness`  | 0.530               | **0.971**      | **$0.024**  |
 
-**Harness ranking is task-dependent.** On short-text 3-class author ID, less-context harnesses (hierarchical, RAG) beat full_context by 12 pp log loss. On long multi-label toxicity, full_context wins and agent_managed is last. None of the 8 cells hit Kaggle medals (bronze/silver/gold), consistent with first-pass code without HPO or ensembling.
+**Runs:** N=2 competitions × 7 harnesses = 14 submissions, single seed, 12.5 min wall, $0.35 total Bedrock spend. Bold = best per column.
 
-**Runs:** N=2 competitions × 4 harnesses = 8 submissions, single seed.
+Three observations — two expected, one surprising:
 
-Run yourself (Docker and Kaggle credentials required; see `mle_harness/README.md`):
+- **Ranking is task-dependent** (reinforcing the prior 4-harness finding). On short-text 3-class author ID, less-context harnesses (hierarchical, agent_managed, rag_embedding, all ~0.486) beat `full_context` (0.576) by ~9 pp log loss. On long multi-label toxicity, four harnesses tie at 0.964 — the agent picks the same TF-IDF + LogReg family regardless of how much context it sees, and that family's ceiling on this corpus is ~0.964.
+- **`thin_harness` was competitive or best on both tasks** — filenames + sample submission alone gave the agent enough to write a clean baseline. On jigsaw it was the only harness above the 4-way 0.964 tie (0.971). Removing context didn't hurt and in one case helped, which is itself a finding about how much of the scaffolding was load-bearing.
+- **`rerank_rag` degenerated to `full_context` on spooky** (identical 0.576 score) because spooky's description is short enough to fall below the rerank_rag chunking floor (<3 chunks → full inclusion). A feature, not a bug — the fallback is explicit — but it means this competition doesn't exercise the reranker. A longer-description competition would.
+
+None of the 14 cells hit Kaggle medals (spooky bronze = 0.294 log loss, jigsaw bronze = 0.986 AUC) — consistent with first-pass code without HPO or ensembling. The probe tests harness ranking, not leaderboard competitiveness.
+
+Run yourself (Docker and Kaggle credentials required; see `mle_harness/`):
 
 ```bash
 AWS_REGION=us-east-1 python -m mle_harness.run_matrix \
   --comps spooky-author-identification,jigsaw-toxic-comment-classification-challenge \
-  --harnesses full_context,rag_embedding,hierarchical,agent_managed \
-  --out output/mle_matrix.csv
+  --harnesses full_context,rag_embedding,hierarchical,agent_managed,rerank_rag,compressed,thin_harness \
+  --out output/mle_matrix_7harness.csv
 ```
 
-## Adaptive routing: viable on mixed-question tasks
+## Adaptive routing: the live question
 
-On HR Policy (N=10), an **oracle router** that picks the cheapest max-quality strategy per question hits **1.000 quality at 1.2× hier cost** — roughly 3× cheaper than `ensemble` and 5× cheaper than `full_context`. The oracle picks `hierarchical` on 9/10 and `agent_managed` on 1/10. Same pattern on Polars: oracle at 1.000 quality at $0.135 total (cheapest strategy was $0.138 with one failure).
+On both reported suites, no single strategy Pareto-dominates. `full_context` wins quality and loses on cost; `rag_embedding` wins cost and loses on quality wherever synthesis is needed. The interesting question is whether a per-question router can pick the right strategy from a cheap signal over the question text.
 
-**Implication:** for mixed-question suites, a trained router over the question text could approach oracle cost while keeping quality. The current `cascade_router` approximates this via self-verification, but self-verification is the weak link (overconfident on confidently-wrong tier-1 outputs — the diagnosis is in the HR forensics doc). A cross-model verifier or a classifier trained on a few hundred labeled routings is a plausible next step.
+The current `cascade` strategy approximates this via self-verification (tier-1 `hierarchical` → verifier → tier-2 `agent_managed` → verifier → tier-3 `full_context`). It underperforms: self-verification over-fires on easy questions *and* misses confidently-wrong tier-1 outputs. The failure mode is in [`eval/forensics_hr.md`](eval/forensics_hr.md). A cross-model verifier, a classifier trained on labelled routings, or an Adaptive-RAG-style query-type router (see "Potentially worth testing next" below) are the concrete next steps.
 
-See [`eval/forensics_hr.md`](eval/forensics_hr.md) for the per-question breakdown that makes this oracle finding explicit.
+## Limitations
+
+Things we are deliberately *not* claiming:
+
+- **Single seed, no confidence intervals.** Numbers are point estimates; small quality gaps on HR (0.927 vs 0.888, N=108) are not tested for significance. Treat rankings as directional until a re-run with bootstrapped CIs lands.
+- **Agent and judge share a model family** on the default config (both default to `claude-opus-4-7`), which risks self-preference bias. The runner prints a warning when this happens. Override `JUDGE_MODEL` in `.env` (e.g. to `claude-haiku-4-5`) to differ.
+- **No label leakage by construction, not by test.** Adjudication metadata (`authority_rule_used`, `canonical_source_ids`, `adjudication_rationale`) is stored in the question schema but never included in the judge payload — see [`xcbench/_internal/evaluator_async.py:30-37`](xcbench/_internal/evaluator_async.py) for the exact payload the judge sees. There is currently no regression test that asserts this; grep is the audit.
+- **Cost-accounting** in cascade / ensemble / meta_harness **sums all sub-calls**, including verifier and optimizer-train calls on meta_harness. The quoted × base is end-to-end spend on the test split; it is not per-answering-call.
+- **No closed-book baseline.** We don't currently report a "model answers without any context" floor. Until that exists, take absolute quality numbers as relative-to-each-other, not relative-to-a-known-floor.
+- **Three HR strategies excluded** from the HR table due to a runtime bug that zeroed their outputs (`hierarchical`, `cascade`, `ensemble`). They do run on ConflictQA; the bug is run-specific, not strategy-fundamental.
 
 ## Architecture
 
@@ -121,7 +136,7 @@ Four things xcbench does differently from a typical evals harness (shape borrowe
 
 1. **`strategies:` is a list** — a suite IS a matrix, not a single `target:`.
 2. **`CorpusSpec` is first-class**, separate from dataset. Docs carry source metadata (`kind`, `timestamp`, `issuer`, `scope`). Questions carry adjudication metadata (`gold_status`, `canonical_source_ids`, `authority_rule_used`) without leaking that rationale into the judge prompt.
-3. **`frontier:` replaces `gate:`** — output is per-axis winners over `(quality, cost, tokens)` plus a trade-off summary, instead of a boolean pass/fail threshold.
+3. **`frontier:` replaces `gate:`** — output is per-axis winners over `(quality, cost, latency)` plus a trade-off summary, instead of a boolean pass/fail threshold.
 4. **`optimize:` is a built-in phase** — propose → evaluate → keep-best on a typed `CurationSpec` runs before final scoring.
 
 ## Add your own strategy
@@ -148,9 +163,11 @@ python -m xcbench demo
 
 # run any suite YAML
 python -m xcbench run suites/sample_data_hr_policy.yaml
+python -m xcbench run suites/conflictqa.yaml --strategies full_context,rag_embedding,hierarchical --skip-optimize
+
+# dev-loop-only suites (N=10 — not reported in this README)
 python -m xcbench run suites/polars_docs.yaml
 python -m xcbench run suites/flask_codebase.yaml
-python -m xcbench run suites/conflictqa.yaml --strategies full_context,rag_embedding,hierarchical --skip-optimize
 
 # minimal 3-doc / 2-question example
 python -m xcbench run examples/toy/suite.yaml
@@ -161,6 +178,8 @@ Artifacts in `output/` (per-suite prefixed):
 - `{suite}_summary.json` — per-strategy aggregate means
 - `{suite}_frontier.json` — Pareto non-dominated set + per-axis winners
 - `{suite}_optimizer_history.json` — proposed spec + rationale + score per iteration
+
+The `{suite}` prefix is the `name:` field inside the suite YAML (e.g. `sample-data-hr-policy_matrix.csv`), which may differ from the YAML filename.
 
 ## Repo layout
 
@@ -175,12 +194,15 @@ xcbench/
 ├── judge.py            # llm_judge grader
 ├── frontier.py         # trade-off summary
 ├── optimizer.py        # built-in propose/eval/keep loop
-└── strategies/         # full_context, rag_embedding, hierarchical, agent_managed, etc.
+└── strategies/         # full_context, rag_embedding, hierarchical, agent_managed, cascade, ensemble, meta_harness
 suites/{sample_data_hr_policy,polars_docs,flask_codebase,conflictqa}.yaml
 data/{handbook,polars,flask,conflictqa}/
+mle_harness/            # cross-domain code-gen probe (full_context, rag_embedding, hierarchical, agent_managed, rerank_rag, compressed, thin_harness)
 examples/toy/{corpus.jsonl,questions.jsonl,suite.yaml}
 eval/{forensics_hr,forensics_polars,eval_runs}.md
 ```
+
+To add a strategy, drop a new file in `xcbench/strategies/` and register it with the `@strategy` decorator (see "Add your own strategy" above, or [`docs/add_your_own.md`](docs/add_your_own.md) for the walkthrough). mle-bench harnesses live separately in `mle_harness/harnesses.py` because they operate on whole-task scaffolding, not per-question document selection.
 
 ## Metrics
 
@@ -217,47 +239,54 @@ The runner warns if agent and judge are the same model (self-preference bias). O
 
 **Embeddings:** local `BAAI/bge-small-en-v1.5` via `sentence-transformers`. FAISS `IndexFlatIP` for retrieval.
 
-## Strategies (with per-task observations)
+## Strategies (with per-suite observations)
+
+Observations below are from the HR N=108 and ConflictQA N=120 runs in the Results section.
 
 - **`full_context`** — stuff every doc into the prompt. No selection.
-  *Observation:* dominant on HR Policy (quality 0.927 vs next 0.888) where conflicts matter, but pays 9.3× base on tokens. On Polars it ties the rest at 0.995 — when retrieval is easy, full_context is just expensive.
+  *Observation:* highest quality on both reported suites (0.927 HR, 0.876 ConflictQA), at 2.6–6.1× base cost. When conflicts or synthesis dominate, paying for the full context wins.
 
 - **`rag_embedding`** — chunk docs (~1200 chars, 200 overlap), embed via `BAAI/bge-small-en-v1.5`, index in FAISS (`IndexFlatIP` on L2-normalized vectors = cosine), retrieve top-k per question. Classic RAG.
-  *Observation:* base on HR (cheapest and fastest), ties the frontier on Polars. Main failure mode: missing the second doc needed for multi-source synthesis. Fix candidates are adaptive-k or a reranker pass — see "Potentially worth testing" below.
+  *Observation:* cheap-and-fine on HR (0.888 q, base cost) but collapses on ConflictQA (0.281 q) — a single retrieved chunk can't represent a genuine disagreement between sources. Motivates the `rerank_rag` mle-bench probe.
 
 - **`hierarchical`** — **no embedding retrieval.** Two LLM passes: (1) *map* — summarize each doc to 1–2 sentences once, cache; (2) *route* — LLM sees question + catalog of `(id, title, timestamp, summary)` and returns JSON `{"doc_ids": [...]}` with 2–5 picks; (3) *expand* — the full text of the selected docs goes to the answerer.
-  *Observation:* Polars cost base at 0.995 quality. Fails when summaries lose the key term (q-v2-010 military-leave on HR).
+  *Observation:* 0.830 q on ConflictQA at 1.6× base cost — strongest value-per-dollar among non-full_context strategies. Excluded from HR table (runtime bug on that matrix).
 
-- **`agent_managed`** — tool-use loop. The model gets four tools (`list_handbook`, `get_handbook(doc_id)`, `list_slack`, `get_slack(thread_id)`) and runs up to 6 turns. Token usage is summed across **all** turns, so the reported cost reflects full loop spend.
-  *Observation:* strong when the right doc is not retrievable by embedding similarity (q-v2-009 STD benefits), but pays 2.1–3.5× base. Underperforms on Polars where the corpus is small enough that RAG rarely misses.
+- **`agent_managed`** — tool-use loop. The model gets tools to list and fetch docs, runs up to 6 turns. Token usage is summed across all turns.
+  *Observation:* third on HR (0.823 q, 2.6× cost). Matches hierarchical on ConflictQA quality but at **50× the latency** because the tool-use loop doesn't short-circuit when retrieval is already sufficient.
 
-- **`cascade_router`** — Tier 1 `hierarchical` → self-verifier (`{"confident": 0|1}`) → if 0, Tier 2 `agent_managed` → verifier again → if 0, Tier 3 `full_context`. Tokens summed across all tiers.
-  *Observation:* self-verifier over-fires (pays all tiers on most questions) AND misses true failures (confident on confidently-wrong hier output). Fix: cross-model verifier.
+- **`cascade`** — Tier 1 `hierarchical` → self-verifier (`{"confident": 0|1}`) → if 0, Tier 2 `agent_managed` → verifier again → if 0, Tier 3 `full_context`. Costs summed across all tiers executed.
+  *Observation:* 0.610 q on ConflictQA at 2.2× base cost. The self-verifier over-fires on easy questions and misses confidently-wrong tier-1 outputs — see HR forensics doc.
 
-- **`ensemble`** — `hierarchical` and `agent_managed` in parallel per question; judge-LLM picks A or B on correctness + specificity. Tokens additive.
-  *Observation:* ties top quality on Polars at 3.1× base cost. On HR matches full_context at ~64% its cost. Reliable but not cheap.
+- **`ensemble`** — `hierarchical` and `agent_managed` in parallel per question; judge-LLM picks A or B on correctness + specificity.
+  *Observation:* 0.641 q on ConflictQA at 3.5× base cost. Worse than either component alone on this suite — judge disagrees with itself.
 
-- **`meta_harness_optimized`** — applies a typed `CurationSpec` (which ids to include, ordering, format, max-chars, instructions) that an LLM proposer iteratively mutated against failure traces on a train subset. Simplification of Stanford IRIS's Meta-Harness (the faithful framework evolves arbitrary Python code; see [`notes/meta_harness_analysis.md`](notes/meta_harness_analysis.md)).
-  *Observation:* ties the Polars frontier. On HR, the optimizer sometimes excludes a doc needed by a held-out question (train-set overfit). Small-N problem.
+- **`meta_harness`** — applies a typed `CurationSpec` (which ids to include, ordering, format, max-chars, instructions) that an LLM proposer iteratively mutates against failure traces on a train subset. Simplification of Stanford IRIS's Meta-Harness (the faithful framework evolves arbitrary Python code; see [`notes/meta_harness_analysis.md`](notes/meta_harness_analysis.md)).
+  *Observation:* 0.866 q on HR at 3.8× base cost — third overall. Train-split overfit is visible on small-N suites: the optimizer sometimes excludes a doc needed by a held-out question.
 
-- **`thin_harness` / `thick_harness`** — ablation axis on how much tool-use / retries / verification the harness layer adds. Defined in the Polars and Flask suites.
-  *Observation:* thin_harness 0.955 / 2.2× base; thick_harness 0.810 / 5.6× base on Polars. More harness machinery ≠ better quality; on this task it hurts.
+### mle-bench-only harnesses
+
+Three additional strategies exist only in the cross-domain code-gen probe below (`mle_harness/harnesses.py`). They operate on whole-task scaffolding rather than per-question document selection:
+
+- **`rerank_rag`** — chunks the competition description, LLM scores each chunk 0–10 for task-relevance, keeps top-5 by rank, re-sorts by original order for coherence.
+- **`compressed`** — LLM compresses the description to ~50% length, preserving metric / target / format / input columns; drops motivation and history.
+- **`thin_harness`** — file list + sample submission only, no description. Ablation floor — tests how much the model can infer from filenames.
 
 ## Potentially worth testing next
 
-From a 2024–2026 literature pass, ranked by cheapest-to-implement that would diagnose a known xcbench weakness. Each is distinct from the 9 above.
+From a 2024–2026 literature pass, ranked by cheapest-to-implement that would diagnose a known xcbench weakness. Each is distinct from the strategies already implemented above.
 
-1. **Reranker-Augmented RAG** — over-retrieve `k=40` with `bge-small`, then cross-encoder rerank to top-6 via [`BAAI/bge-reranker-v2-m3`](https://huggingface.co/BAAI/bge-reranker-v2-m3). Cheapest test of whether `rag_embedding`'s HR-failure (missing the second doc) is reranker-limited. ~50 LOC.
+1. **Cross-encoder reranker** — over-retrieve `k=40` with `bge-small`, then cross-encoder rerank to top-6 via [`BAAI/bge-reranker-v2-m3`](https://huggingface.co/BAAI/bge-reranker-v2-m3). The mle-bench `rerank_rag` harness uses LLM-scoring as a proxy; a cross-encoder is the proper retrieval-side version and is the cheapest test of whether `rag_embedding`'s HR-failure (missing the second doc) is reranker-limited. ~50 LOC.
 2. **Contextual Retrieval** ([Anthropic, Sep 2024](https://www.anthropic.com/news/contextual-retrieval)) — prepend an LLM-generated 50–100 token chunk-context blurb before embedding and BM25. 35%/49% retrieval-failure reduction in the original post. Targets Polars/Flask where chunks lose parent-scope. ~100 LOC.
 3. **Adaptive-RAG** ([Jeong et al., NAACL 2024, arXiv:2403.14403](https://arxiv.org/abs/2403.14403)) — T5-Large classifier routes `{no-retrieve, single-step, multi-step}` per query on auto-derived labels. Canonical learned-router paper; directly replaces hand-coded cascade escalation. Repo: [starsuzi/Adaptive-RAG](https://github.com/starsuzi/Adaptive-RAG). ~150 LOC.
 4. **RAPTOR** ([Sarthi et al., ICLR 2024, arXiv:2401.18059](https://arxiv.org/abs/2401.18059)) — recursive GMM-cluster + summarize chunks into a multi-level tree; retrieve at any level. Real upgrade to the single-level `hierarchical`. ~200 LOC.
-5. **LongLLMLingua / LLMLingua-2** ([arXiv:2310.06839](https://arxiv.org/abs/2310.06839), [arXiv:2403.12968](https://arxiv.org/abs/2403.12968)) — token-importance classifier drops low-score tokens conditioned on the query. Reshapes `full_context`'s Pareto frontier rather than replacing it. ~70 LOC.
-6. **GraphRAG** ([Microsoft, arXiv:2404.16130](https://arxiv.org/abs/2404.16130)) / **LightRAG** ([HKU, arXiv:2410.05779](https://arxiv.org/abs/2410.05779)) — entity KG + community summaries. Handles query-focused summarization ("what are the main themes of…") which none of the 9 strategies above do well. ~150–200 LOC.
-7. **CRAG — Corrective RAG** ([Yan et al., arXiv:2401.15884](https://arxiv.org/abs/2401.15884)) — T5 retrieval *evaluator* (not the LLM itself) grades retrievals and triggers web-fallback or decompose. Sidesteps the `cascade_router` self-verification pathology. ~120 LOC.
+5. **LongLLMLingua / LLMLingua-2** ([arXiv:2310.06839](https://arxiv.org/abs/2310.06839), [arXiv:2403.12968](https://arxiv.org/abs/2403.12968)) — token-importance classifier drops low-score tokens conditioned on the query. Proper version of the LLM-as-compressor `compressed` mle-bench harness; reshapes `full_context`'s Pareto frontier rather than replacing it. ~70 LOC.
+6. **GraphRAG** ([Microsoft, arXiv:2404.16130](https://arxiv.org/abs/2404.16130)) / **LightRAG** ([HKU, arXiv:2410.05779](https://arxiv.org/abs/2410.05779)) — entity KG + community summaries. Handles query-focused summarization ("what are the main themes of…") which none of the strategies above do well. ~150–200 LOC.
+7. **CRAG — Corrective RAG** ([Yan et al., arXiv:2401.15884](https://arxiv.org/abs/2401.15884)) — T5 retrieval *evaluator* (not the LLM itself) grades retrievals and triggers web-fallback or decompose. Sidesteps the `cascade` self-verification pathology. ~120 LOC.
 8. **HyDE** ([Gao et al., ACL 2023, arXiv:2212.10496](https://arxiv.org/abs/2212.10496)) — LLM drafts a fake answer; embed the answer, not the query. Likely helps on HR ("what's our policy on…") and hurts on Polars (hallucinated API names mislead retrieval). ~30 LOC.
 9. **Self-RAG** ([Asai et al., ICLR 2024, arXiv:2310.11511](https://arxiv.org/abs/2310.11511)) — model emits `[Retrieve] / [IsRel] / [IsSup] / [IsUse]` reflection tokens; retrieval gated per sentence. Differs from `agent_managed` in granularity. Pretrained 7B/13B checkpoints exist. ~100 LOC.
 
-**On learned per-query routing**, three recent papers directly study it: Adaptive-RAG (above), [RAGRouter / RAGRouter-Bench (arXiv:2505.23052)](https://arxiv.org/abs/2505.23052), and [RouteRAG (arXiv:2506.15862)](https://arxiv.org/abs/2506.15862). All report that per-query routing beats fixed-strategy baselines on heterogeneous question sets — which matches xcbench's oracle-router observation above.
+**On learned per-query routing**, three recent papers directly study it: Adaptive-RAG (above), [RAGRouter / RAGRouter-Bench (arXiv:2505.23052)](https://arxiv.org/abs/2505.23052), and [RouteRAG (arXiv:2506.15862)](https://arxiv.org/abs/2506.15862). All report that per-query routing beats fixed-strategy baselines on heterogeneous question sets — directly relevant to the cascade-failure pattern documented in the HR forensics doc.
 
 ## References & upstream codebases
 
